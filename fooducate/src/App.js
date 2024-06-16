@@ -1,23 +1,54 @@
-import logo from './logo.svg';
 import './App.css';
+import React, { useState } from 'react';
+import { auth, signInWithEmailAndPassword } from './firebase/firebase'; 
 
 function App() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value);
+  };
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
+
+  const handleLoginClick = () => {
+    signInWithEmailAndPassword(auth, username, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        alert(`Logged in as ${user.email}`);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        alert(`Login failed: ${errorMessage}`);
+      });
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="logo">
+        <h1>Fooducate</h1>
+      </div>
+      <hr />
+      <div className="info">
+        <div className="loginContainer">
+          <div className='userAndPassContainer'>
+            <h1>Member Login</h1>
+            <h2>Username:</h2>
+            <input type='text' value={username} onChange={handleUsernameChange}></input>
+            <h2>Password:</h2>
+            <input type='password' value={password} onChange={handlePasswordChange}></input>
+          </div>
+          <div className='buttonContainer'>
+            <button onClick={handleLoginClick}>Login</button>
+            <button>Sign Up</button>
+          </div>
+          <a href='#'>Forgot Password</a>
+        </div>
+      </div>
     </div>
   );
 }
