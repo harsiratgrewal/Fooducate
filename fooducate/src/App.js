@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Nutrients from './pages/Nutrients';
 import GroceryList from './pages/GroceryList';
 import SignIn from './pages/SignIn';
+import Register from './pages/Register';
 
 function App() {
 
@@ -17,6 +18,8 @@ function App() {
         <Route path='/meals' element={<Meals />} />
         <Route path='/grocerylist' element={<GroceryList />} />
         <Route path='/nutrients' element={<Nutrients />} />
+        <Route path='/register' element={<Register />} />
+        
       </Routes>
     </Router>
   );

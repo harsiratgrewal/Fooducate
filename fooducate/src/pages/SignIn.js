@@ -1,31 +1,25 @@
-import React, { useState } from 'react';
+
 import '../App.css';
-import { auth, signInWithEmailAndPassword } from '../firebase/firebase';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { auth, logInWithEmailAndPassword, signInWithGoogle } from "../firebase/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+
+
 
 function SignIn() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [user, loading, error] = useAuthState(auth);
+  const navigate = useNavigate();
 
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
-  };
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
-
-  const handleLoginClick = () => {
-    signInWithEmailAndPassword(auth, username, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        alert(`Logged in as ${user.email}`);
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        alert(`Login failed: ${errorMessage}`);
-      });
-  };
+  useEffect(() => {
+    if (loading) {
+      // maybe trigger a loading screen
+      return;
+    }
+    if (user) navigate("/dashboard");
+  }, [user, loading]);
 
   return (
     <div className="App">
@@ -37,16 +31,19 @@ function SignIn() {
           <div className="loginContainer">
             <div className='userAndPassContainer'>
               <h1>Member Login</h1>
-              <h2>Username:</h2>
-              <input type='text' value={username} onChange={handleUsernameChange}></input>
+              <h2>Email:</h2>
+              <input type='text' value={email} onChange={(e) => setEmail(e.target.value)}></input>
               <h2>Password:</h2>
-              <input type='password' value={password} onChange={handlePasswordChange}></input>
+              <input type='password' value={password} onChange={(e) => setPassword(e.target.value)}></input>
             </div>
             <div className='buttonContainer'>
-              <button onClick={handleLoginClick}>Login</button>
-              <button>Sign Up</button>
+              <button onClick={() => logInWithEmailAndPassword(email, password)}>Login</button>
+              <Link to="/register"><button>Sign Up</button></Link>
             </div>
-            <a href='#'>Forgot Password</a>
+            <Link to="/reset">Forgot Password</Link>
+            <div>
+            Don't have an account? <Link to="/register">Register</Link> now.
+            </div>
           </div>
         </div>
       </div>
