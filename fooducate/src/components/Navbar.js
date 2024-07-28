@@ -17,7 +17,7 @@ import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 import logoFooducate from '../img/logo-fooducate.svg'
 
 
-const drawerWidth = 200;
+const drawerWidth = 190;
 
 export default function Navbar() {
     return (
@@ -69,7 +69,7 @@ export default function Navbar() {
                   <MenuBookIcon sx={{ color: "#cecae3"}}/>
                 </ListItemIcon>
                 <ListItemText>
-                  Planned meals
+                  Recipes
                 </ListItemText>
               </ListItemButton>
             </ListItem>
@@ -86,6 +86,22 @@ export default function Navbar() {
                 </ListItemIcon>
                 <ListItemText>
                   Find nutrients
+                </ListItemText>
+              </ListItemButton>
+            </ListItem>
+            </NavLink>
+            <NavLink to="/mealplan"  style={({ isActive }) => ({
+            color: isActive ? '#ffffff' : '#cecae3',
+            background: isActive ? '#996BFF' : '#28243D',
+            textDecoration: 'none'
+          })}>
+           <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <DocumentScannerIcon sx={{ color: "#cecae3"}}/>
+                </ListItemIcon>
+                <ListItemText>
+                  Meal Planner
                 </ListItemText>
               </ListItemButton>
             </ListItem>

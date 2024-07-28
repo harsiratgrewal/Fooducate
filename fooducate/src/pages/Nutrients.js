@@ -5,22 +5,23 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Chatbot from '../components/Chatbot';
 import ChatHistory from '../components/ChatHistory';
+import UpdateMealImages from '../components/UpdateMealImages';
 
 function Nutrients() {
   return (
     <Box sx={{ display: 'flex', width: '100%' }}>
-        <Navbar/>
-        <Box
+        <Navbar />
+            <Box
             component="main"
             sx={{
                 bgcolor: '#F0F3FF',
                 height: '100vh',
                 overflow: 'auto',
                 width: '100%',
-                padding: 2
+               
             }}
             >
-                <Grid container spacing={1.5} columns={12}>
+                <Grid container sx={{ paddingLeft: 1.5 }} spacing={1.5} columns={12}>
                     <Grid item xs={8}>
                         <Paper
                             
@@ -29,7 +30,7 @@ function Nutrients() {
                                 display: 'flex',
                                 backgroundColor: "#FCFCFD",
                                 flexDirection: 'column',
-                                height: '100vh',
+                                height: '100%',
                                 borderRadius: 4
                                 }}
                                 >
@@ -53,7 +54,8 @@ function Nutrients() {
                     </Grid>
                 </Grid>
             </Box>
-    </Box>
+            </Box>
+
   )
 }
 
