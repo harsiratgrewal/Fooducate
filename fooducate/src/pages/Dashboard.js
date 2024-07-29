@@ -2,31 +2,21 @@ import React, { useEffect, useState } from "react";
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Navbar from '../components/Navbar';
-import Button from '@mui/material/Button';
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Paper from '@mui/material/Paper';
 import MealTargets from '../components/MealTargets';
 import DailyNutrients from '../components/DailyNutrients';
 import 'bootstrap/dist/css/bootstrap.css';
 import WeeklySuggestions from '../components/WeeklySuggestions';
-import LogoutIcon from '@mui/icons-material/Logout';
 import HealthGoals from "../components/HealthGoals";
 import MonthlyNutrients from '../components/MonthlyNutrients';
-import IconButton from '@mui/material/IconButton';
-import { styled, alpha } from '@mui/material/styles';
-import InputBase from '@mui/material/InputBase';
-import SearchIcon from '@mui/icons-material/Search';
-import { auth, db, logout } from "../firebase/firebase";
-import Stack from '@mui/material/Stack';
+import { auth, db } from "../firebase/firebase";
 import { query, collection, getDocs, where } from "firebase/firestore";
-import GroceryListCard from '../components/GroceryListCard';
-import { autocompleteClasses, Typography } from "@mui/material";
 import Header from "../components/Header";
 
 function Dashboard() {
-  const [user, loading, error] = useAuthState(auth);
-  const [name, setName] = useState("");
+  const [user, loading ] = useAuthState(auth);
   const [userInfo, setUserInfo] = useState({})
 
   const navigate = useNavigate();
@@ -35,7 +25,6 @@ function Dashboard() {
       const q = query(collection(db, "users"), where("uid", "==", user?.uid));
       const doc = await getDocs(q);
       const data = doc.docs[0].data();
-      setName(data.name);
       setUserInfo(data)
       console.log(userInfo)
     } catch (err) {

@@ -110,7 +110,6 @@ export default function AllRecipes({ onSelectRecipe, onCategoryChange }) {
                     <Typography sx={{ fontSize: 17  }}>
                         {recipe.name}
                     </Typography>
-                    <CardMedia component="img" image={recipe.imageUrl} alt="recipe-image" />
                     <Stack direction="row" sx={{marginTop: '0.75rem'}} spacing={2} alignItems="center">
                       <Stack direction="row" justifyContent="flex-start" alignItems="center">
                       <AccessTimeFilledIcon  sx={{ fontSize: 16, color: '#6F6DCF'}} />

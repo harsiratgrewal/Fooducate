@@ -5,14 +5,8 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import AllRecipes from '../components/AllRecipes';
 import Typography from '@mui/material/Typography';
-import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
-import { Button, Card, Divider, ListItem, ListItemText, Stack } from '@mui/material';
-import RoomServiceIcon from '@mui/icons-material/RoomService';
-import Checkbox from '@mui/material/Checkbox';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import List from '@mui/material/List';
-import { Link, useNavigate } from 'react-router-dom';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { Button, Card, Divider, Stack } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import IngredientsCard from '../components/IngreidientsCard';
 

@@ -30,8 +30,9 @@ export default function FullGroceryList() {
       try {
         const q = query(collection(db, `users/${userId}/grocerylist`));
         const querySnapshot = await getDocs(q);
-        const itemsArray = querySnapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name }));
+        const itemsArray = querySnapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name, quantity: doc.data().quantity }));
         setItems(itemsArray);
+        console.log(itemsArray);
       } catch (error) {
         console.error("Error fetching grocery list: ", error);
       }
@@ -69,7 +70,7 @@ export default function FullGroceryList() {
 
   return (
     <React.Fragment>
-      <div className="d-flex flex-row justify-content-between align-items-center">
+      <div className="p-2 d-flex flex-row justify-content-between align-items-center">
       <Typography variant="h6" color="#494949" sx={{ fontWeight: 'medium'}}>
         Grocery List
       </Typography>
@@ -79,11 +80,16 @@ export default function FullGroceryList() {
         {items.map((item) => (
           <React.Fragment key={item.id}>
             <ListItem onClick={handleToggle(item.id)}>
-              <ListItemText primary={item.name.charAt(0).toUpperCase() + item.name.slice(1)} />
+              <ListItemText  primary={<React.Fragment><Typography sx={{ fontSize: 20 }}>{item.name.charAt(0).toUpperCase() + item.name.slice(1)}</Typography></React.Fragment>} secondary={<React.Fragment><Typography sx={{ fontSize: 18 }}>{item.quantity}</Typography></React.Fragment>} />
               <ListItemSecondaryAction>
                 <Checkbox
                   edge="end"
                   checked={!!checked[item.id]}
+                  sx={{
+                    '&.Mui-checked': {
+                      color: '#996BFF',
+                    },
+                  }}
                   onChange={handleToggle(item.id)}
                   inputProps={{ 'aria-labelledby': `checkbox-list-label-${item.id}` }}
                 />

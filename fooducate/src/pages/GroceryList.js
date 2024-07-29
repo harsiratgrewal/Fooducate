@@ -6,6 +6,8 @@ import Grid from '@mui/material/Grid';
 import FullGroceryList from '../components/FullGroceryList';
 import Header from '../components/Header';
 import CalculatedTotal from '../components/CalculatedTotal';
+import SearchMeals from '../components/SearchMeals';
+import FavoritedMealsCard from '../components/FavoritedMealsCard';
 
 function GroceryList() {
   return (
@@ -20,49 +22,82 @@ function GroceryList() {
                 width: '100%',
             }}
             >
-                <Grid container sx={{ paddingLeft: 1.5 }} spacing={1.5} columns={16}>
-                    <Grid item xs={12}>
-            <div className="row mt-1 g-2">
-              <div className="col-12">
-                  <div className="row mb-2">
-                       <Header />
-                   </div>
-              </div>
-              <div className="col-7">
-            <Paper
-              elevation={1}
-              sx={{
-                p: 2,
-                display: 'flex',
-                backgroundColor: "#FEFEFF",
-                flexDirection: 'column',
-                height: '100%',
-                borderRadius: 5,
-                  // Add this line
-              }}
-            >
-              <FullGroceryList />
-            </Paper>
-            </div>
-            <div className="col-5">
-            <Paper
-              elevation={1}
-              sx={{
-                p: 2,
-                display: 'flex',
-                backgroundColor: "#FEFEFF",
-                flexDirection: 'column',
-                height: '100%',
-                borderRadius: 3,
-                  // Add this line
-              }}
-            >
-              <CalculatedTotal />
-            </Paper>
-            </div>
-            </div>
+            <Grid container sx={{ paddingLeft: 1.5 }} spacing={1.5} columns={16}>
+                <Grid item xs={11}>
+                    <div className="row mt-1 g-2">
+                    <div className="col-12">
+                        <div className="row mb-2">
+                            <Header />
+                        </div>
+                    </div>
+                        <div className="col-6">
+                        <Paper
+                        elevation={1}
+                        sx={{
+                            p: 2,
+                            display: 'flex',
+                            backgroundColor: "#FEFEFF",
+                            flexDirection: 'column',
+                            height: '100vh',
+                            borderRadius: 5,
+                        }}
+                        >
+                        <FullGroceryList />
+                        </Paper>
+                        </div>
+                        <div className="col-6 d-flex flex-column justify-content-between h-100vh">
+                          <div className="col">
+                            <Paper
+                            elevation={1}
+                            sx={{
+                                p: 2,
+                                display: 'flex',
+                                backgroundColor: "#FEFEFF",
+                                flexDirection: 'column',
+                                height: '95%',
+                                borderRadius: 3,
+                                // Add this line
+                            }}
+                            >
+                            <CalculatedTotal />
+                            </Paper>
+                        </div>
+                        <div className="col">
+                            <Paper
+                            elevation={1}
+                            sx={{
+                                p: 2,
+                                display: 'flex',
+                                backgroundColor: "#FEFEFF",
+                                flexDirection: 'column',
+                                height: '95%',
+                                borderRadius: 3,
+                                // Add this line
+                            }}
+                            >
+                            <FavoritedMealsCard />
+                            </Paper>
+                        </div>
+                        <div className="col">
+                            <Paper
+                            elevation={1}
+                            sx={{
+                                p: 2,
+                                display: 'flex',
+                                backgroundColor: "#FEFEFF",
+                                flexDirection: 'column',
+                                height: '100%',
+                                borderRadius: 3,
+                                // Add this line
+                            }}
+                            >
+                            <CalculatedTotal />
+                            </Paper>
+                        </div>
+                        </div>
+                        </div>
           </Grid>
-          <Grid item xs={4} sx={{ paddingBottom: 0, paddingTop: 0 }}>
+          <Grid item xs={5} sx={{ paddingBottom: 0, paddingTop: 0 }}>
             <Paper
               elevation={2}
               sx={{
@@ -70,13 +105,14 @@ function GroceryList() {
                 display: 'flex',
                 backgroundColor: "#FEFEFF",
                 flexDirection: 'column',
-                height: '100vh',
-                padding: 0,
+                height: '100%',
+                padding: 2,
                 overflow: 'auto'
                 
                 
               }}
             >
+                <SearchMeals />
               
             </Paper>
           </Grid>

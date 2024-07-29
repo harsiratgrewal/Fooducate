@@ -25,6 +25,8 @@ const categories = ["Breakfast", "Lunch", "Dinner", "Snack", "Sweets"];
 const AddMeal = ({ open, onClose }) => {
   const [userId, setUserId] = useState(null);
   const [recipes, setRecipes] = useState([]);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
   const [filteredRecipes, setFilteredRecipes] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -113,9 +115,12 @@ const AddMeal = ({ open, onClose }) => {
         });
 
         await batch.commit();
-        console.log("Batch commit successful.");
+        setAlertOpen(true);
+        
         
         onClose();
+
+
       } catch (error) {
         console.error('Error adding recipes to meal plan:', error);
       }

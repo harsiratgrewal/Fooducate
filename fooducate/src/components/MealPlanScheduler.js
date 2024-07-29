@@ -1,6 +1,6 @@
-import { Avatar, Divider, Stack, Typography, TextField, Button, Box, Grid, Card, CardContent, List, ListItem, Paper } from '@mui/material';
+import { Avatar, Menu, MenuItem, Divider, Stack, Typography, TextField, Button, Box, Grid, Card, CardContent, List, ListItem, Paper, Alert } from '@mui/material';
 import React, { useState, useEffect } from 'react';
-import { getFirestore, collection, updateDoc, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
+import { getFirestore, addDoc, setDoc, collection, updateDoc, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -9,10 +9,13 @@ import isBetween from 'dayjs/plugin/isBetween';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import proteinIcon from '../img/proteindrumstick2.svg';
 import fatsIcon from '../img/droplet.svg';
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
 import carbsIcon from '../img/wheatcarbs.svg';
 import { styled } from '@mui/material/styles';
 import { v4 as uuidv4 } from 'uuid';
 import AddMeal from './AddMeal';
+import CheckIcon from '@mui/icons-material/Check';
 import { db, auth } from '../firebase/firebase';
 import ProgressBar from './ProgressBar';
 import CarbsProgressBar from './CarbsProgressBar';
@@ -21,7 +24,7 @@ import Header from './Header';
 import weekday from 'dayjs/plugin/weekday';
 import updateNutritionInfo from '../firebase/updateNutritionInfo';
 import CustomWeekPickerInput from './CustomWeekPickerInput'; // Import the custom input component
-
+import { useNavigate } from 'react-router-dom';
 dayjs.extend(isBetween);
 
 export default function MealPlanScheduler() {
@@ -32,10 +35,15 @@ export default function MealPlanScheduler() {
   const [fats, setFats] = useState();
   const [proteins, setProteins] = useState();
   const [carbs, setCarbs] = useState();
-
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [startOfWeek, setStartOfWeek] = useState(dayjs().startOf('week'));
   const [endOfWeek, setEndOfWeek] = useState(dayjs().endOf('week'));
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
+
+  const navigate = useNavigate(); // Use useNavigate hook
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -100,38 +108,6 @@ export default function MealPlanScheduler() {
     }
   };
 
-  const addUniqueIdToDocuments = async () => {
-    const collections = ['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'];
-
-    try {
-      for (const collectionName of collections) {
-        const querySnapshot = await getDocs(collection(db, collectionName));
-        querySnapshot.forEach(async (docSnapshot) => {
-          const docRef = doc(db, collectionName, docSnapshot.id);
-          const docData = docSnapshot.data();
-
-          if (!docData.recipeId) {
-            const recipeId = uuidv4();
-            await updateDoc(docRef, { recipeId });
-            console.log(`Updated document ${docSnapshot.id} in collection ${collectionName} with recipeId: ${recipeId}`);
-          }
-        });
-      }
-    } catch (error) {
-      console.error('Error updating documents:', error);
-    }
-  };
-
-  const handleUpdateClick = () => {
-    addUniqueIdToDocuments()
-      .then(() => {
-        console.log('All documents have been updated with a unique ID');
-      })
-      .catch((error) => {
-        console.error('Error updating documents:', error);
-      });
-  };
-
   const getDayName = (date) => {
     return dayjs(date).format('ddd');
   };
@@ -143,6 +119,47 @@ export default function MealPlanScheduler() {
   const handleCloseDialog = () => {
     setDialogOpen(false);
   };
+
+  const handleMenuClick = (event, recipe) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedRecipe(recipe);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedRecipe(null);
+  };
+
+  const handleViewRecipe = () => {
+    navigate(`/recipe/${selectedRecipe.recipeId}`);
+    handleMenuClose();
+  };
+
+    const handleFavoriteRecipe = async () => {
+    if (userId && selectedRecipe && selectedRecipe.recipeId) {
+      try {
+        const favoriteDocRef = doc(collection(db, `users/${userId}/favoritedMeals`));
+        await setDoc(favoriteDocRef, {
+          recipeId: selectedRecipe.recipeId,
+          favoritedAt: new Date()
+        });
+        
+        handleMenuClose();
+        setAlertOpen(true);
+        setAlertMessage(`${selectedRecipe.name} added to favorites`);
+        
+        
+      } catch (error) {
+        console.error('Error adding to favorited meals:', error);
+      }
+    }
+  };
+
+  const handleAlertClose = () => {
+    setAlertOpen(false);
+  };
+
+  console.log(selectedRecipe)
 
   const filterMealPlansByWeek = (startOfWeek, endOfWeek) => {
     return mealPlans.filter(mealPlan =>
@@ -240,7 +257,9 @@ export default function MealPlanScheduler() {
                                             
                                             <div className="d-flex flex-row justify-content-between align-items-center w-100 mb-2">
                                               <Typography sx={{ fontSize: 19 }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].name : 'Loading...'}</Typography>
-                                              <MoreVertIcon />
+                                              <IconButton onClick={(event) => handleMenuClick(event, recipes[mealPlan.recipeId])}>
+                                                <MoreVertIcon />
+                                              </IconButton>
                                             </div>
                                             <div className="d-flex flex-row justify-content-between align-items-center w-100 mb-2">
                                             <div className="d-flex flex-row align-items-center">
@@ -279,6 +298,21 @@ export default function MealPlanScheduler() {
           </div>
         </Grid>
       </Grid>
+
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+        <MenuItem onClick={handleViewRecipe}>View</MenuItem>
+        <MenuItem onClick={handleFavoriteRecipe}>Favorite</MenuItem>
+      </Menu>
+       <Snackbar open={alertOpen} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={6000} onClose={handleAlertClose}>
+       <Alert
+        icon={<CheckIcon  sx={{color: '#1B6A36', fontSize: 28}}  />}
+        autoHideDuration={6000}
+        sx={{ bgcolor: '#95EDB3', color: '#1B6A36', fontSize: 18 }}
+        variant="filled"
+        onClose={handleAlertClose}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </React.Fragment>
   )
 }
