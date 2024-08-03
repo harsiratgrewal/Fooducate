@@ -7,6 +7,8 @@ import Nutrients from './pages/Nutrients';
 import GroceryList from './pages/GroceryList';
 import SignIn from './pages/SignIn';
 import Register from './pages/Register';
+import MealPlan from './pages/MealPlan';
+import RecipeDetails from './pages/RecipeDetails';
 
 function App() {
 
@@ -16,9 +18,11 @@ function App() {
         <Route exact path='/' element={<SignIn />} />
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/meals' element={<Meals />} />
+        <Route path='/mealplan' element={<MealPlan />}/>
         <Route path='/grocerylist' element={<GroceryList />} />
         <Route path='/nutrients' element={<Nutrients />} />
         <Route path='/register' element={<Register />} />
+        <Route exact path="/recipe/:recipeId" element={<RecipeDetails />} />
         
       </Routes>
     </Router>

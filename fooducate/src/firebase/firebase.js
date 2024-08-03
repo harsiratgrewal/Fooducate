@@ -9,6 +9,7 @@ import {
   sendPasswordResetEmail,
   signOut,
 } from "firebase/auth";
+import { getStorage } from 'firebase/storage';
 import {
   getFirestore,
   query,
@@ -32,6 +33,7 @@ const firebaseConfig = {
 
 
 const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
@@ -88,12 +90,15 @@ const sendPasswordReset = async (email) => {
     alert(err.message);
   }
 };
+
+
 const logout = () => {
   signOut(auth);
 };
 export {
   auth,
   db,
+  storage,
   signInWithGoogle,
   logInWithEmailAndPassword,
   registerWithEmailAndPassword,

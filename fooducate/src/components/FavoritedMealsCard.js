@@ -1,0 +1,119 @@
+import React, { useState, useEffect } from 'react';
+import { Accordion, AccordionSummary, AccordionDetails, List, ListItem, ListItemText, Button, Box,  Typography, Grid, Card, CardContent } from '@mui/material';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { onAuthStateChanged } from 'firebase/auth';
+import Divider from '@mui/material/Divider';
+import AddIcon from '@mui/icons-material/Add';
+import IconButton from '@mui/material/IconButton';
+
+import { db, auth } from '../firebase/firebase'; // Adjust the import based on your file structure
+
+const categories = ['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'];
+
+const FavoritedMealsCard = () => {
+  const [userId, setUserId] = useState(null);
+  const [favoriteMeals, setFavoriteMeals] = useState([]);
+  const [recipes, setRecipes] = useState({});
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid);
+        fetchFavoriteMeals(user.uid);
+      } else {
+        setUserId(null);
+        setFavoriteMeals([]);
+        setRecipes({});
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const fetchFavoriteMeals = async (uid) => {
+    try {
+      const q = query(collection(db, `users/${uid}/favoritedMeals`));
+      const querySnapshot = await getDocs(q);
+      const mealsList = querySnapshot.docs.map(doc => doc.data().recipeId);
+      setFavoriteMeals(mealsList);
+      fetchRecipes(mealsList);
+    } catch (error) {
+      console.error("Error fetching favorite meals: ", error);
+    }
+  };
+
+  const fetchRecipes = async (mealsList) => {
+    const allRecipes = {};
+    try {
+      for (const category of categories) {
+        const categoryCollection = collection(db, category);
+        const querySnapshot = await getDocs(categoryCollection);
+        querySnapshot.docs.forEach((doc) => {
+          const recipeId = doc.data().recipeId;  // Ensure the recipeId is fetched as a string
+          if (mealsList.includes(recipeId)) {
+            allRecipes[doc.id] = { ...doc.data(), category, recipeId: doc.id };
+          }
+        });
+      }
+      setRecipes(allRecipes);
+    } catch (error) {
+      console.error("Error fetching recipes: ", error);
+    }
+  };
+
+  const handleAddToGroceryList = (ingredient) => {
+    // Add ingredient to grocery list logic here
+    console.log(`Add ${ingredient} to grocery list`);
+  };
+
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
+  
+  return (
+    <Box sx={{ padding: 1 }}>
+        <Typography variant="h5" color='#494949'sx={{ width: '80%', fontWeight: 'medium', fontSize: 20 }}>Favorited meals</Typography>
+     <Box sx={{ marginBottom: 1, maxHeight: '30vh', overflowY: 'auto' }}>
+      <List>
+        {favoriteMeals.length === 0 ? (
+          <Typography variant="h6">No favorite meals found.</Typography>
+        ) : (
+          Object.values(recipes).map((recipe) => (
+            <Accordion key={recipe.recipeId}  sx={{ boxShadow: 'none', borderBottom: '1px solid rgba(0, 0, 0, 0.12)'}}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              className='ps-0 mb-0'
+              sx={{ height: 35}}
+              aria-controls={`panel-${recipe.recipeId}-content`}
+              id={`panel-${recipe.recipeId}-header`}
+            >
+              <Typography className='pb-0' variant="h6">{recipe.name}</Typography>
+            </AccordionSummary>
+            <AccordionDetails className='ps-0 pt-0'>
+              <List>
+                {recipe.ingredients.map((ingredient, index) => (
+                  <ListItem key={index} className='ps-0'
+                    secondaryAction={
+                    <IconButton variant="outlined" sx={{ width: 40 }} onClick={() => handleAddToGroceryList(ingredient)}>
+                      <AddIcon />
+                    </IconButton>
+                  }
+                  
+                  >
+                    <ListItemText className='ps-0' primary={capitalizeFirstLetter(ingredient)} />
+                  </ListItem>
+                ))}
+              </List>
+            </AccordionDetails>
+          </Accordion>
+          ))
+        )}
+      </List>
+      </Box>
+    </Box>
+  );
+};
+
+export default FavoritedMealsCard;
