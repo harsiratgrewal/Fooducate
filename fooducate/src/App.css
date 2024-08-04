@@ -1,0 +1,93 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+.App {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-image: url(../src/img/create-food-website.jpg);
+  background-size: cover; 
+  background-position: center; 
+  width: 100vw;
+  height: 100vh;
+}
+
+.logo {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.logo h1 {
+  font-size: 90px;
+  color: white;
+  margin-bottom: 150px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); 
+}
+
+.info {
+  width: 50%; 
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginContainer {
+  width: 450px; 
+  height: 550px; 
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  border-radius: 8px; 
+  padding: 20px; 
+}
+.userAndPassContainer h1{
+  margin-bottom: 60px;
+  margin-left: 90px;
+}
+.userAndPassContainer, .buttonContainer {
+  width: 100%; 
+  margin-bottom: 20px; 
+}
+
+
+button {
+  width: calc(50% - 10px); 
+  padding: 10px;
+  margin-right: 10px; 
+  border: none;
+  background-color: #007bff; 
+  color: white;
+  border-radius: 4px;
+  cursor: pointer; 
+  transition: background-color 0.3s; 
+}
+
+button:hover {
+  background-color: #0056b3; 
+}
+
+button:last-child {
+  margin-right: 0; 
+}
+
+a {
+  color: #007bff; 
+  text-decoration: none; 
+  transition: color 0.3s; 
+}
+
+a:hover {
+  color: #0056b3; 
+}
