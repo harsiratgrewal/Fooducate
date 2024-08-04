@@ -6,20 +6,26 @@ import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import { styled, alpha } from '@mui/material/styles';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import { useAuthState } from "react-firebase-hooks/auth";
+import AssistantIcon from '@mui/icons-material/Assistant';
 import { useNavigate } from "react-router-dom";
 
 function Header() {
  const [user, loading, error] = useAuthState(auth);
  const [name, setName] = useState("");
+ const navigate = useNavigate();
+
+ const handleChatClick = () => {
+        navigate('/nutrients');
+    };
 
 
  const Search = styled('div')(({ theme }) => ({
         position: 'relative',
         borderRadius: 10,
-        backgroundColor: "#D6D9E8",
-        color: "#75787E",
+        backgroundColor: 'rgba(11, 38, 136, 0.07)',
+        color: 'rgba(14, 17, 21, 0.50)',
         '&:hover': {
             backgroundColor: "#E7E9F3",
         },
@@ -40,7 +46,7 @@ function Header() {
         justifyContent: 'center',
     }));
     const StyledInputBase = styled(InputBase)(({ theme }) => ({
-        color: 'inherit',
+        color: '#040505',
         width: '100%',
         '& .MuiInputBase-input': {
             padding: theme.spacing(1, 1, 1, 0),
@@ -76,7 +82,7 @@ function Header() {
   return (
     <React.Fragment>
         <Box sx={{display: 'flex', flexDirection: 'row', marginLeft: 1, justifyContent: 'between', alignItems: 'center'}}>
-            <Typography variant="h6" color="#494949" sx={{ width: '75%', fontWeight: 'medium'}}>Welcome back, {name} </Typography>
+            <Typography variant="h5" color="#232530" sx={{ width: '75%'}}>Welcome back, {name} </Typography>
             <div className="d-flex flex-row w-100 me-2 justify-content-end">
                 <Search className="me-2">
                    <SearchIconWrapper>
@@ -87,7 +93,37 @@ function Header() {
                                  inputProps={{ 'aria-label': 'search' }}
                                 />
                                 </Search>
-                                <IconButton size="medium" sx={{ width: 40, borderRadius: 2, color: '#FFFFFF', backgroundColor: '#996BFF' }} onClick={logout}><LogoutIcon /></IconButton>
+                                <Button disableElevation 
+                                variant="contained"
+                                size="medium" 
+                                onClick={handleChatClick} 
+                                sx={{ borderRadius: 2, 
+                                    marginRight: 1,  
+                                    backgroundColor: '#996BFF', 
+                                    color: '#FFFFFF', 
+                                    width: 100,
+                                    '&:hover': {
+                                        backgroundColor: '#6E4ABE', // Custom hover background color
+                                    },
+
+                                }} 
+                                startIcon={<AssistantIcon />}>
+                                    Chat
+                                </Button>
+                                <IconButton 
+                                size="medium" 
+                                sx={{ 
+                                    width: 40, 
+                                    borderRadius: 2, 
+                                    color: '#FFFFFF', 
+                                    backgroundColor: '#996BFF',
+                                    '&:hover': {
+                                        backgroundColor: '#6E4ABE', // Custom hover background color
+                                    },
+                                 }} 
+                                onClick={logout}>
+                                    <LogoutIcon />
+                                </IconButton>
             </div>
         </Box>
     </React.Fragment>

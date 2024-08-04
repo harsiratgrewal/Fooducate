@@ -1,6 +1,6 @@
-import { Avatar, Menu, MenuItem, Divider, Stack, Typography, TextField, Button, Box, Grid, Card, CardContent, List, ListItem, Paper, Alert } from '@mui/material';
+import { Menu, MenuItem, Typography, Button, Box, Grid, Card, List, ListItem, Alert } from '@mui/material';
 import React, { useState, useEffect } from 'react';
-import { getFirestore, addDoc, setDoc, collection, updateDoc, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
+import { setDoc, collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -12,8 +12,6 @@ import fatsIcon from '../img/droplet.svg';
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import carbsIcon from '../img/wheatcarbs.svg';
-import { styled } from '@mui/material/styles';
-import { v4 as uuidv4 } from 'uuid';
 import AddMeal from './AddMeal';
 import CheckIcon from '@mui/icons-material/Check';
 import { db, auth } from '../firebase/firebase';
@@ -21,8 +19,6 @@ import ProgressBar from './ProgressBar';
 import CarbsProgressBar from './CarbsProgressBar';
 import FatsProgressBar from './FatsProgressBar';
 import Header from './Header';
-import weekday from 'dayjs/plugin/weekday';
-import updateNutritionInfo from '../firebase/updateNutritionInfo';
 import CustomWeekPickerInput from './CustomWeekPickerInput'; // Import the custom input component
 import { useNavigate } from 'react-router-dom';
 dayjs.extend(isBetween);
@@ -208,7 +204,7 @@ export default function MealPlanScheduler() {
                   padding: 0.25
                 }}>
                   <Card elevation={0} className="d-flex p-3 flex-row justify-content-between align-items-center" sx={{ borderRadius: 3 }}>
-                    <Typography variant="h6" color="#494949" sx={{ fontWeight: 'semibold' }}>
+                    <Typography variant="h5" color='#232530' sx={{ fontWeight: 'semibold' }}>
                       Meal Planner
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -218,10 +214,20 @@ export default function MealPlanScheduler() {
                           value={selectedDate}
                           onChange={(date) => setSelectedDate(date)}
                           renderInput={(params) => <CustomWeekPickerInput {...params} value={selectedDate} onChange={setSelectedDate} />}
-                          views={['day']}
+                          views={['year', 'month', 'day']}
                         />
                       </LocalizationProvider>
-                      <Button variant="contained" sx={{ width: 150, borderRadius: 2, color: '#FFFFFF', backgroundColor: '#996BFF', marginLeft: 2 }} onClick={handleOpenDialog}>
+                      <Button disableElevation variant="contained" 
+                      sx={{ width: 150, 
+                        color: '#FFFFFF', 
+                        backgroundColor: '#996BFF', 
+                        marginLeft: 2,
+                        '&:hover': {
+                            backgroundColor: '#8A60E6', // Custom hover background color
+                          }, 
+                      
+                      }} 
+                      onClick={handleOpenDialog}>
                         Add meal
                       </Button>
                     </Box>
@@ -233,46 +239,43 @@ export default function MealPlanScheduler() {
                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => {
                           const mealPlansForDay = mealPlansByDayAndCategory[day] || {};
                           const nutrients = calculateNutrients(Object.values(mealPlansForDay).flat());
-                          const targetFats = 70; // Example target fats per meal goal in grams
-                          const targetProtein = 175; // Example target protein per meal goal in grams
-                          const targetCarbs = 300; // Example target carbs per meal goal in grams
                           return (
                             <Grid item xs={12} key={day} sx={{ width: '100%' }}>
                               <div className="d-flex flex-row mb-2 mt-4">
                                 <Card variant="contained" sx={{ width: 70, overflow: 'visible', borderRadius: 7, backgroundColor: '#FEFEFF', padding: 1, display: 'flex', flexDirection: 'column', textAlign: 'center' }}>
-                                  <Typography sx={{ alignSelf: 'center', fontWeight: 'medium', marginTop: 1, fontSize: 16 }}>{day}</Typography>
+                                  <Typography sx={{ alignSelf: 'center', color:'#232530', marginTop: 1, fontSize: 18 }}>{day}</Typography>
                                 </Card>
                                 <Box sx={{ width: '15%'}} className="d-flex flex-column justify-content-evenly ms-2 me-2">
-                                  <ProgressBar variant="determinate" value={nutrients.protein} max={targetProtein} />
-                                  <CarbsProgressBar variant="determinate" value={nutrients.fats} max={targetFats} />
-                                  <FatsProgressBar variant="determinate" value={nutrients.carbs} max={targetCarbs} />
+                                  <ProgressBar variant="determinate" value={nutrients.protein} max={proteins} />
+                                  <CarbsProgressBar variant="determinate" value={nutrients.fats} max={fats} />
+                                  <FatsProgressBar variant="determinate" value={nutrients.carbs} max={carbs} />
                                 </Box>
                                 <Grid container spacing={1} columns={30}>
                                   {['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'].map(category => (
                                     <Grid sx={{ height: '100%' }} item xs={25} sm={25} md={25} lg={6} xl={6} key={category}>
-                                      <Typography sx={{ backgroundColor: "#FEFEFF", borderRadius: 2, paddingLeft: 1.5, paddingRight: 2, paddingTop: 1, paddingBottom: 1, fontSize: 20 }}>{category.charAt(0).toUpperCase() + category.slice(1)}</Typography>
+                                      <Typography sx={{ backgroundColor: "#FEFEFF", borderRadius: 2, paddingLeft: 1.5, paddingRight: 2, paddingTop: 1, paddingBottom: 1, fontSize: 18 }}>{category.charAt(0).toUpperCase() + category.slice(1)}</Typography>
                                       <List>
                                         {mealPlansByDayAndCategory[day] && mealPlansByDayAndCategory[day][category] ? mealPlansByDayAndCategory[day][category].map(mealPlan => (
                                           <ListItem sx={{ backgroundColor: "#FEFEFF", borderRadius: 2, marginBottom: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }} key={mealPlan.id}>
                                             
                                             <div className="d-flex flex-row justify-content-between align-items-center w-100 mb-2">
                                               <Typography sx={{ fontSize: 19 }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].name : 'Loading...'}</Typography>
-                                              <IconButton onClick={(event) => handleMenuClick(event, recipes[mealPlan.recipeId])}>
+                                              <IconButton sx={{ width: '20%'}} onClick={(event) => handleMenuClick(event, recipes[mealPlan.recipeId])}>
                                                 <MoreVertIcon />
                                               </IconButton>
                                             </div>
                                             <div className="d-flex flex-row justify-content-between align-items-center w-100 mb-2">
                                             <div className="d-flex flex-row align-items-center">
                                               <img style={{ transform: 'rotate(135deg)', marginRight: 2 }} src={proteinIcon} alt="protein icon"/>
-                                              <Typography sx={{ fontSize: 20}}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.protein : 'Loading...'}g</Typography>
+                                              <Typography sx={{ fontSize: 17}}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.protein : 'Loading...'}g</Typography>
                                             </div>
                                             <div className="d-flex flex-row align-items-center">
                                               <img style={{ marginRight: 2, transform: 'rotate(-45deg)' }}src={carbsIcon} alt="carbs icon"/>
-                                              <Typography sx={{ fontSize: 20 }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.carbs : 'Loading...'}g</Typography>
+                                              <Typography sx={{ fontSize: 17 }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.carbs : 'Loading...'}g</Typography>
                                             </div>
                                             <div className="d-flex flex-row align-items-center">
                                               <img style={{ marginRight: 2 }} src={fatsIcon} alt="fats icon"/>
-                                              <Typography sx={{ fontSize: 20 }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.fat : 'Loading...'}g</Typography>
+                                              <Typography sx={{ fontSize: 17 }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.fat : 'Loading...'}g</Typography>
                                             </div>
                                             </div>
                                           </ListItem>

@@ -62,6 +62,8 @@ const FavoritedMealsCard = () => {
     }
   };
 
+  console.log(favoriteMeals);
+
   const handleAddToGroceryList = (ingredient) => {
     // Add ingredient to grocery list logic here
     console.log(`Add ${ingredient} to grocery list`);
@@ -74,8 +76,8 @@ const FavoritedMealsCard = () => {
   
   return (
     <Box sx={{ padding: 1 }}>
-        <Typography variant="h5" color='#494949'sx={{ width: '80%', fontWeight: 'medium', fontSize: 20 }}>Favorited meals</Typography>
-     <Box sx={{ marginBottom: 1, maxHeight: '30vh', overflowY: 'auto' }}>
+        <Typography variant="h5" color='#232530' sx={{ width: '80%' }}>Favorited meals</Typography>
+     <Box sx={{ marginBottom: 1, maxHeight: '50vh', overflowY: 'auto' }}>
       <List>
         {favoriteMeals.length === 0 ? (
           <Typography variant="h6">No favorite meals found.</Typography>
@@ -89,14 +91,14 @@ const FavoritedMealsCard = () => {
               aria-controls={`panel-${recipe.recipeId}-content`}
               id={`panel-${recipe.recipeId}-header`}
             >
-              <Typography className='pb-0' variant="h6">{recipe.name}</Typography>
+              <Typography className='pb-0' sx={{ color: "#232530"}} variant="subtitle1">{recipe.name}</Typography>
             </AccordionSummary>
             <AccordionDetails className='ps-0 pt-0'>
               <List>
                 {recipe.ingredients.map((ingredient, index) => (
                   <ListItem key={index} className='ps-0'
                     secondaryAction={
-                    <IconButton variant="outlined" sx={{ width: 40 }} onClick={() => handleAddToGroceryList(ingredient)}>
+                    <IconButton variant="outlined" sx={{ width: 40, color: "#996BFF" }} onClick={() => handleAddToGroceryList(ingredient)}>
                       <AddIcon />
                     </IconButton>
                   }

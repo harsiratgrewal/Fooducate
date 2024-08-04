@@ -15,6 +15,8 @@ import DiamondIcon from '@mui/icons-material/Diamond';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 import logoFooducate from '../img/logo-fooducate.svg'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 
 const drawerWidth = 190;
@@ -98,10 +100,10 @@ export default function Navbar() {
            <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                  <DocumentScannerIcon sx={{ color: "#cecae3"}}/>
+                  <CalendarMonthIcon sx={{ color: "#cecae3"}}/>
                 </ListItemIcon>
                 <ListItemText>
-                  Meal Planner
+                  Meal planner
                 </ListItemText>
               </ListItemButton>
             </ListItem>
@@ -118,6 +120,22 @@ export default function Navbar() {
                 </ListItemIcon>
                 <ListItemText>
                   Grocery list
+                </ListItemText>
+              </ListItemButton>
+            </ListItem>
+            </NavLink>
+            <NavLink to="/objectives"  style={({ isActive }) => ({
+            color: isActive ? '#ffffff' : '#cecae3',
+            background: isActive ? '#996BFF' : '#28243D',
+            textDecoration: 'none'
+          })}>
+           <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon>
+                  <EmojiEventsIcon sx={{ color: "#cecae3"}} />
+                </ListItemIcon>
+                <ListItemText>
+                  Health goals
                 </ListItemText>
               </ListItemButton>
             </ListItem>

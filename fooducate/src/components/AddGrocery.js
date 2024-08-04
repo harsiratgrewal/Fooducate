@@ -57,7 +57,19 @@ export default function AddGrocery() {
 
   return (
     <React.Fragment>
-      <Button sx={{width: 115, bgcolor: "#996BFF", fontSize: 15 }} size="small" className='fw-regular' variant="contained" onClick={handleClickOpen}>
+      <Button disableElevation 
+      sx={{
+        width: 115, 
+        bgcolor: "#996BFF", 
+        fontSize: 15,
+        '&:hover': {
+          backgroundColor: '#6E4ABE', // Custom hover background color
+        },
+       }} 
+      size="small" 
+      className='fw-regular' 
+      variant="contained" 
+      onClick={handleClickOpen}>
         Add Item
       </Button>
       <Dialog

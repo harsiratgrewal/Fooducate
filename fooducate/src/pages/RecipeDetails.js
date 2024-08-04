@@ -145,7 +145,7 @@ const RecipeDetails = () => {
                     <Grid item xs={13} sm={13} md={13} lg={13} xl={8}>
                         <Header />
                         <Grid container spacing={{ xs: 1, md: 1.5 }} sx={{height: '100vh', paddingTop: 1 }} columns={12}>
-                            <Grid item xs={6}>
+                            <Grid item xs={12}>
                                 <Paper
                                     elevation={0}
                                     sx={{
@@ -162,35 +162,6 @@ const RecipeDetails = () => {
                                     <Typography className='fs-6' color="#494949" sx={{ fontWeight: 'medium' }}>{recipe.description}</Typography>
                                     <Typography className='fs-6' color="#494949" sx={{ fontWeight: 'medium' }}>{recipe.prepTime} mins</Typography>
                                     <Typography className='fs-6' color="#494949" sx={{ fontWeight: 'medium' }}>{recipe.cookTime} mins</Typography>
-                                        
-                                </Paper>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        backgroundColor: "#FCFCFD",
-                                        flexDirection: 'column',
-                                        height: '100%',
-                                        borderRadius: 5
-                                        }}
-                                        >
-                                    
-                                    <Typography className='fs-5' color="#494949" sx={{ fontWeight: 'medium' }}>Macronutrients</Typography>
-                                    <Grid container direction="row" justifyContent="center" alignItems="center" columns={12}>
-                                        <Grid item xs={4}>
-                                            <NutritionGauge category="protein" protein={recipe.nutrients.protein} max={proteins} color="#4B49C3"/>
-                                        </Grid>
-                                        <Grid item xs={4}>
-                                            <NutritionGauge category="fats" protein={recipe.nutrients.fat} max={fats} color="#6D4CB5"/>
-                                        </Grid>
-                                        <Grid item xs={4}>
-                                            <NutritionGauge category="carbs" protein={recipe.nutrients.carbs} color="#6F6DCF" max={carbs}/>
-                                        </Grid>
-                                    </Grid>
-                                    
                                         
                                 </Paper>
                             </Grid>
@@ -260,7 +231,38 @@ const RecipeDetails = () => {
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={5} xl={4}>
+                    
+                    <Grid item xs={5} xl={4} sx={{ height: '100vh'}}>
+                        <Grid item xs={12}>
+                                <Paper
+                                    elevation={0}
+                                    sx={{
+                                        p: 2,
+                                        display: 'flex',
+                                        backgroundColor: "#FCFCFD",
+                                        flexDirection: 'column',
+                                        height: '100%',
+                                        marginBottom: 1,
+                                        borderRadius: 5
+                                        }}
+                                        >
+                                    
+                                    <Typography className='fs-5' color="#494949" sx={{ fontWeight: 'medium' }}>Macronutrients</Typography>
+                                    <Grid container direction="row" justifyContent="center" alignItems="center" columns={12}>
+                                        <Grid item xs={4}>
+                                            <NutritionGauge category="protein" protein={recipe.nutrients.protein} max={proteins} color="#4B49C3"/>
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            <NutritionGauge category="fats" protein={recipe.nutrients.fat} max={fats} color="#6D4CB5"/>
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            <NutritionGauge category="carbs" protein={recipe.nutrients.carbs} color="#6F6DCF" max={carbs}/>
+                                        </Grid>
+                                    </Grid>
+                                    
+                                        
+                                </Paper>
+                            </Grid>
                         <Grid container direction="columns" justifyContent="center" alignItems="stretch" spacing={{ xs: 1, md: 1.5 }} sx={{ height: '100%' }} columns={12}>
                             <Grid item xs={12}>
                                 <Paper
@@ -334,22 +336,6 @@ const RecipeDetails = () => {
                                     </ListItem>
 
                                 </List>
-                                </Paper>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        backgroundColor: "#FCFCFD",
-                                        flexDirection: 'column',
-                                        height: '100%',
-                                        borderRadius: 4
-                                        }}
-                                    >
-                                    <Typography className='fs-5' color="#494949" sx={{ fontWeight: 'medium' }}>Other recipes</Typography>
-                                    
                                 </Paper>
                             </Grid>
                         </Grid>
