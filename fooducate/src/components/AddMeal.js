@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, CardHeader, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, List, ListItem, ListItemText, Typography, Select, MenuItem, FormControl, InputLabel, Grid, Card, CardContent, CardActions } from '@mui/material';
+import { Box, CardHeader, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, List, ListItem, ListItemText, Typography, Select, MenuItem, FormControl, InputLabel, Grid, Card, CardContent, CardActions, Divider } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { collection,  addDoc, doc, updateDoc, getDocs, setDoc, writeBatch } from 'firebase/firestore';
@@ -141,9 +141,9 @@ const AddMeal = ({ open, onClose }) => {
         {selectedRecipes
           .filter(recipe => recipe.category === category)
           .map(recipe => (
-            <ListItem key={recipe.id}>
-              <ListItemText primary={recipe.name} secondary={recipe.category} />
-            </ListItem>
+            <><ListItem sx={{ padding: 0 }} key={recipe.id}>
+              <ListItemText sx={{marginBottom: 2 }} primary={<React.Fragment><Typography sx={{ fontSize: 18 }}>{recipe.name}</Typography></React.Fragment>} />
+            </ListItem><Divider component="li" /></>
           ))}
       </List>
     );
@@ -200,6 +200,11 @@ const AddMeal = ({ open, onClose }) => {
                       checked={selectedRecipes.indexOf(recipe) !== -1}
                       tabIndex={-1}
                       disableRipple
+                      sx={{
+                        '&.Mui-checked': {
+                          color: '#996BFF',
+                        },
+                      }}
                     />
                     <ListItemText primary={recipe.name} secondary={recipe.category} />
                   </ListItem>
@@ -213,7 +218,7 @@ const AddMeal = ({ open, onClose }) => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     label="Select Date"
-      
+                    sx={{ marginBottom: 4 }}
                     value={date}
                     onChange={(newValue) => setDate(newValue)}
                     slotProps={{ textField: { fullWidth: true, margin: "normal" } }}
@@ -221,21 +226,43 @@ const AddMeal = ({ open, onClose }) => {
                 </LocalizationProvider>
                 {['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'].map((category) => (
                   <div key={category}>
-                    <Typography sx={{ fontSize: 14, color: '#8D8D8D'}}>{category.charAt(0).toUpperCase() + category.slice(1)}</Typography>
+                    <Typography sx={{ fontSize: 16, color: '#8D8D8D'}}>{category.charAt(0).toUpperCase() + category.slice(1)}</Typography>
                     {renderSelectedRecipes(category)}
                   </div>
                 ))}
               </CardContent>
               
-              <Button variant="outlined" sx={{ borderColor: '#996BFF', width: '50%'}}onClick={onClose}>Cancel</Button>
+              
             </Card>
           </Grid>
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" sx={{ backgroundColor: '#996BFF', width: '50%'}} onClick={handleSave}>
+        <div className='d-flex w-50 flex-row justify-content-between'>
+        <Button variant="outlined" 
+        sx={{ borderColor: '#767676', 
+          width: '50%',
+           marginRight: 2, 
+           color: '#767676', 
+           '&:hover': {
+            backgroundColor: 'rgba(118, 118, 118, 0.15)', // Custom hover background color
+            borderColor: '#767676'
+           }, 
+           }}
+        onClick={onClose}>
+          Cancel
+        </Button>
+        <Button disableElevation variant="contained" sx={{ 
+          backgroundColor: '#996BFF',
+          
+          '&:hover': {
+            backgroundColor: '#8A60E6', // Custom hover background color
+           }, 
+          width: '50%'}} 
+          onClick={handleSave}>
                 Save Plan
           </Button>
+        </div>
         
       </DialogActions>
     </Dialog>

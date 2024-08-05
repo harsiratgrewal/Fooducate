@@ -94,48 +94,63 @@ function Meals() {
             >
               {selectedRecipe ? (
                 <Box sx={{ padding: 2 }}>
-                  <Stack direction="row" alignItems="center" sx={{marginBottom: 2 }}>
-                  <Typography variant="h5" color='#494949'sx={{ width: '80%', fontWeight: 'medium', fontSize: 20 }}>
+                  <Stack direction="row" alignItems="center">
+                  <Typography variant="h5" color="#232530" sx={{ width: '80%' }}>
                     {selectedRecipe.name}
                   </Typography>
-                  <Button onClick={() => handleCookItClick(selectedRecipe.recipeId)} disableElevation variant="contained" size="small" sx={{ bgcolor: '#996BFF', width: 125}}>Cook it</Button>
+                  <Button onClick={() => handleCookItClick(selectedRecipe.recipeId)}
+                   disableElevation 
+                   variant="contained" 
+                   size="medium" 
+                   sx={{ 
+                      width: 100,
+                      '&:hover': {
+                      backgroundColor: '#6E4ABE', // Custom hover background color
+                      },
+                      bgcolor: "#996BFF",
+                      fontWeight: 'regular',
+                      fontSize: 16,
+                  }}
+                   
+                   >
+                    Cook it</Button>
                   </Stack>
-                  <Typography variant="body1" sx={{ mb: 2 }}>
+                  <Typography variant="subtitle1" sx={{ mb: 2 }}>
                     {selectedRecipe.description}
                   </Typography>
                   <Card variant="outlined" sx={{ mb: 2, borderRadius: 2 }}>
                   <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ padding: 0.25 }}>
                     <Box sx={{  width: '100%', display: 'flex', flexDirection: 'column',  alignItems: 'center'}}>                
-                    <Typography sx={{ marginLeft: 0.5, fontWeight: 'regular', fontSize: 13, color: '#494949' }}>Prep</Typography>
-                    <Typography sx={{ fontWeight: 'regular', fontSize: 13, color: '#494949' }}>{selectedRecipe.prepTime} mins</Typography>
+                    <Typography sx={{ marginLeft: 0.5, fontWeight: 'regular', fontSize: 17, color: '#232530' }}>Prep</Typography>
+                    <Typography sx={{ fontWeight: 'regular', fontSize: 17, color: '#232530' }}>{selectedRecipe.prepTime} mins</Typography>
                     </Box>
                     <Divider flexItem orientation='vertical' />
                     <Box sx={{  width: '100%', display: 'flex', flexDirection: 'column',  alignItems: 'center'}}>
-                    <Typography sx={{ marginLeft: 0.5, fontWeight: 'regular', fontSize: 13, color: '#494949' }}>Cook</Typography>
+                    <Typography sx={{ marginLeft: 0.5, fontWeight: 'regular', fontSize: 17, color: '#232530' }}>Cook</Typography>
 
-                    <Typography sx={{ fontWeight: 'regular', fontSize: 13, color: '#494949' }}>{selectedRecipe.cookTime} mins</Typography>
+                    <Typography sx={{ fontWeight: 'regular', fontSize: 17, color: '#232530' }}>{selectedRecipe.cookTime} mins</Typography>
                     </Box>
                     <Divider flexItem orientation='vertical' />
                     <Box sx={{  width: '100%', display: 'flex', flexDirection: 'column',  alignItems: 'center'}}>                    
-                    <Typography sx={{ marginLeft: 0.5, fontWeight: 'regular', fontSize: 13, color: '#494949' }}>Servings</Typography>                    
-                    <Typography sx={{ fontWeight: 'regular', fontSize: 13, color: '#494949' }}>{selectedRecipe.servings}</Typography>
+                    <Typography sx={{ marginLeft: 0.5, fontWeight: 'regular', fontSize: 17, color: '#232530' }}>Servings</Typography>                    
+                    <Typography sx={{ fontWeight: 'regular', fontSize: 17, color: '#232530' }}>{selectedRecipe.servings}</Typography>
                     </Box>
                     <Divider flexItem orientation='vertical' />
                     <Box sx={{  width: '100%', display: 'flex', flexDirection: 'column',  alignItems: 'center'}}>
-                    <Typography sx={{ marginLeft: 0.5, fontWeight: 'regular', fontSize: 13, color: '#494949' }}>Cost</Typography>
-                    <Typography sx={{ fontWeight: 'regular', fontSize: 13, color: '#494949' }}>{selectedRecipe.averageCost}</Typography>
+                    <Typography sx={{ marginLeft: 0.5, fontWeight: 'regular', fontSize: 17, color: '#232530' }}>Cost</Typography>
+                    <Typography sx={{ fontWeight: 'regular', fontSize: 17, color: '#232530' }}>{selectedRecipe.averageCost}</Typography>
                     </Box>
 
                   </Stack>
                   </Card>
                   {selectedRecipe.nutrients && (
                     <Box sx={{ mb: 2 }}>
-                      <Typography sx={{ fontWeight: 'medium', fontSize: 17, marginBottom: 1, color: "#3F3F3F"}} >
+                      <Typography sx={{ fontSize: 18, marginBottom: 1, color: "#232530"}} >
                         Nutrients
                       </Typography>
                       <Stack spacing={2} direction="row" justifyContent="space-between" alignItems="center">
                       <Card elevation={0} sx={{ bgcolor: "#F1F2F8", borderWidth: 2, display: 'flex', justifyContent: 'space-between', width: '25%', flexDirection: 'column', alignItems: 'center', padding: 1, borderRadius: 2}}>
-                      <Typography sx={{ fontWeight: 'regular', fontSize: 14, color: '#7E7E7E'}}>
+                      <Typography sx={{ fontWeight: 'regular', fontSize: 17, color: '#232530'}}>
                         Calories
                       </Typography>
                       <Typography sx={{ fontWeight: 'bold', fontSize: 18, color: '#996BFF' }} color="textSecondary">
@@ -143,47 +158,47 @@ function Meals() {
                       </Typography>
                       </Card>
                       <Card elevation={0} sx={{ bgcolor: "#F1F2F8", borderWidth: 2, display: 'flex', justifyContent: 'space-between', width: '25%',flexDirection: 'column', alignItems: 'center', padding: 1, borderRadius: 2}}>
-                      <Typography sx={{ fontWeight: 'regular', fontSize: 14, color: '#7E7E7E'}}>
+                      <Typography sx={{ fontWeight: 'regular', fontSize: 17, color: '#232530'}}>
                         Protein
                       </Typography>
                       <Typography sx={{ fontWeight: 'bold', fontSize: 18, color: '#4B49C3' }}>
-                        {selectedRecipe.nutrients.protein}
+                        {selectedRecipe.nutrients.protein}g
                       </Typography>
                       </Card>
                       <Card elevation={0} sx={{ bgcolor: "#F1F2F8", borderWidth: 2, display: 'flex', justifyContent: 'space-between', width: '25%',flexDirection: 'column', alignItems: 'center', padding: 1, borderRadius: 2}}>
-                      <Typography sx={{ fontWeight: 'regular', fontSize: 14, color: '#7E7E7E'}}>
+                      <Typography sx={{ fontWeight: 'regular', fontSize: 17, color: '#232530'}}>
                         Carbs
                       </Typography>
                       <Typography sx={{ fontWeight: 'bold', fontSize: 18, color: '#6F6DCF' }}>
-                       {selectedRecipe.nutrients.carbs}
+                       {selectedRecipe.nutrients.carbs}g
                       </Typography>
                       </Card>
                       <Card elevation={0} sx={{ bgcolor: "#F1F2F8", borderWidth: 2, display: 'flex', justifyContent: 'space-between', width: '25%', flexDirection: 'column', alignItems: 'center', padding: 1, borderRadius: 2}}>
-                      <Typography sx={{ fontWeight: 'regular', fontSize: 14, color: '#7E7E7E'}}>
+                      <Typography sx={{ fontWeight: 'regular', fontSize: 17, color: '#232530'}}>
                         Fat
                       </Typography>
                       <Typography sx={{ fontWeight: 'bold', fontSize: 18, color: '#6D4CB5' }}>
-                        {selectedRecipe.nutrients.fat}
+                        {selectedRecipe.nutrients.fat}g
                       </Typography>
                       </Card>
                       </Stack>
                     </Box>
                   )}
-                    <Box sx={{ mb: 2 }}>
+                    <Box sx={{ mb: 2, border: 2, borderColor: 'rgba(102, 103, 113, 0.15)', borderRadius: 4 }}>
                       <IngredientsCard ingredients={selectedRecipe.ingredients}/>
                     </Box>
                   
                   {selectedRecipe.notes && (
-                    <Card variant="outlined" sx={{ height: 100, marginBottom: 2, padding: 1, borderRadius: 3}}>
-                    <Typography variant="body2" color="textSecondary" sx={{ mb: 0.5 }}>
+                    <Card variant="outlined" sx={{ height: 100, marginBottom: 2, padding: 1, borderColor: 'rgba(102, 103, 113, 0.15)', borderRadius: 3}}>
+                    <Typography color="textSecondary" sx={{ fontSize: 16, mb: 0.5 }}>
                       Notes 
                     </Typography>
-                    <Typography sx={{ fontWeight: 'regular', fontSize: 15, color: '#494949' }}>{selectedRecipe.notes}</Typography>
+                    <Typography sx={{ fontWeight: 'regular', fontSize: 18, color: '#232530' }}>{selectedRecipe.notes}</Typography>
                     </Card>
                   )}
                 </Box>
               ) : (
-                <Box sx={{ padding: 2, height: '100vh' }}><Typography variant="h5" color="#494949" sx={{ mb: 2, fontWeight: 'medium' }} >Details</Typography><Card variant="outlined" sx={{ borderRadius: 3, padding: 1, height: 50, display: 'flex', flexDirection: 'row', alignItems: 'center'}}><Typography sx={{ fontSize: 15 }}>Select a recipe to view its details</Typography></Card></Box>
+                <Box sx={{ padding: 2, height: '100vh' }}><Typography variant="h5" color="#232530" sx={{ mb: 2, fontWeight: 'medium' }} >Details</Typography><Card variant="outlined" sx={{ borderRadius: 3, padding: 1, height: 50, display: 'flex', flexDirection: 'row', alignItems: 'center'}}><Typography sx={{ fontSize: 15 }}>Select a recipe to view its details</Typography></Card></Box>
               )}
             </Paper>
           </Grid>

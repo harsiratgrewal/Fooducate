@@ -3,6 +3,7 @@ import { Box, Card, CardContent, Typography, Checkbox, Button, Dialog, DialogTit
 import { collection, addDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase/firebase'; // adjust the import based on your file structure
 import { useAuthState } from 'react-firebase-hooks/auth';
+import QuantitySelector from './QuantitySelector';
 
 const IngredientsCard = ({ ingredients }) => {
   const [checkedItems, setCheckedItems] = useState([]);
@@ -65,26 +66,48 @@ const IngredientsCard = ({ ingredients }) => {
   };
 
   return (
-    <Card elevation={0} sx={{ backgroundColor: "#FCFCFD", borderRadius: 5 }}>
+    <Card elevation={0} sx={{ borderRadius: 5 }}>
       <CardContent>
-        <Typography className='fs-5' color="#494949" sx={{ fontWeight: 'medium' }}>Ingredients</Typography>
-        <Button variant="contained" color="primary" onClick={handleDialogOpen}>
+        <div className='mb-2 d-flex flex-row justify-content-between align-items-center w-100'>
+        <Typography sx={{ fontSize: 19, color: "#232530" }}>Ingredients</Typography>
+        <Button 
+        variant="outlined" 
+        color="primary" 
+        disableElevation
+        onClick={handleDialogOpen}
+        sx={{ 
+            width: 200,
+            '&:hover': {
+            borderColor: '#6E4ABE', // Custom hover background color
+            },
+            borderColor: "#4442B1",
+            color: "#4442B1",
+            fontWeight: 'regular',
+            fontSize: 15,
+            borderRadius: 5
+            
+        }}
+        >
           Add to Grocery List
         </Button>
-        <List>
+        </div>
+        <List sx={{ padding: 0 }}>
           {ingredients.map((ingredient, index) => (
-            <ListItem key={index} button onClick={handleToggle(ingredient)}>
+            <ListItem sx={{ paddingLeft: 0, paddingRight: 0, width: '100%' }} key={index} onClick={handleToggle(ingredient)}>
               <Checkbox
                 checked={checkedItems.some(item => item.name === ingredient)}
                 tabIndex={-1}
+                sx={{
+                    '&.Mui-checked': {
+                      color: '#996BFF',
+                    },
+                  }}
               />
-              <ListItemText primary={ingredient} />
-              <TextField
-                type="number"
-                label="Quantity"
+              <ListItemText primary={ingredient.charAt(0).toUpperCase() + ingredient.slice(1)} />
+              <QuantitySelector
                 value={quantities[ingredient] || 1}
-                onChange={handleQuantityChange(ingredient)}
-                sx={{ width: '4rem', marginLeft: '1rem' }}
+                onIncrease={handleQuantityChange(ingredient, 1)}
+                onDecrease={handleQuantityChange(ingredient, -1)}
               />
             </ListItem>
           ))}

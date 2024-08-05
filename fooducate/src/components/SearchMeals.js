@@ -32,6 +32,7 @@ const SearchMeals = () => {
     { name: 'sweets', icon: <IcecreamIcon /> }
   ]);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const categoryOrder = ['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'];
 
   useEffect(() => {
     if (user) {
@@ -41,24 +42,30 @@ const SearchMeals = () => {
   }, [user]);
 
   const fetchNextDayRecipes = async () => {
-     const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const tomorrowString = tomorrow.toDateString();
-        console.log(tomorrowString)
-        const mealPlansQuery = query(collection(db, 'mealplans'), where('userId', '==', user.uid));
-        const mealPlansSnapshot = await getDocs(mealPlansQuery);
-        const mealPlans = mealPlansSnapshot.docs.map(doc => doc.data()).filter(mealPlan => {
-            const mealDate = new Date(mealPlan.date); // Convert Firestore Timestamp to Date
-            return mealDate.toDateString() === tomorrowString;
-        });
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowString = tomorrow.toDateString();
+    const mealPlansQuery = query(collection(db, 'mealplans'), where('userId', '==', user.uid));
+    const mealPlansSnapshot = await getDocs(mealPlansQuery);
+    const mealPlans = mealPlansSnapshot.docs.map(doc => doc.data()).filter(mealPlan => {
+      const mealDate = new Date(mealPlan.date); // Convert Firestore Timestamp to Date
+      return mealDate.toDateString() === tomorrowString;
+    });
 
-        const recipePromises = mealPlans.map(async (mealPlan) => {
-        const recipeDoc = await getDoc(doc(db, mealPlan.category, mealPlan.recipeId));
+    const recipePromises = mealPlans.map(async (mealPlan) => {
+      const recipeDoc = await getDoc(doc(db, mealPlan.category, mealPlan.recipeId));
+      if (recipeDoc.exists()) {
         return { ...recipeDoc.data(), id: recipeDoc.id };
-        });
+      }
+      return null; // Return null if the recipe doesn't exist
+    });
 
-        const recipes = await Promise.all(recipePromises);
-        setNextDayRecipes(recipes);
+    let recipes = (await Promise.all(recipePromises)).filter(recipe => recipe !== null);
+
+    // Sort recipes based on categoryOrder
+    recipes = recipes.sort((a, b) => categoryOrder.indexOf(a.category) - categoryOrder.indexOf(b.category));
+
+    setNextDayRecipes(recipes);
   };
 
   const fetchRecipes = async () => {
@@ -117,14 +124,12 @@ const SearchMeals = () => {
     });
   };
 
-   const handleCheckboxChange = (event, ingredient) => {
+  const handleCheckboxChange = (event, ingredient) => {
     setCheckedIngredients({
       ...checkedIngredients,
       [ingredient]: event.target.checked
     });
   };
-
-  console.log(selectedRecipe)
 
   const addAllCheckedIngredients = async () => {
     try {
@@ -151,25 +156,43 @@ const SearchMeals = () => {
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Typography variant="h6" color="#494949" sx={{ fontWeight: 'medium' }}>
-              Tomorrow's Ingredients
+            <Typography variant="h5" color="#232530">
+              Tomorrow's meals
+            </Typography>
+            <Typography variant="subtitle1" color="#232530">
+              View recipes to add the ingredients to your list
             </Typography>
             <List>
               {nextDayRecipes.map((recipe, index) => (
-                <ListItem key={index}>
-                  <ListItemText primary={recipe.name} />
-                  <Button variant="contained" onClick={() => handleDialogOpen(recipe)}>View</Button>
+                <ListItem class="border-start border-3 d-flex flex-row justify-content-between align-items-center mb-2" sx={{ paddingLeft: 0 }} key={index}>
+                  <div>
+                    <ListItemText sx={{ paddingLeft: 1 }} primary={recipe.name} secondary={recipe.category.charAt(0).toUpperCase() + recipe.category.slice(1)} />
+                  </div>
+                  <div>
+                    <Button disableElevation
+                      sx={{
+                        bgcolor: '#996BFF',
+                        '&:hover': {
+                          backgroundColor: '#8A60E6', // Custom hover background color
+                        },
+
+                      }}
+                      variant="contained"
+                      onClick={() => handleDialogOpen(recipe)}>View</Button>
+                  </div>
                 </ListItem>
               ))}
             </List>
           </Grid>
 
           <Grid item xs={12}>
-            <Typography variant="h6" color="#494949" sx={{ fontWeight: 'medium', marginTop: 2 }}>
+            <Typography variant="h5" color="#232530">
               Search Recipes
             </Typography>
+            <Typography variant="subtitle1" color="#232530">
+              Search for a recipe to add the ingredients to your list
+            </Typography>
           </Grid>
-
           <Grid item xs={12}>
             <Grid container columns={18} spacing={1}>
               {categories.map((category, index) => (
@@ -181,7 +204,9 @@ const SearchMeals = () => {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      textTransform: 'none'
+                      textTransform: 'none',
+                      borderColor: '#996BFF',
+                      color: '#996BFF'
                     }}
                   >
                     {category.icon}
@@ -194,33 +219,38 @@ const SearchMeals = () => {
             </Grid>
           </Grid>
           <Grid item xs={12}>
-              <TextField
+            <TextField
               fullWidth
               variant="outlined"
               placeholder="Search recipes..."
               value={searchQuery}
               onChange={handleSearch}
-              sx={{ marginBottom: 2 }}
+              sx={{
+                marginBottom: 2,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 10, // Custom hover background color
+                },
+              }}
             />
           </Grid>
-           <Box style={{ width: '100%', maxHeight: '45vh', overflowY: 'auto' }}>   
-          <Grid item xs={12}>
-            <List>
-              {filteredRecipes.map((recipe) => (
-                <ListItem key={recipe.id}>
-                  <ListItemText primary={recipe.name} />
-                </ListItem>
-              ))}
-            </List>
-          </Grid>
+          <Box style={{ width: '100%', maxHeight: '45vh', overflowY: 'auto' }}>
+            <Grid item xs={12}>
+              <List>
+                {filteredRecipes.map((recipe) => (
+                  <ListItem key={recipe.id}>
+                    <ListItemText primary={recipe.name} />
+                  </ListItem>
+                ))}
+              </List>
+            </Grid>
           </Box>
         </Grid>
       </CardContent>
 
-      {selectedRecipe && (
-        <Dialog open={dialogOpen} onClose={handleDialogClose}>
+      {selectedRecipe && selectedRecipe.ingredients && (
+        <Dialog open={dialogOpen} sx={{ width: '100%' }} onClose={handleDialogClose}>
           <DialogTitle>{selectedRecipe.name}</DialogTitle>
-          <DialogContent>
+          <DialogContent sx={{ width: '100%' }}>
             <Typography variant="h6">Ingredients</Typography>
             <List>
               {selectedRecipe.ingredients.map((ingredient, index) => (
@@ -229,7 +259,7 @@ const SearchMeals = () => {
                     checked={!!checkedIngredients[ingredient]}
                     onChange={(event) => handleCheckboxChange(event, ingredient)}
                   />
-                  <ListItemText primary={`${ingredient}`} />
+                  <ListItemText primary={`${ingredient.charAt(0).toUpperCase() + ingredient.slice(1)}`} />
                   <TextField
                     type="number"
                     label="Quantity"

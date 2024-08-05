@@ -31,6 +31,7 @@ function GroceryList() {
                         </div>
                     </div>
                         <div className="col-6">
+                        <div style={{ height: '100%', marginBottom: '1rem'}}>
                         <Paper
                         elevation={1}
                         sx={{
@@ -38,23 +39,24 @@ function GroceryList() {
                             display: 'flex',
                             backgroundColor: "#FEFEFF",
                             flexDirection: 'column',
-                            height: '100vh',
+                            height: '100%',
                             borderRadius: 5,
                         }}
                         >
                         <FullGroceryList />
                         </Paper>
                         </div>
-                        <div className="col-6 d-flex flex-column justify-content-between h-100vh">
-                          <div className="col">
+                        </div>
+                        <div className="col-6 d-flex justify-content-between flex-column">
+                          <div style={{ height: '60%', marginBottom: '1rem'}}>
                             <Paper
                             elevation={1}
                             sx={{
-                                p: 2,
+                                p: 1,
                                 display: 'flex',
                                 backgroundColor: "#FEFEFF",
                                 flexDirection: 'column',
-                                height: '95%',
+                                height: '100%',
                                 borderRadius: 3,
                                 // Add this line
                             }}
@@ -62,23 +64,7 @@ function GroceryList() {
                             <CalculatedTotal />
                             </Paper>
                         </div>
-                        <div className="col">
-                            <Paper
-                            elevation={1}
-                            sx={{
-                                p: 2,
-                                display: 'flex',
-                                backgroundColor: "#FEFEFF",
-                                flexDirection: 'column',
-                                height: '95%',
-                                borderRadius: 3,
-                                // Add this line
-                            }}
-                            >
-                            <FavoritedMealsCard />
-                            </Paper>
-                        </div>
-                        <div className="col">
+                        <div style={{ height: '60%'}}>
                             <Paper
                             elevation={1}
                             sx={{
@@ -91,7 +77,7 @@ function GroceryList() {
                                 // Add this line
                             }}
                             >
-                            <CalculatedTotal />
+                            <FavoritedMealsCard />
                             </Paper>
                         </div>
                         </div>
@@ -106,7 +92,7 @@ function GroceryList() {
                 backgroundColor: "#FEFEFF",
                 flexDirection: 'column',
                 height: '100%',
-                padding: 2,
+                padding: 0.75,
                 overflow: 'auto'
                 
                 

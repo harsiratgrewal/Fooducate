@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { CardContent, Typography, LinearProgress } from '@mui/material';
-import { collection, getDocs, doc, getDoc  } from 'firebase/firestore';
+import { CardContent, Typography, Box } from '@mui/material';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 
 const CalculatedTotal = () => {
   const [user] = useAuthState(auth);
@@ -35,34 +36,92 @@ const CalculatedTotal = () => {
     console.log(items);
   };
 
-   const calculateTotalCost = (items) => {
+  const calculateTotalCost = (items) => {
     const total = items.reduce((acc, item) => {
       const itemTotal = parseFloat(item.price) * parseInt(item.quantity);
       return acc + itemTotal;
     }, 0);
-    setTotalCost(total.toFixed(2)); // Round to 2 decimal places
+    setTotalCost(total); // No need to call toFixed here, we'll handle it in the render
   };
 
+  const formattedTotalCost = totalCost ? totalCost.toFixed(2) : '0.00';
+  const formattedBudgetGoal = budgetGoal ? budgetGoal.toFixed(2) : '0.00';
+  const leftToSpend = budgetGoal - totalCost;
+  const formattedLeftToSpend = leftToSpend ? leftToSpend.toFixed(2) : '0.00';
+  const percentageSpent = budgetGoal ? ((totalCost / budgetGoal) * 100).toFixed(2) : '0.00';
+
   return (
-      <CardContent>
-        <Typography variant="h6" color="#494949" sx={{ fontWeight: 'medium' }}>
-          Total Cost
+    <CardContent className='h-100'>
+      <div className='d-flex flex-row justify-content-between w-100'>
+        <Typography variant="h5" color="#232530">
+          Budget tracker
         </Typography>
-        <Typography variant="h4" color="#494949" sx={{ fontWeight: 'bold', marginTop: 2 }}>
-          ${totalCost}
-        </Typography>
-        <Typography variant="subtitle1" color="#494949" sx={{ marginTop: 1 }}>
-          Goal: ${budgetGoal}
-        </Typography>
-        <LinearProgress 
-          variant="determinate" 
-          value={(totalCost / budgetGoal) * 100} 
-          sx={{ marginTop: 2, height: 10, borderRadius: 5 }}
+        <Box sx={{ backgroundColor: 'rgba(11, 38, 136, 0.04)', paddingLeft: 2, paddingRight: 2, borderRadius: 3, display: 'flex', flexDirection: 'column' }}>
+          <Typography variant="subtitle2" sx={{ paddingTop: 0.75 }} color="rgba(27, 29, 37, 0.63)">
+            Left to spend
+          </Typography>
+          <Typography sx={{ paddingBottom: 0.75 }} fontSize={22} color="#232530">
+            ${formattedLeftToSpend}
+          </Typography>
+        </Box>
+      </div>
+
+      <svg style={{ height: 0 }}>
+        <defs>
+          <linearGradient id="gradientColors" gradientTransform="rotate(90)">
+            <stop offset="0%" stopColor="rgba(153, 107, 255, 0.50)" />
+            <stop offset="50%" stopColor="rgba(196, 166, 252, 0.40)" />
+            <stop offset="100%" stopColor='#EFE2FA' />
+          </linearGradient>
+        </defs>
+      </svg>
+      <div className="w-100 d-flex flex-row align-items-baseline justify-content-center">
+        <Gauge
+          variant="determinate"
+          value={totalCost && budgetGoal ? (totalCost / budgetGoal) * 100 : 0}
+          valueMax={budgetGoal}
+          startAngle={-90}
+          endAngle={90}
+          width={450}
+          height={200}
+          sx={{
+            [`& .${gaugeClasses.valueText}`]: {
+              fontSize: 40,
+              fontWeight: 'medium',
+              transform: 'translate(0px, -60px)',
+              fontFamily: 'Roboto'
+            },
+            [`& .${gaugeClasses.valueArc}`]: {
+              fill: 'url(#gradientColors)',
+            },
+            [`& .${gaugeClasses.referenceArc}`]: {
+              fill: 'rgba(231, 233, 243, 0.80)',
+            },
+          }}
+          text={
+            ({ value }) => `${value}%`
+          }
         />
-        <Typography variant="body2" color="#494949" sx={{ marginTop: 1 }}>
-          {((totalCost / budgetGoal) * 100).toFixed(2)}% of goal reached
-        </Typography>
-      </CardContent>
+      </div>
+      <div className='w-100 d-flex flex-row align-items-center justify-content-between'>
+        <Box sx={{ padding: 2, display: 'flex', flexDirection: 'column' }}>
+          <Typography variant="subtitle2" color="rgba(27, 29, 37, 0.63)">
+            Current grocery list total
+          </Typography>
+          <Typography variant="h5" color="#232530">
+            ${formattedTotalCost}
+          </Typography>
+        </Box>
+        <Box sx={{ padding: 2, display: 'flex', flexDirection: 'column' }}>
+          <Typography variant="subtitle2" color="rgba(27, 29, 37, 0.63)">
+            Maximum goal budget
+          </Typography>
+          <Typography variant="h5" color="#232530">
+            ${formattedBudgetGoal}
+          </Typography>
+        </Box>
+      </div>
+    </CardContent>
   );
 };
 

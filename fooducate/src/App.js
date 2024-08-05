@@ -9,6 +9,8 @@ import SignIn from './pages/SignIn';
 import Register from './pages/Register';
 import MealPlan from './pages/MealPlan';
 import RecipeDetails from './pages/RecipeDetails';
+import Objectives from './pages/Objectives';
+
 
 function App() {
 
@@ -22,6 +24,7 @@ function App() {
         <Route path='/grocerylist' element={<GroceryList />} />
         <Route path='/nutrients' element={<Nutrients />} />
         <Route path='/register' element={<Register />} />
+        <Route path='/objectives' element={<Objectives />} />
         <Route exact path="/recipe/:recipeId" element={<RecipeDetails />} />
         
       </Routes>

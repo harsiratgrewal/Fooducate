@@ -1,18 +1,68 @@
-import { Stack, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import React, { useState, useEffect } from 'react'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import dayjs from 'dayjs';
-import FormControl from '@mui/material/FormControl';
+import Card from '@mui/material/Card';
 import { db, auth } from '../firebase/firebase';
-import ListItemText from '@mui/material/ListItemText';
-import { List, ListItem, Checkbox, ListItemIcon, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { collection, getDocs, where, query } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 
+const newTheme = (theme) => createTheme({
+  ...theme,
+  components: {
+    MuiPickersCalendarHeader: {
+      styleOverrides: {
+        labelContainer: {
+          borderRadius: '10px',
+          border: '0px solid',
+          width: '75%',
+          fontSize: 16
+          
+        }
+      }
+    },
+    MuiPickersDay: {
+      styleOverrides: {
+        root: {
+          fontSize: 18,
+          '&.Mui-selected': {
+            backgroundColor: '#996BFF',
+            '&:hover': {
+              backgroundColor: '#4B49C3',
+            },
+          }
+        }
+      }
+    },
+    MuiDayCalendar: {
+      styleOverrides: {
+        weekContainer: {
+          margin: 10 
+        },
+         weekDayLabel: {
+          fontSize: 18
+        }
+      }
+    },
+    MuiDateCalendar: {
+      styleOverrides: {
+        root: {
+          borderRadius: '10px',
+          borderWidth: '0px',
+          borderColor: '#e91e63',
+          border: '0px solid',
+          marginLeft: 0,
+          marginTop: '2rem'
+        }
+      }
+    }
+  }
+})
 
 export default function WeeklySuggestions() {
   const [selectedDate, setSelectedDate] = useState(dayjs(new Date()));
@@ -88,68 +138,54 @@ export default function WeeklySuggestions() {
     <React.Fragment>
         <React.Fragment>
 
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Grid item xs={12} sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', padding: 2}}>
-                  
-                <Typography variant="h6" color="#494949" sx={{ fontWeight: 'medium'}}>
-                    Meal Plans 
-                </Typography>
-                  <Stack direction="row" spacing={2}>
-                  <FormControl fullWidth>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-select-small"
-                    displayEmpty
-                    value={selectedCategories}
-                    multiple
-                    renderValue={(selected) => {
-                        if (selected.length === 0) {
-                        return <Typography variant="body1">Filter</Typography>;
-                        }
-
-                        return selected.join(', ');
-                    }}
-                    sx={{ borderRadius: 3, width: '100%', height: 40}}
-                    onChange={handleCategoryChange}
-                    >
-                    {['breakfast', 'lunch', 'dinner'].map((category) => (
-                    <MenuItem key={category} value={category}>
-                      <ListItemIcon>
-                        <Checkbox checked={selectedCategories.indexOf(category) > -1} />
-                      </ListItemIcon>
-                      <ListItemText primary={category.charAt(0).toUpperCase() + category.slice(1)} />
-                    </MenuItem>
-                  ))}
-                  </Select>
-                  </FormControl>
-                  </Stack>
-                  </Grid>
+            <Grid container sx={{ height: '100%', padding: 0 }}>
                     <Grid item xs={12}>
+                      <Grid container sx={{ height: '100%', padding: 0 }}>
+                        <Grid item xs={6} className='d-flex flex-column justify-content-start'>
+                          <Typography variant="h5" color="#232530">
+                              Meal Plans 
+                          </Typography>
+                          
+                        <ThemeProvider theme={newTheme}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <DateCalendar defaultValue={dayjs(new Date())} value={selectedDate} onChange={handleDateChange} />                     
+                          <DateCalendar 
+                          defaultValue={dayjs(new Date())} 
+                          value={selectedDate} 
+                          onChange={handleDateChange} />                     
                         </LocalizationProvider>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Typography sx={{ paddingLeft: 2, paddingBottom: 2, fontSize: 20}}>{displayedDate}</Typography>
-                        <List sx={{ padding: 0, paddingLeft: 2, paddingRight: 2, marginBottom: 2  }}>
+                        </ThemeProvider>
+                       
+                        </Grid>
+                        
+                    
+                      <Grid item xs={6} sx={{  height: '100%' }} className='d-flex flex-column justify-content-start'>
+                        <Typography sx={{ paddingBottom: 1, fontSize: 20}}>{displayedDate}</Typography>
+                        <div style={{ marginTop: '2rem' }}>
                           {['breakfast', 'lunch', 'dinner'].map(category => (
                             <React.Fragment key={category}>
-                              <Typography sx={{ fontSize: 15, paddingBottom: 1 }} className="ps-0 fw-medium">{category.charAt(0).toUpperCase() + category.slice(1)}</Typography>
-                              {groupedMealPlans(category).map(mealPlan => (
-                                <ListItem key={mealPlan.id} className="border rounded-3 mb-3 d-flex flex-row justify-content-between">
-                                  
-                                  <Typography sx={{ fontSize: 15 }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].name : 'Loading...'}</Typography>
-                                  <Typography sx={{ fontSize: 15 }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.calories : 'Loading...'}</Typography>
-                                  
-                                </ListItem>
-                              ))}
+                              
+                              <Typography sx={{ fontSize: 16, paddingBottom: 1, fontWeight: 'light' }} className="ps-0">{category.charAt(0).toUpperCase() + category.slice(1)}</Typography>
+                              <Grid container direction="column" spacing={2} wrap="nowrap">
+                                {groupedMealPlans(category).map(mealPlan => (
+                                  <Grid sx={{ height: '100%' }} item key={mealPlan.id}>
+                                    <Card variant="outlined" sx={{ textAlign: 'left'}} className="border w-100 fw-light rounded-3 py-3 px-2 mb-3 d-flex flex-row justify-content-between align-items-center">
+                                      <Typography sx={{ fontSize: 18, width: '100%' }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].name : 'Loading...'}</Typography>
+                                      <div className='d-flex flex-row align-items-center justify-content-end'>
+                                      <LocalFireDepartmentIcon fontSize='medium' sx={{ color: '#4B49C3', marginRight: 0.25}} />
+                                      <Typography sx={{ fontSize: 18, width: '100%'  }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.calories : 'Loading...'}</Typography>
+                                      </div>
+                                    </Card>
+                                  </Grid>
+                                ))}
+                              </Grid>
+                              
                             </React.Fragment>
                           ))}
-                        </List>
+                        </div>
+                      </Grid>
                     </Grid>
-                </Grid>
-              </Grid>
+                  </Grid>
+            </Grid>
         </React.Fragment>
     </React.Fragment>
   )

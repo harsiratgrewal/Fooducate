@@ -4,7 +4,6 @@ import SendIcon from '@mui/icons-material/Send';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import axios from 'axios';
 
-// Fetch Clarifai API credentials from environment variables
 const PAT = process.env.REACT_APP_CLARIFAI_PAT;
 const USER_ID = process.env.REACT_APP_CLARIFAI_USER_ID;
 const APP_ID = process.env.REACT_APP_CLARIFAI_APP_ID;
@@ -25,11 +24,9 @@ export default function Chatbot() {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Add the uploaded image to the chat
     const newMessage = { text: null, image: URL.createObjectURL(file), type: 'user' };
     setMessages(prevMessages => [...prevMessages, newMessage]);
 
-    // Process the image with Clarifai Food Model
     const description = await analyzeImage(file);
     if (description) {
       const nutritionalInfo = await getNutritionalInfo(description);
@@ -145,7 +142,6 @@ export default function Chatbot() {
     }
   };
 
-  // Scroll to the bottom of the chat container when messages change
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -153,7 +149,7 @@ export default function Chatbot() {
   }, [messages]);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Box sx={{ flexGrow: 1, p: 2, overflowY: 'auto' }} ref={chatContainerRef}>
         <Typography variant="h6" color="#494949" sx={{ fontWeight: 'medium' }}>
           AI Nutritional Helper
@@ -177,7 +173,7 @@ export default function Chatbot() {
               }}
             >
               {msg.image ? (
-                <img src={msg.image} alt="uploaded" style={{ maxWidth: '100%' }} />
+                <img src={msg.image} alt="uploaded" style={{ maxWidth: '100%', maxHeight: '200px' }} />
               ) : (
                 <Typography variant="body1">{msg.text}</Typography>
               )}
@@ -185,182 +181,43 @@ export default function Chatbot() {
           </Box>
         ))}
       </Box>
-      <Paper sx={{ p: 2, mt: 2 }}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs>
-            <TextField
-              fullWidth
-              variant="outlined"
-              placeholder="Type your message"
-              value={message}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item>
-            <input
-              accept="image/*"
-              style={{ display: 'none' }}
-              id="upload-button-file"
-              type="file"
-              onChange={handleImageUpload}
-            />
-            <label htmlFor="upload-button-file">
-              <IconButton color="primary" aria-label="upload picture" component="span">
-                <PhotoCamera />
-              </IconButton>
-            </label>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSendMessage}
-              endIcon={<SendIcon />}
-            >
-              Send
-            </Button>
-          </Grid>
-        </Grid>
+      <Paper sx={{ p: 2, display: 'flex', alignItems: 'center' }}>
+        <input
+          accept="image/*"
+          style={{ display: 'none' }}
+          id="upload-button-file"
+          type="file"
+          onChange={handleImageUpload}
+        />
+        <label htmlFor="upload-button-file">
+          <IconButton color="primary" aria-label="upload picture" component="span">
+            <PhotoCamera />
+          </IconButton>
+        </label>
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Type your message"
+          value={message}
+          onChange={handleInputChange}
+          sx={{
+            ml: 2,
+            mr: 2,
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '20px',
+            },
+          }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSendMessage}
+          endIcon={<SendIcon />}
+          sx={{ minWidth: '80px', maxWidth: '100px', height: '40px', borderRadius: '20px' }}
+        >
+          Send
+        </Button>
       </Paper>
     </Box>
   );
 }
-
-
-
-
-
-
-
-
-/*import React, { useState } from 'react';
-import { Box, Button, TextField, Paper, Grid, IconButton, Typography } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
-import CloseIcon from '@mui/icons-material/Close';
-
-export default function Chatbot() {
-  const [message, setMessage] = useState('');
-  const [image, setImage] = useState(null);
-  const [messages, setMessages] = useState([]);
-
-  const handleInputChange = (e) => {
-    setMessage(e.target.value);
-  };
-
-  const handleImageUpload = (e) => {
-    setImage(e.target.files[0]);
-  };
-
-  const handleSendMessage = () => {
-    if (!message && !image) return;
-
-    const newMessage = { text: message, image: image ? URL.createObjectURL(image) : null, type: 'user' };
-    setMessages([...messages, newMessage]);
-
-    // Simulate an AI response after a delay
-    setTimeout(() => {
-      const aiResponse = { text: "This is an AI response.", type: 'ai' };
-      setMessages(prevMessages => [...prevMessages, aiResponse]);
-    }, 1000);
-
-    setMessage('');
-    setImage(null);
-  };
-
-  const handleRemoveImage = () => {
-    setImage(null);
-  };
-
-  return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Box sx={{ flexGrow: 1, p: 2, overflowY: 'auto' }}>
-        <Typography variant="h6" color="#494949" sx={{ fontWeight: 'medium' }}>
-          AI Nutritional Helper
-        </Typography>
-        {messages.map((msg, index) => (
-          <Box
-            key={index}
-            sx={{
-              display: 'flex',
-              justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start',
-              mb: 1,
-            }}
-          >
-            <Paper
-              sx={{
-                p: 1,
-                m: 1,
-                backgroundColor: msg.type === 'user' ? '#e0f7fa' : '#f5f5f5',
-                maxWidth: '60%',
-                borderRadius: '10px',
-              }}
-            >
-              <Typography variant="body1">{msg.text}</Typography>
-              {msg.image && <img src={msg.image} alt="uploaded" style={{ maxWidth: '100%' }} />}
-            </Paper>
-          </Box>
-        ))}
-      </Box>
-      <Paper sx={{ p: 2, mt: 2 }}>
-        {image && (
-          <Box sx={{ position: 'relative', mb: 2, display: 'flex', alignItems: 'center' }}>
-            <img
-              src={URL.createObjectURL(image)}
-              alt="preview"
-              style={{ width: '100px', height: 'auto', marginRight: '10px', borderRadius: '5px' }}
-            />
-            <IconButton
-              sx={{ position: 'absolute', top: 0, right: 0 }}
-              color="secondary"
-              onClick={handleRemoveImage}
-            >
-              <CloseIcon />
-            </IconButton>
-          </Box>
-        )}
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs>
-            <TextField
-              fullWidth
-              variant="outlined"
-              placeholder="Type your message"
-              value={message}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item>
-            <input
-              accept="image/*"
-              style={{ display: 'none' }}
-              id="upload-button-file"
-              type="file"
-              onChange={handleImageUpload}
-            />
-            <label htmlFor="upload-button-file">
-              <IconButton color="primary" aria-label="upload picture" component="span">
-                <PhotoCamera />
-              </IconButton>
-            </label>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSendMessage}
-              endIcon={<SendIcon />}
-            >
-              Send
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
-    </Box>
-  );
-}*/
-
-
-
-
-
-

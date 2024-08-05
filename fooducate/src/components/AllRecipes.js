@@ -81,15 +81,15 @@ export default function AllRecipes({ onSelectRecipe, onCategoryChange }) {
 
   return (
     <Box sx={{ padding: 1 }}>
-      <Typography variant="h5" color="#494949" sx={{ fontWeight: 'medium' }}>
+      <Typography variant="h5" color="#232530">
         Recipes
       </Typography>
       <StyledTabs value={value} sx={{ marginBottom: 2 }} onChange={handleChange}>
-        <StyledTab sx={{ width: '10%' }} label="Breakfast" value="breakfast" />
-        <StyledTab sx={{ width: '10%' }} label="Lunch" value="lunch" />
-        <StyledTab sx={{ width: '10%' }} label="Dinner" value="dinner" />
-        <StyledTab sx={{ width: '10%' }} label="Snacks" value="snacks" />
-        <StyledTab sx={{ width: '10%' }} label="Sweets" value="sweets" />
+        <StyledTab sx={{ width: '10%', fontSize: 17 }} label="Breakfast" value="breakfast" />
+        <StyledTab sx={{ width: '10%', fontSize: 17 }} label="Lunch" value="lunch" />
+        <StyledTab sx={{ width: '10%', fontSize: 17 }} label="Dinner" value="dinner" />
+        <StyledTab sx={{ width: '10%', fontSize: 17 }} label="Snacks" value="snacks" />
+        <StyledTab sx={{ width: '10%', fontSize: 17 }} label="Sweets" value="sweets" />
       </StyledTabs>
        <Box style={{ maxHeight: '72vh', overflowY: 'auto' }}>
         <Grid container sx={{ width: '100%' }} rowSpacing={{ xs: 3, sm: 2, md: 3, lg: 2, xl: 2 }} columnSpacing={{ xs: 1, sm: 2, md: 3, lg: 2, xl: 2 }} columns={12}>
@@ -105,20 +105,20 @@ export default function AllRecipes({ onSelectRecipe, onCategoryChange }) {
               }
               return (
               <Grid item xs={6} sm={6} md={4} xl={4} lg={6}>
-                <Card variant="outlined" sx={{ borderColor: '#E2E6F7', borderWidth: 2, borderRadius: 3, height: '100%'}}>
+                <Card variant="outlined" sx={{ borderColor: 'rgba(102, 103, 113, 0.15)', borderWidth: 2, borderRadius: 3, height: '100%'}}>
                   <CardContent sx={{  paddingTop: '0.75rem'  }}>
-                    <Typography sx={{ fontSize: 17  }}>
+                    <Typography sx={{ fontSize: 20 }}>
                         {recipe.name}
                     </Typography>
                     <Stack direction="row" sx={{marginTop: '0.75rem'}} spacing={2} alignItems="center">
                       <Stack direction="row" justifyContent="flex-start" alignItems="center">
-                      <AccessTimeFilledIcon  sx={{ fontSize: 16, color: '#6F6DCF'}} />
+                      <AccessTimeFilledIcon fontSize='medium' sx={{ color: '#6F6DCF'}} />
 
-                      <Typography sx={{ fontSize: 13, marginLeft: 0.5 }}>{totalTime}</Typography>
+                      <Typography sx={{ fontSize: 17, marginLeft: 0.5 }}>{totalTime}</Typography>
                       </Stack>
                       <Stack direction="row" justifyContent="flex-start" alignItems="center">
-                      <LocalFireDepartmentIcon fontSize='small' sx={{ color: '#4B49C3'}} />
-                      <Typography sx={{ fontSize: 13, marginLeft: 0.5 }}>{recipe.nutrients.calories} cal</Typography>
+                      <LocalFireDepartmentIcon fontSize='medium' sx={{ color: '#4B49C3'}} />
+                      <Typography sx={{ fontSize: 17, marginLeft: 0.5 }}>{recipe.nutrients.calories} cal</Typography>
                       </Stack>
                     </Stack>
                   </CardContent>
@@ -127,9 +127,23 @@ export default function AllRecipes({ onSelectRecipe, onCategoryChange }) {
                     <Button
                       key={index}
                       variant="outlined"
-                      size="small"
+                      size="medium"
                       onClick={() => handleRecipeClick(recipe)}
-                      sx={{  textTransform: 'none', textAlign: 'center', borderColor: '#D6D9E8', borderWidth: 2, color: '#8B61E8',  width: 110, height: 27, borderRadius: 3 }}
+                      sx={{  
+                        textTransform: 'none', 
+                        textAlign: 'center', 
+                        borderColor: '#D6D9E8', 
+                        borderWidth: 2, 
+                        color: '#8B61E8',  
+                        width: 130, 
+                        height: 27, 
+                        borderRadius: 3,
+                        '&:hover': {
+                           borderColor: '#6E4ABE', // Custom hover background color
+                           color: '#6E4ABE', 
+                        },
+                      
+                      }}
                     >View details</Button>
                   </CardActions>
                 </Card>

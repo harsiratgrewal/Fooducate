@@ -5,12 +5,10 @@ import Dialog from '@mui/material/Dialog';
 import EditIcon from '@mui/icons-material/Edit';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase/firebase'; // Import Firestore and Auth instances
 import { onAuthStateChanged } from 'firebase/auth';
-import { v4 as uuidv4 } from 'uuid'; // For generating unique IDs
 
 
 export default function EditDialog() {

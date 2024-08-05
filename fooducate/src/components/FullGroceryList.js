@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { collection, query, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
-import { List, ListItem, ListItemText, Checkbox, ListItemSecondaryAction, Typography, Collapse, Button, Box } from '@mui/material';
+import { List, ListItem, ListItemText, Checkbox, Typography, Collapse, Button, Box } from '@mui/material';
 import { db, auth } from '../firebase/firebase';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import AddGrocery from './AddGrocery';
 
 export default function FullGroceryList() {
@@ -32,11 +33,11 @@ export default function FullGroceryList() {
         const querySnapshot = await getDocs(q);
         const itemsArray = querySnapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name, quantity: doc.data().quantity }));
         setItems(itemsArray);
-        console.log(itemsArray);
       } catch (error) {
         console.error("Error fetching grocery list: ", error);
       }
     };
+    console.log(items);
 
     fetchGroceryList();
   }, [userId]);
@@ -71,37 +72,48 @@ export default function FullGroceryList() {
   return (
     <React.Fragment>
       <div className="p-2 d-flex flex-row justify-content-between align-items-center">
-      <Typography variant="h6" color="#494949" sx={{ fontWeight: 'medium'}}>
-        Grocery List
-      </Typography>
-      <AddGrocery />
+        <Typography variant="h5" color="#232530">
+          Grocery List
+        </Typography>
+        <AddGrocery />
       </div>
       <List>
         {items.map((item) => (
           <React.Fragment key={item.id}>
-            <ListItem onClick={handleToggle(item.id)}>
-              <ListItemText  primary={<React.Fragment><Typography sx={{ fontSize: 20 }}>{item.name.charAt(0).toUpperCase() + item.name.slice(1)}</Typography></React.Fragment>} secondary={<React.Fragment><Typography sx={{ fontSize: 18 }}>{item.quantity}</Typography></React.Fragment>} />
-              <ListItemSecondaryAction>
-                <Checkbox
-                  edge="end"
-                  checked={!!checked[item.id]}
-                  sx={{
-                    '&.Mui-checked': {
-                      color: '#996BFF',
-                    },
-                  }}
-                  onChange={handleToggle(item.id)}
-                  inputProps={{ 'aria-labelledby': `checkbox-list-label-${item.id}` }}
-                />
-              </ListItemSecondaryAction>
-            </ListItem>
-            <Collapse in={expanded[item.id]} timeout="auto" unmountOnExit>
-              <Box sx={{ marginLeft: 4, marginTop: 1, marginBottom: 1 }}>
-                <Typography>Did you purchase this?</Typography>
-                <Button variant="contained" color="primary" onClick={() => handleYes(item.id)}>Yes</Button>
-                <Button variant="outlined" color="secondary" onClick={() => handleNo(item.id)} sx={{ marginLeft: 2 }}>No</Button>
-              </Box>
-            </Collapse>
+            {item && (
+              <>
+                <ListItem onClick={handleToggle(item.id)}>
+                  <ListItemIcon>
+                    <Checkbox
+                      edge="start"
+                      checked={!!checked[item.id]}
+                      sx={{
+                        '&.Mui-checked': {
+                          color: '#996BFF',
+                        },
+                      }}
+                      onChange={handleToggle(item.id)}
+                      inputProps={{ 'aria-labelledby': `checkbox-list-label-${item.id}` }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <React.Fragment>
+                        <Typography sx={{ fontSize: 20 }}>{item.name.charAt(0).toUpperCase() + item.name.slice(1)}</Typography>
+                      </React.Fragment>
+                    }
+                  />
+                  <Typography sx={{ fontSize: 18 }}>{item.quantity}</Typography>
+                </ListItem>
+                <Collapse in={expanded[item.id]} timeout="auto" unmountOnExit>
+                  <Box sx={{ marginLeft: 4, marginTop: 1, marginBottom: 1 }}>
+                    <Typography>Did you purchase this?</Typography>
+                    <Button variant="contained" color="primary" onClick={() => handleYes(item.id)}>Yes</Button>
+                    <Button variant="outlined" color="secondary" onClick={() => handleNo(item.id)} sx={{ marginLeft: 2 }}>No</Button>
+                  </Box>
+                </Collapse>
+              </>
+            )}
           </React.Fragment>
         ))}
       </List>
