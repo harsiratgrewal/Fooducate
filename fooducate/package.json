@@ -17,6 +17,7 @@
     "axios": "^1.7.3",
     "bootstrap": "^5.3.3",
     "clarifai": "^2.9.1",
+    "concurrently": "^8.2.2",
     "dayjs": "^1.11.11",
     "dotenv": "^16.4.5",
     "firebase": "^10.12.2",
@@ -33,7 +34,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "node": "--env-file='.env'",
+    "dev": "concurrently \"npm start\" \"node --env-file=.env .\\src\\openai\\server.js"
   },
   "eslintConfig": {
     "extends": [
