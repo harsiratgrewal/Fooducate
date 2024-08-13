@@ -30,7 +30,7 @@ app.post('/analyze-image', async (req, res) => {
           content: [
             {
               type: "text",
-              text: "Describe the type and quantities of food in this image. Use this format- quantity food, quantity food, quantity food..."
+              text: "Describe the type and quantities of food in this image. Use this format quantity food, quantity food, quantity food..."
             },
             {
               type: "image_url",

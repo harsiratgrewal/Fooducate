@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Button, TextField, Paper, Grid, IconButton, Typography } from '@mui/material';
+import { Box, TextField, Paper, IconButton, Typography } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import axios from 'axios';
 
@@ -19,6 +21,9 @@ export default function Chatbot() {
   const handleImageUpload = async (e) => {
 
     const imageFile = e.target.files[0];
+    if (!imageFile){
+      return;
+    }
     if (!imageFile.type.startsWith('image/')) {
       setError('The selected file is not an image. Please upload an image file.');
       return;
@@ -76,7 +81,7 @@ export default function Chatbot() {
         'https://api.openai.com/v1/chat/completions',
         {
           model: 'gpt-4o-mini',
-          messages: [{ role: 'user', content: `Give a 2-3 line brief nutritional breakdown (just include one line of names/quantities, total calories, and then a very brief benefit) of the following items: ${description}` }],
+          messages: [{ role: 'user', content: `Give a 2-3 line brief nutritional breakdown (just include one line of names/quantities, total calories, and then a very brief benefit) for the following items: ${description}` }],
           max_tokens: 1000,
         },
         {
@@ -157,78 +162,170 @@ export default function Chatbot() {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <Box sx={{ flexGrow: 1, p: 2, overflowY: 'auto', borderRadius: '10px', border: '1px solid #ddd', backgroundColor: '#fff' }} ref={chatContainerRef}>
-        <Typography variant="h6" color="#494949" sx={{ fontWeight: 'medium' }}>
-          AI Nutritional Helper
-        </Typography>
-        {messages.map((msg, index) => (
-          <Box
-            key={index}
-            sx={{
-              display: 'flex',
-              justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start',
-              mb: 1,
-            }}
-          >
-            <Paper
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '100%',
+      width: '100%',
+      p: 2 
+    }}>
+      <Box 
+        sx={{ 
+          flexGrow: 1, 
+          overflow: 'hidden', 
+          borderRadius: '15px', 
+          border: '0px solid #6a1b9a',
+          backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          display: 'flex', 
+          flexDirection: 'column',
+          justifyContent: 'space-between'
+        }} 
+        ref={chatContainerRef}
+      >
+        <Box 
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: '#6a1b9a',
+            borderRadius: '10px 10px 0 0',
+            p: 2,
+            m: 0,
+          }}
+        >
+          <SmartToyIcon sx={{ fontSize: 40, color: '#fff', mr: 2 }} />
+          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#fff', m: 0 }}>
+            Nutritional Helper
+          </Typography>
+        </Box>
+        <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 2, backgroundColor: 'rgba(255, 255, 255, 0.0)'}}>
+          {messages.map((msg, index) => (
+            <Box
+              key={index}
               sx={{
-                p: 1,
-                m: 1,
-                backgroundColor: msg.type === 'user' ? '#e0f7fa' : '#f5f5f5',
-                maxWidth: '60%',
-                borderRadius: '10px',
-                border: '1px solid #ddd',
+                display: 'flex',
+                justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start',
+                mb: 1,
+                alignItems: 'center'
               }}
             >
-              {msg.image ? (
-                <img src={msg.image} alt="uploaded" style={{ maxWidth: '100%', borderRadius: '10px' }} />
-              ) : (
-                <Typography variant="body1">{msg.text}</Typography>
+              {msg.type !== 'user' && (
+                <SmartToyIcon sx={{ fontSize: 20, color: '#6a1b9a', mr: 1 }} />
               )}
-            </Paper>
-          </Box>
-        ))}
+              <Paper
+                sx={{
+                  p: 1,
+                  backgroundColor: msg.type === 'user' ? '#f3e5f5' : '#fff',
+                  maxWidth: '60%',
+                  borderRadius: '10px',
+                  border: '1px solid #6a1b9a',
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexDirection: 'column'
+                }}
+              >
+                {msg.image && (
+                  <img 
+                    src={msg.image} 
+                    alt="uploaded" 
+                    style={{ 
+                      maxWidth: '100%', 
+                      maxHeight: '150px',
+                      borderRadius: '10px', 
+                      marginBottom: '8px' 
+                    }} 
+                  />
+                )}
+                <Typography  
+                  component="span"
+                  style={{ 
+                    fontSize: '16px',
+                    lineHeight: '1.2',
+                    margin: 0,
+                    padding: 0
+                  }}>
+                  {msg.text}
+                </Typography>
+              </Paper>
+              {msg.type === 'user' && (
+                <AccountBoxIcon sx={{ fontSize: 20, color: '#6a1b9a', ml: 1 }} />
+              )}
+            </Box>
+          ))}
+        </Box>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          p: 1,
+          borderTop: '1px solid #6a1b9a',
+          m: 0,
+          backgroundColor: '#6a1b9a', // Light purple background
+          borderRadius: '0 0 10px 10px', // Rounded bottom corners
+        }}>
+          <TextField
+            fullWidth
+            variant="standard"
+            placeholder="Type your message here..."
+            value={message}
+            onChange={handleInputChange}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault(); // Prevents the default action (like form submission)
+                handleSendMessage(); // Triggers the send message function
+              }
+            }}
+            sx={{ 
+              borderRadius: '0',
+              backgroundColor: '#6a1b9a',
+              '& .MuiInputBase-input': {
+                padding: '10px',
+                color: '#fff',
+                fontSize: '16px', // Increase font size
+                fontWeight: 'bold', // Make the input text bold
+                caretColor: '#fff', 
+              },
+              '& .MuiInput-underline:before': {
+                borderBottom: 'none',
+              },
+              '& .MuiInput-underline:after': {
+                borderBottom: 'none',
+              },
+              '& .MuiInput-underline:hover:before': {
+                borderBottom: 'none',
+              },
+              '& .MuiInputBase-input::placeholder': {
+                color: '#fff', // Make the placeholder text white
+                opacity: 1, // Ensure the placeholder is fully visible
+              },
+              '& .MuiInputBase-input:focus::placeholder': {
+                opacity: 0, // Hide the placeholder on focus (when the text field is clicked)
+              },
+              
+            }}
+            InputProps={{
+              disableUnderline: true,
+              endAdornment: (
+                <React.Fragment>
+                  <IconButton color="primary" aria-label="send message" component="span" onClick={handleSendMessage} sx={{ color: '#fff', fontSize: '16px', fontWeight: 'bold' }}>
+                    <SendIcon />
+                  </IconButton>
+                  <input
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    id="upload-button-file"
+                    type="file"
+                    onChange={handleImageUpload}
+                  />
+                  <label htmlFor="upload-button-file">
+                    <IconButton color="primary" aria-label="upload picture" component="span" sx={{ color: '#fff', fontSize: '16px', fontWeight: 'bold' }}>
+                      <PhotoCamera />
+                    </IconButton>
+                  </label>
+                </React.Fragment>
+              ),
+            }}
+          />
+        </Box>
       </Box>
-      <Paper sx={{ p: 2, mt: 2, borderRadius: '10px', border: '1px solid #ddd' }}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs>
-            <TextField
-              fullWidth
-              variant="outlined"
-              placeholder="Type your message"
-              value={message}
-              onChange={handleInputChange}
-              sx={{ borderRadius: '10px' }}
-            />
-          </Grid>
-          <Grid item>
-            <input
-              accept="image/*"
-              style={{ display: 'none' }}
-              id="upload-button-file"
-              type="file"
-              onChange={handleImageUpload}
-            />
-            <label htmlFor="upload-button-file">
-              <IconButton color="primary" aria-label="upload picture" component="span">
-                <PhotoCamera />
-              </IconButton>
-            </label>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSendMessage}
-              endIcon={<SendIcon />}
-              sx={{ borderRadius: '10px' }}
-            >
-              Send
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
     </Box>
   );
 }

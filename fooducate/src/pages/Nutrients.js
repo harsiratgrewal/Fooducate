@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Navbar from '../components/Navbar';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
+import back from '../img/back.jpg';
 import Chatbot from '../components/Chatbot';
 
 function Nutrients() {
@@ -26,6 +27,7 @@ function Nutrients() {
                 p: 2,
                 display: 'flex',
                 backgroundColor: "#FCFCFD",
+                backgroundImage: `url(${back})`,
                 flexDirection: 'column',
                 height: '100%',
                 borderRadius: 4,
