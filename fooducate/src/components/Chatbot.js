@@ -8,10 +8,15 @@ import axios from 'axios';
 
 const KEY = process.env.REACT_APP_API_KEY;
 
-export default function Chatbot() {
+export default function Chatbot({ sessionKey }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const chatContainerRef = useRef(null);
+
+  useEffect(() => {
+    const savedMessages = JSON.parse(sessionStorage.getItem('currentSession')) || [];
+    setMessages(savedMessages);
+  }, [sessionKey]);
 
   const handleInputChange = (e) => {
     setMessage(e.target.value);
@@ -32,12 +37,33 @@ export default function Chatbot() {
       const newMessage = { text: null, image: URL.createObjectURL(imageFile), type: 'user' };
       setMessages(prevMessages => [...prevMessages, newMessage]);
       
+      let sessionKey = sessionStorage.getItem('sessionKey');
+      if (!sessionKey) {
+          sessionKey = `session-${new Date().toLocaleString()}`;
+          sessionStorage.setItem('sessionKey', sessionKey);
+          localStorage.setItem(sessionKey, JSON.stringify([]));
+      }
+
+      const currentSession = JSON.parse(sessionStorage.getItem('currentSession')) || [];
+      const updatedSession = [...currentSession, newMessage];
+      sessionStorage.setItem('currentSession', JSON.stringify(updatedSession));
+
+      const localStorageSession = JSON.parse(localStorage.getItem(sessionKey)) || [];
+      const updatedLocalStorageSession = [...localStorageSession, newMessage];
+      localStorage.setItem(sessionKey, JSON.stringify(updatedLocalStorageSession));
+
       const description = await analyzeImageWithBackend(imageFile);
       if (description) {
         const nutritionalInfo = await getNutritionalInfo(description);
         if (nutritionalInfo) {
+
           const aiResponse = { text: nutritionalInfo, type: 'ai' };
           setMessages(prevMessages => [...prevMessages, aiResponse]);
+          const finalSession = [...updatedSession, aiResponse];
+          sessionStorage.setItem('currentSession', JSON.stringify(finalSession));
+
+          const finalLocalStorageSession = [...updatedLocalStorageSession, aiResponse];
+          localStorage.setItem(sessionKey, JSON.stringify(finalLocalStorageSession));
         }
       }
     }
@@ -81,7 +107,9 @@ export default function Chatbot() {
         'https://api.openai.com/v1/chat/completions',
         {
           model: 'gpt-4o-mini',
-          messages: [{ role: 'user', content: `Give a 2-3 line brief nutritional breakdown (just include one line of names/quantities, total calories, and then a very brief benefit) for the following items: ${description}` }],
+          messages: [{ role: 'user', content: `Give a 2-3 line brief nutritional breakdown (no headings or sub headings) (just include one line of names/quantities, total calories, and then a very brief benefit) for the following items: ${description}
+            Use this format: 
+            Quantity Name (Calories cal), Quantity Name (Calories). Total calories ~ (Amount) cal. Overall Benefit` }],
           max_tokens: 1000,
         },
         {
@@ -93,27 +121,39 @@ export default function Chatbot() {
       );
 
       console.log("OpenAI API response:", response.data);
-      const info = formatDescription(response.data.choices[0].message.content);
+      const info = response.data.choices[0].message.content;
       return info;
     } catch (error) {
       console.error('Error getting nutritional info: ', error);
       return null;
     }
   };
-
+ 
   const handleSendMessage = async () => {
     if (!message) return;
-
     const newMessage = { text: message, type: 'user' };
     setMessages([...messages, newMessage]);
-
     setMessage('');
+    let sessionKey = sessionStorage.getItem('sessionKey');
+    if (!sessionKey) {
+        sessionKey = `session-${new Date().toLocaleString()}`;
+        sessionStorage.setItem('sessionKey', sessionKey);
+        localStorage.setItem(sessionKey, JSON.stringify([]));
+    }
+
+    const currentSession = JSON.parse(sessionStorage.getItem('currentSession')) || [];
+    const updatedSession = [...currentSession, newMessage];
+    sessionStorage.setItem('currentSession', JSON.stringify(updatedSession));
+
+    const localStorageSession = JSON.parse(localStorage.getItem(sessionKey)) || [];
+    const updatedLocalStorageSession = [...localStorageSession, newMessage];
+    localStorage.setItem(sessionKey, JSON.stringify(updatedLocalStorageSession));
 
     try {
       console.log("Sending message to OpenAI API...");
       const response = await axios.post('https://api.openai.com/v1/chat/completions', {
         model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: message }],
+        messages: [{ role: 'user', content: `I am passing your chat history here- ${JSON.stringify(updatedSession)} (if history is empty ignore this line) (don't mention about the history in response just use it). This is the current query (don't mention about the query just take it) (Just answer the question): ${message}`}],
         max_tokens: 500,
       }, {
         headers: {
@@ -125,41 +165,22 @@ export default function Chatbot() {
       console.log("OpenAI API response:", response.data);
       const aiResponse = { text: response.data.choices[0].message.content.trim(), type: 'ai' };
       setMessages(prevMessages => [...prevMessages, aiResponse]);
+
+      const finalSession = [...updatedSession, aiResponse];
+      sessionStorage.setItem('currentSession', JSON.stringify(finalSession));
+
+      const finalLocalStorageSession = [...updatedLocalStorageSession, aiResponse];
+      localStorage.setItem(sessionKey, JSON.stringify(finalLocalStorageSession));
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
-  // Scroll to the bottom of the chat container when messages change
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
-
-  const formatDescription = (description) => {
-    const parts = description.split('###').filter(part => part.trim() !== '');
-  
-    return parts.map((part, index) => {
-      const lines = part.trim().split('\n').filter(line => line.trim() !== '');
-
-      let title = lines[0];
-      title = title.replace(/\*\*/g, '');
-
-      const details = lines.slice(1).map((line, index) => (
-        <li key={index}>{line.replace(/\*\*/g, '').trim()}</li>
-      ));
-  
-      return (
-        <div key={index} style={{ marginBottom: '20px' }}>
-          <h3>{title}</h3>
-          <ul>
-            {details}
-          </ul>
-        </div>
-      );
-    });
-  };
 
   return (
     <Box sx={{ 
@@ -174,7 +195,7 @@ export default function Chatbot() {
           flexGrow: 1, 
           overflow: 'hidden', 
           borderRadius: '15px', 
-          border: '0px solid #6a1b9a',
+          border: '0px solid #996BFF',
           backgroundColor: 'rgba(255, 255, 255, 0.5)',
           display: 'flex', 
           flexDirection: 'column',
@@ -186,7 +207,7 @@ export default function Chatbot() {
           sx={{
             display: 'flex',
             alignItems: 'center',
-            backgroundColor: '#6a1b9a',
+            backgroundColor: '#996BFF',
             borderRadius: '10px 10px 0 0',
             p: 2,
             m: 0,
@@ -197,69 +218,82 @@ export default function Chatbot() {
             Nutritional Helper
           </Typography>
         </Box>
-        <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 2, backgroundColor: 'rgba(255, 255, 255, 0.0)'}}>
-          {messages.map((msg, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: 'flex',
-                justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start',
-                mb: 1,
-                alignItems: 'center'
-              }}
-            >
-              {msg.type !== 'user' && (
-                <SmartToyIcon sx={{ fontSize: 20, color: '#6a1b9a', mr: 1 }} />
-              )}
-              <Paper
+        <Box 
+          sx={{ 
+            flexGrow: 1, 
+            overflowY: 'auto', 
+            p: 2, 
+            backgroundColor: 'rgba(255, 255, 255, 0.0)' 
+          }}
+        >
+          {messages.length > 0 ? (
+            messages.map((msg, index) => (
+              <Box
+                key={index}
                 sx={{
-                  p: 1,
-                  backgroundColor: msg.type === 'user' ? '#f3e5f5' : '#fff',
-                  maxWidth: '60%',
-                  borderRadius: '10px',
-                  border: '1px solid #6a1b9a',
                   display: 'flex',
-                  alignItems: 'center',
-                  flexDirection: 'column'
+                  justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start',
+                  mb: 1,
+                  alignItems: 'center'
                 }}
               >
-                {msg.image && (
-                  <img 
-                    src={msg.image} 
-                    alt="uploaded" 
-                    style={{ 
-                      maxWidth: '100%', 
-                      maxHeight: '150px',
-                      borderRadius: '10px', 
-                      marginBottom: '8px' 
-                    }} 
-                  />
+                {msg.type !== 'user' && (
+                  <SmartToyIcon sx={{ fontSize: 20, color: '#996BFF', mr: 1 }} />
                 )}
-                <Typography  
-                  component="span"
-                  style={{ 
-                    fontSize: '16px',
-                    lineHeight: '1.2',
-                    margin: 0,
-                    padding: 0
-                  }}>
-                  {msg.text}
-                </Typography>
-              </Paper>
-              {msg.type === 'user' && (
-                <AccountBoxIcon sx={{ fontSize: 20, color: '#6a1b9a', ml: 1 }} />
-              )}
-            </Box>
-          ))}
+                <Paper
+                  sx={{
+                    p: 1,
+                    backgroundColor: msg.type === 'user' ? '#f3e5f5' : '#fff',
+                    maxWidth: '60%',
+                    borderRadius: '10px',
+                    border: '1px solid #996BFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexDirection: 'column'
+                  }}
+                >
+                  {msg.image && (
+                    <img 
+                      src={msg.image} 
+                      alt="uploaded" 
+                      style={{ 
+                        maxWidth: '100%', 
+                        maxHeight: '150px',
+                        borderRadius: '10px', 
+                        marginBottom: '8px' 
+                      }} 
+                    />
+                  )}
+                  <Typography  
+                    component="span"
+                    style={{ 
+                      fontSize: '16px',
+                      lineHeight: '1.2',
+                      margin: 0,
+                      padding: 0
+                    }}>
+                    {msg.text}
+                  </Typography>
+                </Paper>
+                {msg.type === 'user' && (
+                  <AccountBoxIcon sx={{ fontSize: 20, color: '#996BFF', ml: 1 }} />
+                )}
+              </Box>
+            ))
+          ) : (
+            <Typography variant="body1" color="text.secondary" align="center" sx={{ fontWeight: 'bold' }}>
+              Hello! I am your AI Nutritional Chatbot. Please type a message to start the conversation!
+            </Typography>
+          )}
         </Box>
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center', 
           p: 1,
-          borderTop: '1px solid #6a1b9a',
+          borderTop: '1px solid #996BFF',
           m: 0,
-          backgroundColor: '#6a1b9a', // Light purple background
-          borderRadius: '0 0 10px 10px', // Rounded bottom corners
+          backgroundColor: '#996BFF',
+          borderRadius: '0 0 10px 10px',
         }}>
           <TextField
             fullWidth
@@ -269,18 +303,18 @@ export default function Chatbot() {
             onChange={handleInputChange}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                e.preventDefault(); // Prevents the default action (like form submission)
-                handleSendMessage(); // Triggers the send message function
+                e.preventDefault();
+                handleSendMessage();
               }
             }}
             sx={{ 
               borderRadius: '0',
-              backgroundColor: '#6a1b9a',
+              backgroundColor: '#996BFF',
               '& .MuiInputBase-input': {
                 padding: '10px',
                 color: '#fff',
-                fontSize: '16px', // Increase font size
-                fontWeight: 'bold', // Make the input text bold
+                fontSize: '16px',
+                fontWeight: 'bold',
                 caretColor: '#fff', 
               },
               '& .MuiInput-underline:before': {
@@ -293,11 +327,11 @@ export default function Chatbot() {
                 borderBottom: 'none',
               },
               '& .MuiInputBase-input::placeholder': {
-                color: '#fff', // Make the placeholder text white
-                opacity: 1, // Ensure the placeholder is fully visible
+                color: '#fff', 
+                opacity: 1,
               },
               '& .MuiInputBase-input:focus::placeholder': {
-                opacity: 0, // Hide the placeholder on focus (when the text field is clicked)
+                opacity: 0,
               },
               
             }}
