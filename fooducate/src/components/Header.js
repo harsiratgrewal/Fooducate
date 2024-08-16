@@ -10,7 +10,6 @@ import { Box, Button, CircularProgress, Typography } from '@mui/material';
 import { useAuthState } from "react-firebase-hooks/auth";
 import AssistantIcon from '@mui/icons-material/Assistant';
 import { useNavigate } from "react-router-dom";
-import UpdateMealSteps from './UpdateMealSteps';
 
 function Header() {
   const [user, loading, error] = useAuthState(auth);
