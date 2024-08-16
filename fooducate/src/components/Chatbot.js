@@ -214,7 +214,7 @@ export default function Chatbot({ sessionKey }) {
           }}
         >
           <SmartToyIcon sx={{ fontSize: 40, color: '#fff', mr: 2 }} />
-          <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#fff', m: 0 }}>
+          <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#fff', m: 0, fontSize: '28px' }}>
             Nutritional Helper
           </Typography>
         </Box>
@@ -281,7 +281,7 @@ export default function Chatbot({ sessionKey }) {
               </Box>
             ))
           ) : (
-            <Typography variant="body1" color="text.secondary" align="center" sx={{ fontWeight: 'bold' }}>
+            <Typography variant="body1" color="text.secondary" align="center" sx={{ fontWeight: 'bold', fontSize: '24px' }}>
               Hello! I am your AI Nutritional Chatbot. Please type a message to start the conversation!
             </Typography>
           )}

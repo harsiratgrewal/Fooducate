@@ -76,7 +76,7 @@ export default function ChatHistory({ loadSession }) {
           <Typography
             variant="body2"
             color="#FF00FF"
-            sx={{ fontSize: '0.850rem', flexGrow: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+            sx={{ fontSize: '0.950rem', flexGrow: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
           >
             {session.date} - {session.time}
           </Typography>
@@ -90,10 +90,10 @@ export default function ChatHistory({ loadSession }) {
             sx={{
               color: '#FF00FF',
               padding: '0',
-              width: "0px",
+              width: "16px",
               minHeight: '16px',
               '& .MuiSvgIcon-root': {
-                fontSize: '16px',
+                fontSize: '20x',
               },
             }}
           >
