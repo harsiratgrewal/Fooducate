@@ -62,8 +62,6 @@ const FavoritedMealsCard = () => {
     }
   };
 
-  console.log(favoriteMeals);
-
   const handleAddToGroceryList = (ingredient) => {
     // Add ingredient to grocery list logic here
     console.log(`Add ${ingredient} to grocery list`);
@@ -76,8 +74,11 @@ const FavoritedMealsCard = () => {
   
   return (
     <Box sx={{ padding: 1 }}>
+      <div className='d-flex flex-column'>
         <Typography variant="h5" color='#232530' sx={{ width: '80%' }}>Favorited meals</Typography>
-     <Box sx={{ marginBottom: 1, maxHeight: '50vh', overflowY: 'auto' }}>
+        <Typography variant="subtitle1" color='#232530'>Add any ingredient(s) from your favorite meals to your list</Typography>
+        </div>
+     <Box sx={{ marginBottom: 1, height: '100%', overflowY: 'auto' }}>
       <List>
         {favoriteMeals.length === 0 ? (
           <Typography variant="h6">No favorite meals found.</Typography>

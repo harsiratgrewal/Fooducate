@@ -86,7 +86,7 @@ const TopFavoritedMeals = () => {
                    
                   </div>
                 </ListItemText>
-                <Box sx={{ display: 'flex', borderRadius: 40, flexDirection: 'row', justifyContent: 'center'}}><IconButton><ArrowForwardIosIcon fontSize='small'/></IconButton></Box>
+                <Box sx={{ display: 'flex', borderRadius: 40, flexDirection: 'row', justifyContent: 'center'}}><IconButton sx={{ width: '100%', padding: 1 }}><ArrowForwardIosIcon fontSize='small'/></IconButton></Box>
               </ListItem>
             ))
           )}

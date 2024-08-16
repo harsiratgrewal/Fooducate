@@ -37,7 +37,7 @@ export default function AddJournalEntryDialog({ open, handleClose }) {
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Add Journal Entry</DialogTitle>
+      <DialogTitle sx={{ color: '#232530' }} variant="h5">Add Journal Entry</DialogTitle>
       <DialogContent>
         <TextField
           fullWidth
@@ -57,8 +57,36 @@ export default function AddJournalEntryDialog({ open, handleClose }) {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="secondary">Cancel</Button>
-        <Button onClick={handleSave} color="primary">Save</Button>
+        <div className='d-flex pb-4 flex-row justify-content-center w-100'>
+        <Button 
+        onClick={handleClose} 
+        sx={{ 
+            
+            width: '40%',
+            borderColor: '#767676',
+            color: '#767676', 
+            '&:hover': {
+               backgroundColor: 'rgba(118, 118, 118, 0.15)', // Custom hover background color
+               borderColor: '#767676'
+            }, 
+          }}
+        
+        >
+          Cancel</Button>
+        <Button onClick={handleSave} 
+        variant='contained'
+        disableElevation
+         sx={{ 
+              marginLeft: 1,
+              backgroundColor: '#996BFF',
+              width: '40%',
+              '&:hover': {
+              backgroundColor: '#8A60E6', // Custom hover background color
+             }, 
+          }} >
+          Save
+          </Button>
+        </div>
       </DialogActions>
     </Dialog>
   );

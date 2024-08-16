@@ -19,33 +19,42 @@ import proteinIcon from '../img/proteindrumstick2.svg';
 import fatsIcon from '../img/droplet.svg';
 import TopFavoritedMeals from "../components/TopFavoriteMeals";
 import ObjectivesCard from "../components/ObjectivesCard";
+import FavoriteMealsCarousel from "../components/FavoriteMealsCarousel";
+import EditDialog from "../components/EditDialog";
+import EditProtein from "../components/EditProtein";
+import EditCarbs from "../components/EditCarbs";
 
 function Dashboard() {
   const [user, loading ] = useAuthState(auth);
   const [userInfo, setUserInfo] = useState({})
 
   const navigate = useNavigate();
+  
   const fetchUserName = async () => {
-    try {
-      const q = query(collection(db, "users"), where("uid", "==", user?.uid));
-      const doc = await getDocs(q);
-      const data = doc.docs[0].data();
-      setUserInfo(data)
-
-      console.log(userInfo)
-    } catch (err) {
-      console.error(err);
-      alert("An error occured while fetching user data");
+    if (user) {
+      try {
+        const q = query(collection(db, "users"), where("uid", "==", user?.uid));
+        const doc = await getDocs(q);
+        if (doc.docs.length > 0) {
+          const data = doc.docs[0].data();
+          setUserInfo(data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
   
 
-  useEffect(() => {
-    if (loading) return;
-    if (!user) return navigate("/");
-    fetchUserName();
-  }, [user, loading]);
+   useEffect(() => {
+    if (loading) return; // Wait for loading to complete
+    if (!user) {
+      navigate("/");
+    } else {
+      fetchUserName();
+    }
+  }, [user, loading, navigate]);
 
     return (
        <Box sx={{ display: 'flex', width: '100%' }}>
@@ -114,7 +123,7 @@ function Dashboard() {
                                                 <Typography sx={{ color: '#232530' }} variant="body1">Daily fats intake goal</Typography>
                                             </Box> 
                                             <Box sx={{ paddingTop: 1, alignItems: 'center', width: '10%', height: '100%', display: 'flex', flexDirection: 'column' }}>  
-                                                <IconButton sx={{ width: 40, color: "#BBBECA" }}><EditIcon /></IconButton>
+                                                <EditDialog />
                                             </Box>
                                                      
                                         </Paper>
@@ -142,7 +151,7 @@ function Dashboard() {
                                                 <Typography sx={{ color: '#232530' }} variant="body1">Daily protein intake goal</Typography>
                                             </Box>
                                             <Box sx={{ paddingTop: 1, alignItems: 'center', width: '10%', height: '100%', display: 'flex', flexDirection: 'column' }}>  
-                                                <IconButton sx={{ width: 40, color: "#BBBECA" }}><EditIcon /></IconButton>
+                                                <EditProtein />
                                             </Box>    
                                         </Paper>
                                         </div>
@@ -169,7 +178,7 @@ function Dashboard() {
                                                     <Typography sx={{ color: '#232530' }} variant="body1">Daily carb intake goal</Typography>
                                                 </Box>
                                                 <Box sx={{ paddingTop: 1, alignItems: 'center', width: '10%', height: '100%', display: 'flex', flexDirection: 'column' }}>  
-                                                <IconButton sx={{ width: 40, color: "#BBBECA" }}><EditIcon /></IconButton>
+                                                <EditCarbs />
                                                 </Box>    
                                         </Paper>
                                         </div>
@@ -193,7 +202,7 @@ function Dashboard() {
                                                 
                                                 }}
                                                 > 
-                                            <TopFavoritedMeals/>
+                                            <FavoriteMealsCarousel />
                                                  
                                         </Paper>
                                 </div>

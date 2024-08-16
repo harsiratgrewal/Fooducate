@@ -1,17 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Checkbox, CardContent, Typography, Button, List, ListItem, ListItemText, TextField, Box, Grid, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Card, Divider, Checkbox, CardContent, Typography, Button, List, ListItem, ListItemText, TextField, Box, Grid, Dialog, DialogContent, DialogActions, Snackbar, Alert } from '@mui/material';
 import { collection, getDocs, query, where, doc, getDoc, addDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
 import BreakfastDiningIcon from '@mui/icons-material/BreakfastDining';
 import LunchDiningIcon from '@mui/icons-material/LunchDining';
 import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
 import EmojiFoodBeverageIcon from '@mui/icons-material/EmojiFoodBeverage';
 import IcecreamIcon from '@mui/icons-material/Icecream';
 import AllInclusiveIcon from '@mui/icons-material/AllInclusive';
-import dayjs from 'dayjs';
+import { styled } from '@mui/material';
+import QuantitySelector from './QuantitySelector';
+import CheckIcon from '@mui/icons-material/Check';
+import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward';
+
+const CustomTextField = styled(TextField)(({ theme }) => ({
+  '& label.Mui-focused': {
+    color: '#996BFF',
+  },
+  '& .MuiInput-underline:after': {
+    borderBottomColor: '#996BFF',
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: '#c4c4c4',
+      borderRadius: '5px',
+    },
+    '&:hover fieldset': {
+      borderColor: '#996BFF',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#996BFF',
+    },
+  },
+  '& .MuiInputBase-input': {
+    padding: '10px',
+    fontSize: '16px',
+  },
+  '& .MuiInputLabel-root': {
+    transform: 'translate(10.5px, 10px) scale(1)',
+  },
+  '& .MuiInputLabel-shrink': {
+    transform: 'translate(10px, -10px) scale(0.80)',
+    padding: 1, 
+    fontSize: '18px'
+  }
+}));
 
 const SearchMeals = () => {
   const [user] = useAuthState(auth);
@@ -21,6 +55,7 @@ const SearchMeals = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [checkedIngredients, setCheckedIngredients] = useState({});
   const [quantities, setQuantities] = useState({});
+  const [units, setUnits] = useState({});
   const [recipes, setRecipes] = useState([]);
   const [filteredRecipes, setFilteredRecipes] = useState([]);
   const [categories, setCategories] = useState([
@@ -33,6 +68,9 @@ const SearchMeals = () => {
   ]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const categoryOrder = ['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'];
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -108,6 +146,7 @@ const SearchMeals = () => {
   const handleDialogOpen = (recipe) => {
     setSelectedRecipe(recipe);
     setQuantities({});
+    setUnits({});
     setCheckedIngredients({});
     setDialogOpen(true);
   };
@@ -117,11 +156,14 @@ const SearchMeals = () => {
     setSelectedRecipe(null);
   };
 
-  const handleQuantityChange = (event, ingredientName) => {
-    setQuantities({
-      ...quantities,
-      [ingredientName]: event.target.value
-    });
+  const handleQuantityChange = (name, change) => {
+    const newQuantities = { ...quantities, [name]: Math.max((quantities[name] || 1) + change, 1) };
+    setQuantities(newQuantities);
+  };
+
+  const handleUnitChange = (event, name) => {
+    const newUnits = { ...units, [name]: event.target.value };
+    setUnits(newUnits);
   };
 
   const handleCheckboxChange = (event, ingredient) => {
@@ -132,23 +174,36 @@ const SearchMeals = () => {
   };
 
   const addAllCheckedIngredients = async () => {
+    let addedCount = 0;
     try {
       for (const ingredient of selectedRecipe.ingredients) {
         if (checkedIngredients[ingredient]) {
           const quantity = quantities[ingredient] || 1; // Default to 1 if no quantity specified
+          const unit = units[ingredient] || ''; // Default to empty string if no unit specified
           const price = (Math.random() * 9 + 1).toFixed(2); // Random price between 1 and 10
           await addDoc(collection(db, `users/${user.uid}/grocerylist`), {
             name: ingredient,
             quantity: quantity,
+            unit: unit,
             price: price
           });
+          addedCount++;
         }
       }
       setDialogOpen(false);
       setSelectedRecipe(null);
+      setSnackbarMessage(`${addedCount} ingredient(s) added to the grocery list.`);
+      setSnackbarOpen(true);
     } catch (error) {
       console.error('Error adding document: ', error);
     }
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
   };
 
   return (
@@ -164,21 +219,30 @@ const SearchMeals = () => {
             </Typography>
             <List>
               {nextDayRecipes.map((recipe, index) => (
-                <ListItem class="border-start border-3 d-flex flex-row justify-content-between align-items-center mb-2" sx={{ paddingLeft: 0 }} key={index}>
+                <ListItem className="border-start border-3 d-flex flex-row justify-content-between align-items-center mb-2" sx={{ paddingBottom: 0, paddingTop: 0, paddingLeft: 0 }} key={index}>
                   <div>
-                    <ListItemText sx={{ paddingLeft: 1 }} primary={recipe.name} secondary={recipe.category.charAt(0).toUpperCase() + recipe.category.slice(1)} />
+                    <ListItemText 
+                    sx={{ paddingLeft: 1 }} 
+                    primary={recipe.name} 
+                    secondary={recipe.category.charAt(0).toUpperCase() + recipe.category.slice(1)} 
+                    primaryTypographyProps={{ fontSize: 18, color: '#232530' }}
+                    secondaryTypographyProps={{ fontSize: 16, color: '#707070' }}
+                    
+                    />
                   </div>
                   <div>
                     <Button disableElevation
                       sx={{
                         bgcolor: '#996BFF',
                         '&:hover': {
-                          backgroundColor: '#8A60E6', // Custom hover background color
+                          backgroundColor: '#8A60E6',
                         },
-
                       }}
                       variant="contained"
-                      onClick={() => handleDialogOpen(recipe)}>View</Button>
+                      onClick={() => handleDialogOpen(recipe)}
+                    >
+                      View
+                    </Button>
                   </div>
                 </ListItem>
               ))}
@@ -206,7 +270,13 @@ const SearchMeals = () => {
                       alignItems: 'center',
                       textTransform: 'none',
                       borderColor: '#996BFF',
-                      color: '#996BFF'
+                      color: selectedCategory === category.name ? '#FFF' : '#996BFF',
+                      backgroundColor: selectedCategory === category.name ? '#996BFF' : 'transparent',
+                      '&:hover': {
+                        backgroundColor: selectedCategory === category.name ? '#996BFF' : '#F4EFFF',
+                        borderColor: '#996BFF',
+                        color: selectedCategory === category.name ? '#FFFFFF' : '#8A60E6'
+                      },
                     }}
                   >
                     {category.icon}
@@ -228,7 +298,7 @@ const SearchMeals = () => {
               sx={{
                 marginBottom: 2,
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: 10, // Custom hover background color
+                  borderRadius: 10,
                 },
               }}
             />
@@ -237,8 +307,24 @@ const SearchMeals = () => {
             <Grid item xs={12}>
               <List>
                 {filteredRecipes.map((recipe) => (
-                  <ListItem key={recipe.id}>
-                    <ListItemText primary={recipe.name} />
+                  <ListItem
+                    key={recipe.id}
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => handleDialogOpen(recipe)} // Open the dialog when a recipe is clicked
+                  >
+                    <ListItemText
+                      primary={recipe.name}
+                      secondary={`${recipe.nutrients.calories} cals`}
+                      primaryTypographyProps={{ fontSize: 18, color: '#232530' }}
+                      secondaryTypographyProps={{ fontSize: 16, color: '#707070' }}
+                    />
+                    <ArrowOutwardIcon
+                      sx={{ color: '#996BFF', marginLeft: 'auto' }} // Optional styling for the arrow icon
+                      onClick={(event) => {
+                        event.stopPropagation(); // Prevents triggering the ListItem click
+                        handleDialogOpen(recipe);
+                      }}
+                    />
                   </ListItem>
                 ))}
               </List>
@@ -248,35 +334,93 @@ const SearchMeals = () => {
       </CardContent>
 
       {selectedRecipe && selectedRecipe.ingredients && (
-        <Dialog open={dialogOpen} sx={{ width: '100%' }} onClose={handleDialogClose}>
-          <DialogTitle>{selectedRecipe.name}</DialogTitle>
+        <Dialog maxWidth="sm" fullWidth open={dialogOpen} onClose={handleDialogClose}>
+          <Typography sx={{ color: "#232530" }} variant="h5" className='ps-4 pt-4'>{selectedRecipe.name}</Typography>
+          <Divider sx={{ borderColor: '#B0B2BA', borderWidth: 1.5, marginTop: 2 }} flexItem />
           <DialogContent sx={{ width: '100%' }}>
-            <Typography variant="h6">Ingredients</Typography>
+            <Typography sx={{ fontSize: 20, color: "#232530" }}>Ingredients</Typography>
             <List>
               {selectedRecipe.ingredients.map((ingredient, index) => (
-                <ListItem key={index} sx={{ display: 'flex', alignItems: 'center' }}>
+                <ListItem key={index} sx={{ display: 'flex', alignItems: 'center', paddingLeft: 0 }}>
                   <Checkbox
                     checked={!!checkedIngredients[ingredient]}
                     onChange={(event) => handleCheckboxChange(event, ingredient)}
+                    sx={{
+                      '&.Mui-checked': {
+                        color: '#996BFF',
+                      },
+                      color: '#B7BAC5'
+                    }}
                   />
                   <ListItemText primary={`${ingredient.charAt(0).toUpperCase() + ingredient.slice(1)}`} />
-                  <TextField
-                    type="number"
-                    label="Quantity"
-                    value={quantities[ingredient] || 1} // Default quantity to 1
-                    onChange={(event) => handleQuantityChange(event, ingredient)}
-                    sx={{ width: '100px', marginRight: '10px' }}
+                  <QuantitySelector
+                    value={quantities[ingredient] || 1}
+                    onIncrease={() => handleQuantityChange(ingredient, 1)}
+                    onDecrease={() => handleQuantityChange(ingredient, -1)}
+                  />
+                  <CustomTextField
+                    label="Unit"
+                    value={units[ingredient] || ''}
+                    onChange={(event) => handleUnitChange(event, ingredient)}
+                    sx={{ width: '100px', marginLeft: '10px' }}
                   />
                 </ListItem>
               ))}
             </List>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleDialogClose} color="secondary">Close</Button>
-            <Button variant="contained" onClick={addAllCheckedIngredients} color="primary">Add All</Button>
+            <div className='d-flex pb-4 flex-row justify-content-center w-100'>
+              <Button
+                onClick={handleDialogClose}
+                disableElevation
+                variant='outlined'
+                sx={{
+                  width: '20%',
+                  borderColor: '#767676',
+                  color: '#767676',
+                  '&:hover': {
+                    backgroundColor: 'rgba(118, 118, 118, 0.15)',
+                    borderColor: '#767676'
+                  },
+                }}
+              >
+                Close
+              </Button>
+              <Button
+                onClick={addAllCheckedIngredients}
+                disableElevation
+                variant="contained"
+                sx={{
+                  marginLeft: 1,
+                  backgroundColor: '#996BFF',
+                  width: '20%',
+                  '&:hover': {
+                    backgroundColor: '#8A60E6',
+                  },
+                }}
+              >
+                Add All
+              </Button>
+            </div>
           </DialogActions>
         </Dialog>
       )}
+
+      <Snackbar
+        open={snackbarOpen}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          icon={<CheckIcon sx={{ color: '#1B6A36', fontSize: 28 }} />}
+          variant="filled"
+          sx={{ bgcolor: '#95EDB3', color: '#1B6A36', fontSize: 18 }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Card>
   );
 };

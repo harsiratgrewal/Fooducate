@@ -9,13 +9,16 @@ export default function CategoryPieChart({ data }) {
         Objectives Distribution
       </Typography>
       <Typography variant="subtitle1" color="#232530">
-        Amount of objectives in each category
+        Amount of objectives incomplete in each category
       </Typography>
-      <Box sx={{ width: '100%', height: 350}}>
+      <Box sx={{ width: '100%', height: 350 }}>
         <PieChart
           series={[
             {
-              data: data,
+              data: data.map((item) => ({
+                ...item,
+                color: item.color, // Use the color property
+              })),
               outerRadius: 100,
               innerRadius: 70,
               cornerRadius: 3,

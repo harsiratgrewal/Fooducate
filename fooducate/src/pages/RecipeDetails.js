@@ -3,55 +3,44 @@ import Box from '@mui/material/Box';
 import Navbar from '../components/Navbar';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import { Button, Card, CardHeader, List, Typography, ListItem, MobileStepper, Collapse, ListItemText } from '@mui/material';
-import Chatbot from '../components/Chatbot';
-import ChatHistory from '../components/ChatHistory';
+import { Button, Card, CardMedia, Typography, Stepper, Step, StepLabel, StepConnector, ListItem, List } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import {  doc, getDoc, query, collection, getDocs, where, writeBatch, addDoc } from "firebase/firestore";
-import fetchRecipeById from '../firebase/fetchRecipeById';
-import { auth, db, logout } from "../firebase/firebase";
-import InputBase from '@mui/material/InputBase';
-import SearchIcon from '@mui/icons-material/Search';
-import IconButton from '@mui/material/IconButton';
-import 'bootstrap/dist/css/bootstrap.css';
-import DialogTitle from '@mui/material/DialogTitle';
-import Dialog from '@mui/material/Dialog';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { useAuthState } from "react-firebase-hooks/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from 'firebase/auth';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import Checkbox from '@mui/material/Checkbox';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import LogoutIcon from '@mui/icons-material/Logout';
-import SwipeableViews from 'react-swipeable-views';
-import { styled, alpha } from '@mui/material/styles';
-import WeeklySuggestions from '../components/WeeklySuggestions';
+import fetchRecipeById from '../firebase/fetchRecipeById';
+import { auth, db } from "../firebase/firebase";
 import Header from '../components/Header';
-import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import NutritionGauge from '../components/Gauge';
-import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import IngredientsCard from '../components/IngreidientsCard';
+import TimerIcon from '@mui/icons-material/Timer';
+import PersonIcon from '@mui/icons-material/Person';
+import AdditionalRecipesCarousel from '../components/AdditionalRecipesCarousel.js';
+import { styled } from '@mui/system';
 
-
+const CustomStepConnector = styled(StepConnector)(({ theme }) => ({
+  [`& .MuiStepConnector-line`]: {
+    borderColor: '#C4C4C4', // Default gray color for incomplete steps
+    height: '100%'
+  },
+  [`&.Mui-active .MuiStepConnector-line`]: {
+    borderColor: '#996BFF', // Purple color for active step
+    height: '100%'
+  },
+  [`&.Mui-completed .MuiStepConnector-line`]: {
+    borderColor: '#996BFF', // Purple color for completed steps
+    height: '100%'
+  },
+}));
 
 const RecipeDetails = () => {
   const { recipeId } = useParams();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [userInfo, setUserInfo] = useState({});
-  const [user, error] = useAuthState(auth);
   const [userId, setUserId] = useState(null);
   const [fats, setFats] = useState();
   const [proteins, setProteins] = useState();
   const [carbs, setCarbs] = useState();
-  const [expanded, setExpanded] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
-  
-  
-  const [steps, setSteps] = useState([]);
-  const maxSteps = steps.length;
 
   useEffect(() => {
     if (userId) {
@@ -79,34 +68,17 @@ const RecipeDetails = () => {
       setLoading(true);
       const recipeData = await fetchRecipeById(recipeId);
       setRecipe(recipeData);
-      setSteps(recipeData.steps);
       setLoading(false);
     };
- 
 
     getRecipe();
   }, [recipeId, userId]);
 
-
-   
-
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleStepChange = (step) => {
-    setActiveStep(step);
-  };
-
-  useState(() => {
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserId(user.uid);
-        console.log(user.uid)
+        console.log(user.uid);
       } else {
         setUserId(null);
       }
@@ -115,10 +87,13 @@ const RecipeDetails = () => {
     return () => unsubscribe();
   }, []);
 
-  const handleViewAllToggle = () => {
-    setExpanded((prevExpanded) => !prevExpanded);
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
 
   if (loading) {
     return <Typography>Loading...</Typography>;
@@ -130,218 +105,282 @@ const RecipeDetails = () => {
 
   return (
     <Box sx={{ display: 'flex', width: '100%' }}>
-        <Navbar/>
-        <Box
-            component="main"
-            sx={{
-                bgcolor: '#F0F3FF',
-                height: '100vh',
-                overflow: 'auto',
-                width: '100%',
-                padding: 1.4
-            }}
-            >
-                <Grid container spacing={1.5} columns={{ xs: 18, sm: 18, md: 18, lg: 18, xl: 12 }}>
-                    <Grid item xs={13} sm={13} md={13} lg={13} xl={8}>
-                        <Header />
-                        <Grid container spacing={{ xs: 1, md: 1.5 }} sx={{height: '100vh', paddingTop: 1 }} columns={12}>
-                            <Grid item xs={12}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        backgroundColor: "#FCFCFD",
-                                        flexDirection: 'column',
-                                        height: '100%',
-                                        borderRadius: 5
-                                        }}
-                                        >
-                                    <img src={recipe.imageUrl} alt="Recipe" />
-                                    <Typography className='fs-5' color="#494949" sx={{ fontWeight: 'medium' }}>{recipe.name}</Typography>
-                                    <Typography className='fs-6' color="#494949" sx={{ fontWeight: 'medium' }}>{recipe.description}</Typography>
-                                    <Typography className='fs-6' color="#494949" sx={{ fontWeight: 'medium' }}>{recipe.prepTime} mins</Typography>
-                                    <Typography className='fs-6' color="#494949" sx={{ fontWeight: 'medium' }}>{recipe.cookTime} mins</Typography>
-                                        
-                                </Paper>
-                            </Grid>
-                            <Grid item xs={5}>
-                                
-                                <IngredientsCard ingredients={recipe.ingredients}/>
-                            </Grid>
-                            <Grid item xs={7}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        backgroundColor: "#FCFCFD",
-                                        flexDirection: 'column',
-                                        height: '100%',
-                                        borderRadius: 5
-                                        }}
-                                        >
-                                    <Typography className='fs-5' color="#494949" sx={{ fontWeight: 'medium' }}>Instructions</Typography>
-                                     <SwipeableViews
-                                            axis={'x'}
-                                            index={activeStep}
-                                            onChangeIndex={handleStepChange}
-                                            enableMouseEvents
-                                            
-                                        >
-                                            {steps.map((step, index) => (
-                                            <div key={index}>
-                                                {Math.abs(activeStep - index) <= 2 ? (
-                                                <Box sx={{ height: 300, overflow: 'hidden', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                    <Typography>{step}</Typography>
-                                                </Box>
-                                                ) : null}
-                                            </div>
-                                            ))}
-                                        </SwipeableViews>
-                                        <MobileStepper
-                                            steps={maxSteps}
-                                            sx={{ backgroundColor: '#FCFCFD'}}
-                                            position="static"
-                                            activeStep={activeStep}
-                                            nextButton={
-                                            <Button size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
-                                                Next
-                                            </Button>
-                                            }
-                                            backButton={
-                                            <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-                                                Back
-                                            </Button>
-                                            }
-                                        />
-                                        <Button size="small" onClick={handleViewAllToggle}>
-                                            {expanded ? 'Hide All' : 'View All'}
-                                        </Button>
-                                        <Collapse in={expanded}>
-                                            <List>
-                                            {steps.map((step, index) => (
-                                                <ListItem key={index}>
-                                                <ListItemText primary={`Step ${index + 1}: ${step}`} />
-                                                </ListItem>
-                                            ))}
-                                            </List>
-                                        </Collapse>
-                                </Paper>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    
-                    <Grid item xs={5} xl={4} sx={{ height: '100vh'}}>
-                        <Grid item xs={12}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        backgroundColor: "#FCFCFD",
-                                        flexDirection: 'column',
-                                        height: '100%',
-                                        marginBottom: 1,
-                                        borderRadius: 5
-                                        }}
-                                        >
-                                    
-                                    <Typography className='fs-5' color="#494949" sx={{ fontWeight: 'medium' }}>Macronutrients</Typography>
-                                    <Grid container direction="row" justifyContent="center" alignItems="center" columns={12}>
-                                        <Grid item xs={4}>
-                                            <NutritionGauge category="protein" protein={recipe.nutrients.protein} max={proteins} color="#4B49C3"/>
-                                        </Grid>
-                                        <Grid item xs={4}>
-                                            <NutritionGauge category="fats" protein={recipe.nutrients.fat} max={fats} color="#6D4CB5"/>
-                                        </Grid>
-                                        <Grid item xs={4}>
-                                            <NutritionGauge category="carbs" protein={recipe.nutrients.carbs} color="#6F6DCF" max={carbs}/>
-                                        </Grid>
-                                    </Grid>
-                                    
-                                        
-                                </Paper>
-                            </Grid>
-                        <Grid container direction="columns" justifyContent="center" alignItems="stretch" spacing={{ xs: 1, md: 1.5 }} sx={{ height: '100%' }} columns={12}>
-                            <Grid item xs={12}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        backgroundColor: "#FCFCFD",
-                                        flexDirection: 'column',
-                                        height: '100%',
-                                        borderRadius: 4
-                                        }}
-                                        >
-                                    <Typography className='fs-5' color="#494949" sx={{ fontWeight: 'medium' }}>Nutritional Information</Typography>
-                                    <List>
-                                    <ListItem sx={{ marginTop: 1.5, padding: 0.5, border: 2, borderRadius: 2, borderColor: "#c5cae9", paddingLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                                        <Typography sx={{ marginLeft: 1}}>
-                                            Carbohydrates
-                                        </Typography>
-                                        <Typography>
-                                            {recipe.nutritionInfoPerServing.carbohydrates}g
-                                        </Typography>
-                                    </ListItem>
-                                    <ListItem sx={{ padding: 0.5, marginTop: 1.5, border: 2, borderRadius: 2, borderColor: "#c5cae9", paddingLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                                        <Typography sx={{ marginLeft: 1}}>
-                                            Energy
-                                        </Typography>
-                                        <Typography>
-                                            {recipe.nutritionInfoPerServing.energy}g
-                                        </Typography>
-                                    </ListItem>
-                                    <ListItem sx={{ padding: 0.5, marginTop: 1.5, border: 2, borderRadius: 2, borderColor: "#c5cae9", paddingLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                                        <Typography sx={{ marginLeft: 1}}>
-                                            Fiber
-                                        </Typography>
-                                        <Typography>
-                                            {recipe.nutritionInfoPerServing.fiber}g
-                                        </Typography>
-                                    </ListItem>
-                                    <ListItem sx={{ padding: 0.5, marginTop: 1.5, border: 2, borderRadius: 2, borderColor: "#c5cae9", paddingLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                                        <Typography sx={{ marginLeft: 1}}>
-                                            Sodium
-                                        </Typography>
-                                        <Typography>
-                                            {recipe.nutritionInfoPerServing.sodium}g
-                                        </Typography>
-                                    </ListItem>
-                                    <ListItem sx={{ padding: 0.5, marginTop: 1.5, border: 2, borderRadius: 2, borderColor: "#c5cae9", paddingLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                                        <Typography sx={{ marginLeft: 1}}>
-                                            Protein
-                                        </Typography>
-                                        <Typography>
-                                            {recipe.nutritionInfoPerServing.protein}g
-                                        </Typography>
-                                    </ListItem>
-                                    <ListItem sx={{ padding: 0.5, marginTop: 1.5, border: 2, borderRadius: 2, borderColor: "#c5cae9", paddingLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                                        <Typography sx={{ marginLeft: 1}}>
-                                            Sugar
-                                        </Typography>
-                                        <Typography>
-                                            {recipe.nutritionInfoPerServing.sugar}g
-                                        </Typography>
-                                    </ListItem>
-                                    <ListItem sx={{ padding: 0.5, marginTop: 1.5, border: 2, borderRadius: 2, borderColor: "#c5cae9", paddingLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                                        <Typography sx={{ marginLeft: 1}}>
-                                            Total Fat
-                                        </Typography>
-                                        <Typography>
-                                            {recipe.nutritionInfoPerServing.totalFat}g
-                                        </Typography>
-                                    </ListItem>
+      <Navbar />
+      <Box
+        component="main"
+        sx={{
+          bgcolor: '#F0F3FF',
+          height: '100vh',
+          overflow: 'auto',
+          width: '100%',
+          
+        }}
+      >
+        <Grid container sx={{ padding: 2, height: '100%' }} spacing={1.5} columns={16}>
+          <Grid item xs={11}>
+            <Grid container item columns={12} spacing={2}>
+              <Grid item xs={12}>
+                <Header />
+              </Grid>
+              <Grid item xs={12}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    display: 'flex',
+                    height: '100%',
+                    backgroundColor: "#FEFEFF",
+                    flexDirection: 'column',
+                    padding: 2, 
+                    borderRadius: 3
+                  }}
+                >
+                  <Card elevation={0} sx={{ display: 'flex' }}>
+                    <CardMedia
+                      component="img"
+                      image={recipe.imageUrl}
+                      alt="Recipe Image"
+                      className="rounded"
+                      height="200"
+                    />
+                    <Box className="w-100" sx={{ marginLeft: 2, marginBottom: 2, width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                      <div className='d-flex flex-column justify-content-start'>
+                      <Typography sx={{ fontSize: 24, marginBottom: 1 }} color="#232530">
+                        {recipe.name}
+                      </Typography>
+                      <Typography sx={{ width: '100%', fontSize: 18, marginBottom: 2 }} color="#232530">
+                        {recipe.description}
+                      </Typography>
+                      </div>
+                      <div className="d-flex me-2 flex-row justify-content-between">
+                      <div className="d-flex flex-row align-items-center">
+                      <TimerIcon sx={{ color: "#707070", marginRight: 1 }} />
+                      <Typography sx={{ fontSize: 16 }} color="#707070">
+                        Prep: {recipe.prepTime} mins
+                      </Typography>
+                      </div>
+                      <div className="d-flex flex-row align-items-center">
+                        <TimerIcon sx={{ color: "#707070", marginRight: 1 }} />
+                      <Typography sx={{ fontSize: 16 }} color="#707070">
+                        Cook: {recipe.cookTime} mins
+                      </Typography>
+                      </div>
+                      <div className="d-flex flex-row align-items-center">
+                        <PersonIcon sx={{ color: "#707070", marginRight: 1 }} />
+                      <Typography sx={{ fontSize: 16 }} color="#707070">
+                        Servings: {recipe.servings}
+                      </Typography>
+                      </div>
+                      </div>
+                     
+                    </Box>
+                  </Card>
+                </Paper>
+              </Grid>
+              <Grid item sx={{ paddingBottom: 2 }} xs={6}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    display: 'flex',
+                    height: '100%',
+                    backgroundColor: "#FEFEFF",
+                    flexDirection: 'column',
+                    padding: 4, 
+                    borderRadius: 3
+                   
+                  }}
+                >
+                  <Typography variant="h5" color="#232530">
+                    Instructions
+                  </Typography>
+                  <Box className="h-100 d-flex flex-column h-100 justify-content-center">
+                  <Stepper
+                    sx={{ height: '100%' }}
+                    activeStep={activeStep}
+                    connector={<CustomStepConnector/>} // Use the custom connector here
+                    orientation="vertical"
+                  >
+                    {recipe.steps.map((step, index) => (
+                      <Step key={index} completed={index < activeStep}>
+                        <StepLabel
+                          sx={{
+                            '& .MuiStepLabel-label': {
+                              fontWeight: activeStep === index ? 'bold' : 'normal',
+                              color: activeStep === index ? '#996BFF' : '#232530',
+                            },
+                            '& .MuiSvgIcon-root.MuiStepIcon-root.Mui-active': {
+                              color: '#996BFF',
+                            },
+                            '& .MuiSvgIcon-root.MuiStepIcon-root.Mui-completed': {
+                              color: '#996BFF', // Purple when completed
+                            },
+                          }}
+                        >
+                          <Typography sx={{ fontWeight: activeStep === index ? 'bold' : 'normal', color: activeStep === index ? '#996BFF' : '#232530' }}>
+                            Step {index + 1} - {step.title}
+                          </Typography>
+                          <Typography sx={{ color: '#707070' }}>{step.time} mins</Typography>
+                        </StepLabel>
+                      </Step>
+                    ))}
+                  </Stepper>
 
-                                </List>
-                                </Paper>
-                            </Grid>
-                        </Grid>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    mt: 2,
+        
+                    
+                    }}>
+                    <Button size="small" 
+                    onClick={handleBack} 
+                    disabled={activeStep === 0}
+                    variant="outlined"
+                    sx={{
+                      borderColor: '#767676',
+                      color: '#767676',
+                      width: '25%',
+                      '&:hover': {
+                      backgroundColor: 'rgba(118, 118, 118, 0.15)', // Custom hover background color
+                      borderColor: '#767676',
+                      color: '#767676',
+                      
+                      },
+                    }}
+                    
+                    >
+                      Back
+                    </Button>
+                    <Button 
+                    size="small" 
+                    onClick={handleNext}
+                    variant="contained"
+                    disableElevation
+                    disabled={activeStep === recipe.steps.length - 1}
+                    sx={{ 
+                    backgroundColor: '#996BFF',
+                    
+                    '&:hover': {
+                      backgroundColor: '#8A60E6', // Custom hover background color
+                    }, 
+                    width: '25%'}}
+                    
+                    >
+                      Next
+                    </Button>
+                  </Box>
+                  </Box>
+                </Paper>
+              </Grid>
+              <Grid item sx={{ marginBottom: 2 }}  xs={6}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    display: 'flex',
+                    height: '100%',
+                    backgroundColor: "#FEFEFF",
+                    flexDirection: 'column',
+                    padding: 1, 
+                    borderRadius: 3
+                  }}
+                >
+              
+                  <IngredientsCard ingredients={recipe.ingredients} />
+                
+                </Paper>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item sx={{ height: '100%'}} xs={5}>
+            <Grid container item columns={12} spacing={2}>
+              <Grid item xs={12}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    display: 'flex',
+                    height: '100%',
+                    backgroundColor: "#FEFEFF",
+                    flexDirection: 'column',
+                    padding: 2, 
+                    borderRadius: 3
+                  }}
+                >
+                  <Typography variant="h5" color="#232530">Macronutrients</Typography>
+                    <Grid container direction="row" justifyContent="center" alignItems="center" sx={{height: '100%'}} columns={12}>
+                      <Grid item className="d-flex flex-row justify-content-center" xs={4}>
+                        <NutritionGauge category="carbs" protein={recipe.nutrients.carbs} color="#996BFF" max={carbs}/>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <NutritionGauge category="protein" protein={recipe.nutrients.protein} max={proteins} color="#39379C"/>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <NutritionGauge category="fats" protein={recipe.nutrients.fat} max={fats} color="#5D5AE6"/>
+                       </Grid>
                     </Grid>
-                </Grid>
-            </Box>
+                </Paper>
+              </Grid>
+              <Grid item xs={12}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    display: 'flex',
+                    height: '100%',
+                    backgroundColor: "#FEFEFF",
+                    flexDirection: 'column',
+                    padding: 2, 
+                    borderRadius: 3
+                  }}
+                >
+                   <Typography variant="h5" color="#232530">
+                  Nutritional Information
+              </Typography>
+                  <List>
+                    <ListItem sx={{ padding: 0.5, paddingLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                      <Typography sx={{ marginLeft: 1 }}>Carbohydrates</Typography>
+                      <Typography>{recipe.nutritionInfoPerServing.carbohydrates}g</Typography>
+                    </ListItem>
+                    <ListItem sx={{ padding: 0.5, backgroundColor: '#F4EFFF', paddingLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                      <Typography sx={{ marginLeft: 1 }}>Fiber</Typography>
+                      <Typography>{recipe.nutritionInfoPerServing.fiber}g</Typography>
+                    </ListItem>
+                    <ListItem sx={{ padding: 0.5, paddingLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                      <Typography sx={{ marginLeft: 1 }}>Sodium</Typography>
+                      <Typography>{recipe.nutritionInfoPerServing.sodium}g</Typography>
+                    </ListItem>
+                    <ListItem sx={{ padding: 0.5, backgroundColor: '#F4EFFF', paddingLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                      <Typography sx={{ marginLeft: 1 }}>Protein</Typography>
+                      <Typography>{recipe.nutritionInfoPerServing.protein}g</Typography>
+                    </ListItem>
+                    <ListItem sx={{ padding: 0.5, paddingLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                      <Typography sx={{ marginLeft: 1 }}>Sugar</Typography>
+                      <Typography>{recipe.nutritionInfoPerServing.sugar}g</Typography>
+                    </ListItem>
+                    <ListItem sx={{ padding: 0.5, backgroundColor: '#F4EFFF', paddingLeft: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                      <Typography sx={{ marginLeft: 1 }}>Total Fat</Typography>
+                      <Typography>{recipe.nutritionInfoPerServing.totalFat}g</Typography>
+                    </ListItem>
+                  </List>
+                </Paper>
+              </Grid>
+              <Grid item sx={{ height: '100%'}} xs={12}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    display: 'flex',
+                    height: '100%',
+                    backgroundColor: "#FEFEFF",
+                    flexDirection: 'column',
+                    padding: 2, 
+                    borderRadius: 3
+                  }}
+                >
+                  <AdditionalRecipesCarousel category={recipe.category} currentRecipeId={recipe.recipeId} />
+                </Paper>
+              </Grid>
+            </Grid>
+          </Grid>
+          
+        </Grid>
+      </Box>
     </Box>
   );
 };

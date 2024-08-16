@@ -1,19 +1,21 @@
-import { Typography, Box, Button, Card, Grid, CardMedia } from '@mui/material';
+import { Typography, Box, Button, Card, Grid, CardMedia, IconButton } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase/firebase";
+import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
+import { db, auth } from "../firebase/firebase";
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import Stack from '@mui/material/Stack';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import { onAuthStateChanged } from 'firebase/auth';
+import BookmarkIcon from '@mui/icons-material/Bookmark'; 
 
 const StyledTabs = styled((props) => (
   <Tabs
-    
     {...props}
     TabIndicatorProps={{ children: <span className="MuiTabs-indicatorSpan" /> }}
   />
@@ -47,11 +49,11 @@ const StyledTab = styled((props) => <Tab disableRipple {...props} />)(
   }),
 );
 
-
-
 export default function AllRecipes({ onSelectRecipe, onCategoryChange }) {
   const [value, setValue] = useState('breakfast');
   const [recipes, setRecipes] = useState([]);
+  const [userId, setUserId] = useState(null);
+  const [favoritedRecipes, setFavoritedRecipes] = useState([]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -63,21 +65,63 @@ export default function AllRecipes({ onSelectRecipe, onCategoryChange }) {
     try {
       const querySnapshot = await getDocs(collection(db, category));
       const recipesList = querySnapshot.docs.map((doc) => doc.data());
-      console.log(`Fetched ${category} recipes:`, recipesList);  // Debugging line
       setRecipes(recipesList);
     } catch (error) {
       console.error(`Error fetching ${category} recipes:`, error);  // Error handling
     }
   };
-  
+
+  const fetchFavoritedRecipes = async (uid) => {
+    try {
+      const favoritesSnapshot = await getDocs(collection(db, `users/${uid}/favoritedMeals`));
+      const favoritesList = favoritesSnapshot.docs.map(doc => doc.data().recipeId);
+      setFavoritedRecipes(favoritesList);
+    } catch (error) {
+      console.error('Error fetching favorited meals:', error);
+    }
+  };
+
+  const handleFavoriteRecipe = async (recipe) => {
+    if (userId && recipe && recipe.recipeId) {
+      try {
+        const favoriteDocRef = doc(db, `users/${userId}/favoritedMeals`, recipe.recipeId);
+
+        if (favoritedRecipes.includes(recipe.recipeId)) {
+          // Remove from favorites
+          await deleteDoc(favoriteDocRef);
+          setFavoritedRecipes(favoritedRecipes.filter(id => id !== recipe.recipeId));
+        } else {
+          // Add to favorites
+          await setDoc(favoriteDocRef, {
+            recipeId: recipe.recipeId,
+            favoritedAt: new Date(),
+          });
+          setFavoritedRecipes([...favoritedRecipes, recipe.recipeId]);
+        }
+      } catch (error) {
+        console.error('Error handling favorite meals:', error);
+      }
+    }
+  };
+
   useEffect(() => {
-    fetchRecipes('breakfast');
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid);
+        fetchRecipes('breakfast');
+        fetchFavoritedRecipes(user.uid); // Fetch favorited recipes
+      } else {
+        setUserId(null);
+        setFavoritedRecipes([]); // Clear the favorited recipes if the user is not logged in
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const handleRecipeClick = (recipe) => {
     onSelectRecipe(recipe);
   };
-
 
   return (
     <Box sx={{ padding: 1 }}>
@@ -99,18 +143,47 @@ export default function AllRecipes({ onSelectRecipe, onCategoryChange }) {
               if (totalMinutes > 60) {
                 const hours = totalMinutes / 60;
                 const minutes = totalMinutes % 60;
-                totalTime = `${Math.trunc(hours)} hr ${minutes} mins`;
+                totalTime = `${Math.trunc(hours)}hr ${minutes}mins`;
               } else {
                 totalTime = `${totalMinutes} mins`
               }
               return (
-              <Grid item xs={6} sm={6} md={4} xl={4} lg={6}>
+              <Grid item xs={6} sm={6} md={4} xl={4} lg={6} key={recipe.recipeId}>
                 <Card variant="outlined" sx={{ borderColor: 'rgba(102, 103, 113, 0.15)', borderWidth: 2, borderRadius: 3, height: '100%'}}>
-                  <CardContent sx={{  paddingTop: '0.75rem'  }}>
+                  <CardContent sx={{  paddingBottom: 1, paddingTop: 0 }}>
+                    <div className='d-flex flex-row mt-2 align-items-center justify-content-between'>
                     <Typography sx={{ fontSize: 20 }}>
                         {recipe.name}
                     </Typography>
-                    <Stack direction="row" sx={{marginTop: '0.75rem'}} spacing={2} alignItems="center">
+                    <IconButton 
+                      sx={{ 
+                        width: '12%', 
+                        height: '12%', 
+                        backgroundColor: favoritedRecipes.includes(recipe.recipeId) ? '#996BFF' : 'transparent',
+                        borderRadius: '50%',
+                        '&:hover': {
+                          backgroundColor: favoritedRecipes.includes(recipe.recipeId) ? '#6E4ABE' : '#f5f5f5', 
+                        }
+                      }}
+                      onClick={() => handleFavoriteRecipe(recipe)}
+                    >
+                      {favoritedRecipes.includes(recipe.recipeId) ? (
+                        <BookmarkIcon size="small" sx={{ color: '#FFFFFF' }} />
+                      ) : (
+                        <BookmarkBorderIcon sx={{ fontSize: 28 }} />
+                      )}
+                    </IconButton>
+                    </div>
+
+                    <CardMedia
+                     component="img"
+                     className="rounded mt-2 mb-2"
+                     height="140"
+                     image={recipe.imageUrl}
+                     alt={recipe.name}
+                    />
+
+                    <Stack direction="row" sx={{marginTop: 0 }} spacing={2} className="h-100" justifyContent="space-between" alignItems="center">
                       <Stack direction="row" justifyContent="flex-start" alignItems="center">
                       <AccessTimeFilledIcon fontSize='medium' sx={{ color: '#6F6DCF'}} />
 
@@ -135,16 +208,17 @@ export default function AllRecipes({ onSelectRecipe, onCategoryChange }) {
                         borderColor: '#D6D9E8', 
                         borderWidth: 2, 
                         color: '#8B61E8',  
-                        width: 130, 
+                        width: 80, 
                         height: 27, 
                         borderRadius: 3,
                         '&:hover': {
                            borderColor: '#6E4ABE', // Custom hover background color
-                           color: '#6E4ABE', 
+                           color: '#6E4ABE',
+                           backgroundColor: '#F5F0FF' 
                         },
                       
                       }}
-                    >View details</Button>
+                    >View</Button>
                   </CardActions>
                 </Card>
                 </Grid>

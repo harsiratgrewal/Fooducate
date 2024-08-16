@@ -23,17 +23,18 @@ function GroceryList() {
             }}
             >
             <Grid container sx={{ paddingLeft: 1.5 }} spacing={1.5} columns={16}>
-                <Grid item xs={11}>
+                <Grid item xs={11} sx={{ paddingBottom: 0, height: '100%' }}>
                     <div className="row mt-1 g-2">
                     <div className="col-12">
                         <div className="row mb-2">
                             <Header />
                         </div>
                     </div>
-                        <div className="col-6">
-                        <div style={{ height: '100%', marginBottom: '1rem'}}>
+                        <div className="col-5 h-100vh">
+                          <div style={{height: '100%'}}>
+                        
                         <Paper
-                        elevation={1}
+                        elevation={0}
                         sx={{
                             p: 2,
                             display: 'flex',
@@ -46,11 +47,12 @@ function GroceryList() {
                         <FullGroceryList />
                         </Paper>
                         </div>
+                        
                         </div>
-                        <div className="col-6 d-flex justify-content-between flex-column">
-                          <div style={{ height: '60%', marginBottom: '1rem'}}>
+                        <div className="col-7 d-flex justify-content-between h-100vh flex-column">
+                            <div style={{height: '100%'}}>
                             <Paper
-                            elevation={1}
+                            elevation={0}
                             sx={{
                                 p: 1,
                                 display: 'flex',
@@ -63,10 +65,11 @@ function GroceryList() {
                             >
                             <CalculatedTotal />
                             </Paper>
-                        </div>
-                        <div style={{ height: '60%'}}>
+                            </div>
+                        
+                            <div style={{height: '100%'}}>
                             <Paper
-                            elevation={1}
+                            elevation={0}
                             sx={{
                                 p: 2,
                                 display: 'flex',
@@ -74,18 +77,20 @@ function GroceryList() {
                                 flexDirection: 'column',
                                 height: '100%',
                                 borderRadius: 3,
+                                marginTop: 2
                                 // Add this line
                             }}
                             >
                             <FavoritedMealsCard />
                             </Paper>
-                        </div>
+                            </div>
+                        
                         </div>
                         </div>
           </Grid>
           <Grid item xs={5} sx={{ paddingBottom: 0, paddingTop: 0 }}>
             <Paper
-              elevation={2}
+              elevation={0}
               sx={{
                 
                 display: 'flex',

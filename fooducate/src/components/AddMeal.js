@@ -1,32 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Box, CardHeader, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, List, ListItem, ListItemText, Typography, Select, MenuItem, FormControl, InputLabel, Grid, Card, CardContent, CardActions, Divider } from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, List, ListItem, ListItemText, Typography, Checkbox, IconButton, Grid, Card, CardContent, Divider, InputAdornment } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { collection,  addDoc, doc, updateDoc, getDocs, setDoc, writeBatch } from 'firebase/firestore';
+import { collection, getDocs, writeBatch, doc } from 'firebase/firestore';
 import { db, auth } from '../firebase/firebase'; // Import Firestore and Auth instances
 import { onAuthStateChanged } from 'firebase/auth';
 import dayjs from 'dayjs';
-import { useForm, Controller } from 'react-hook-form';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import BreakfastIcon from '@mui/icons-material/Egg';
-import AddIcon from '@mui/icons-material/Add';
 import LunchIcon from '@mui/icons-material/LunchDining';
 import DinnerIcon from '@mui/icons-material/DinnerDining';
 import SnacksIcon from '@mui/icons-material/Fastfood';
-import { InputAdornment } from '@mui/material';
 import SweetsIcon from '@mui/icons-material/Cake';
-import { v4 as uuidv4 } from 'uuid'; // For generating unique IDs
 
 const categories = ["Breakfast", "Lunch", "Dinner", "Snack", "Sweets"];
 
-
-const AddMeal = ({ open, onClose }) => {
+const AddMeal = ({ open, onClose, onSave }) => {
   const [userId, setUserId] = useState(null);
   const [recipes, setRecipes] = useState([]);
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
   const [filteredRecipes, setFilteredRecipes] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -109,18 +100,12 @@ const AddMeal = ({ open, onClose }) => {
             date: date.format('YYYY-MM-DDTHH:mm:ss.sssZ'), // Format date as YYYY-MM-DD
             category: recipe.category
           };
-          console.log(mealPlanData)
           const mealPlanDocRef = doc(collection(db, 'mealplans'));
           batch.set(mealPlanDocRef, mealPlanData);
         });
 
         await batch.commit();
-        setAlertOpen(true);
-        
-        
-        onClose();
-
-
+        onSave(`Successfully added ${selectedRecipes.length} meals for ${date.format('MMMM DD, YYYY')} to meal plans!`);
       } catch (error) {
         console.error('Error adding recipes to meal plan:', error);
       }
@@ -252,7 +237,8 @@ const AddMeal = ({ open, onClose }) => {
         onClick={onClose}>
           Cancel
         </Button>
-        <Button disableElevation variant="contained" sx={{ 
+        <Button disableElevation variant="contained" 
+        sx={{ 
           backgroundColor: '#996BFF',
           
           '&:hover': {
@@ -263,7 +249,6 @@ const AddMeal = ({ open, onClose }) => {
                 Save Plan
           </Button>
         </div>
-        
       </DialogActions>
     </Dialog>
   );

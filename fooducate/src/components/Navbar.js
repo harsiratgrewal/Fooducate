@@ -11,7 +11,6 @@ import Toolbar from '@mui/material/Toolbar';
 import { NavLink } from "react-router-dom";
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import ChecklistIcon from '@mui/icons-material/Checklist';
-import DiamondIcon from '@mui/icons-material/Diamond';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 import logoFooducate from '../img/logo-fooducate.svg'

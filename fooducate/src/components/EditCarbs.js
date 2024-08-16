@@ -15,10 +15,8 @@ import Snackbar from '@mui/material/Snackbar';
 import CheckIcon from '@mui/icons-material/Check';
 
 
-export default function EditDialog() {
+export default function EditCarbs() {
   const [open, setOpen] = React.useState(false);
-  const [fats, setFats] = useState();
-  const [proteins, setProteins] = useState();
   const [carbs, setCarbs] = useState();
   const [userId, setUserId] = useState(null);
   const [alertMessage, setAlertMessage] = useState('');
@@ -50,7 +48,7 @@ export default function EditDialog() {
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             const data = docSnap.data();
-            setFats(data.fats);
+            setCarbs(data.carbs);
           } else {
             console.log('No such document!');
           }
@@ -75,10 +73,10 @@ export default function EditDialog() {
       try {
         const docRef = doc(db, 'users', userId);
         await updateDoc(docRef, {
-          fats: parseInt(fats),
+          carbs: parseInt(carbs),
         });
         handleClose();
-        setAlertMessage('Fats daily intake goal has been updated');
+        setAlertMessage('Carbs daily intake goal has been updated');
         setAlertOpen(true)
       } catch (error) {
         console.error('Error updating meal targets:', error);
@@ -88,7 +86,7 @@ export default function EditDialog() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'fats') setFats(value);
+    if (name === 'carbs') setCarbs(value);
   };
 
   return (
@@ -107,13 +105,13 @@ export default function EditDialog() {
           },
         }}
       >
-        <DialogTitle sx={{ color: '#232530' }} variant="h5">Edit daily fat intake goal</DialogTitle>
+        <DialogTitle sx={{ color: '#232530' }} variant="h5">Edit daily carbs intake goal</DialogTitle>
         <DialogContent>
             <TextField
-            label="Fats (g)"
+            label="Carbs (gm)"
             type="number"
-            name="fats"
-            value={fats}
+            name="carbs"
+            value={carbs}
             onChange={handleChange}
             fullWidth
             margin="normal"
