@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { Link,useNavigate } from "react-router-dom";
-import { TextField, Button, Stepper, Step, StepLabel, Container, Box, Typography, Stack, Divider } from '@mui/material';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { TextField, Button, Stepper, Step, StepLabel, Box, Typography, Stack, Divider, Grid, InputLabel, Select, Chip, MenuItem, FormControl } from '@mui/material';
 import {
   auth,
-  signInWithGoogle,
 } from "../firebase/firebase";
 import { styled } from '@mui/material/styles';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -15,7 +13,7 @@ import PropTypes from 'prop-types';
 import Check from '@mui/icons-material/Check';
 
 
-const steps = [{number: '01', name: 'Account details'}, {number: '02', name: 'Meal targets'}, {number: '03', name: 'Health goals'}];
+const steps = [{number: '01', name: 'Account details'}, {number: '02', name: 'Nutritional daily targets'}, {number: '03', name: 'Personal info'}];
 
 const Connector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -37,6 +35,27 @@ const Connector = styled(StepConnector)(({ theme }) => ({
     borderColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
     borderTopWidth: 3,
     borderRadius: 1,
+  },
+}));
+
+const CustomTextField = styled(TextField)(({ theme }) => ({
+  '& label.Mui-focused': {
+    color: '#996BFF', // Color of the label when focused
+  },
+  '& .MuiInput-underline:after': {
+    borderBottomColor: '#996BFF', // Color of the underline when focused
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: '#c4c4c4', // Default border color
+      borderRadius: 7
+    },
+    '&:hover fieldset': {
+      borderColor: '#996BFF', // Border color on hover
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#996BFF', // Border color when focused
+    },
   },
 }));
 
@@ -96,12 +115,31 @@ function Register() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [budgetGoal, setBudgetGoal] = useState('');
+  const [macronutrientToImprove, setMacronutrientToImprove] = useState("");
+  const [likes, setLikes] = useState([]);
+  const [dislikes, setDislikes] = useState([]);
   const [fats, setFats] = useState('');
   const [proteins, setProteins] = useState('');
   const [carbs, setCarbs] = useState('');
-  const [goals, setGoals] = useState(['', '', '']);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  const macronutrientOptions = ["Fats", "Proteins", "Carbs"];
+  const likeOptions = ["High Protein", "Low Carbs", "Sweet", "Salty", "Spicy", "Vegetarian", "Vegan"];
+  const dislikeOptions = ["High Sugar", "Gluten", "Dairy", "Fried Foods", "Bitter Foods"];
+  const handleChipClick = (option, type) => {
+    if (type === "like") {
+      setLikes((prev) =>
+        prev.includes(option) ? prev.filter((item) => item !== option) : [...prev, option]
+      );
+    } else if (type === "dislike") {
+      setDislikes((prev) =>
+        prev.includes(option) ? prev.filter((item) => item !== option) : [...prev, option]
+      );
+    }
+  };
+
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -110,14 +148,7 @@ function Register() {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
-
-  const handleGoalChange = (index, value) => {
-    const newGoals = [...goals];
-    newGoals[index] = value;
-    setGoals(newGoals);
-  };
   
-
   const handleRegister = async () => {
     setError(null);
     try {
@@ -125,7 +156,7 @@ function Register() {
         throw new Error('Name, Email, and Password cannot be empty.');
       }
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await setUserDocument(userCredential.user, { firstName, lastName, password, fats, proteins, carbs, goals });
+      await setUserDocument(userCredential.user, { firstName, lastName, password, fats, proteins, carbs, budgetGoal, likes, dislikes, macronutrientToImprove  });
       console.log('User registered and document created');
       navigate('/dashboard'); // Redirect to the dashboard
     } catch (error) {
@@ -136,16 +167,16 @@ function Register() {
   
   return (
     <>
-    <Box sx={{ width: '100%',  height: '100vh', bgcolor: '#F0F3FF', display: 'flex', alignItems: 'center', flexDirection: 'column', padding: 5}}>
+    <Box sx={{ width: '100%', justifyContent: 'center', height: '100vh', bgcolor: '#F0F3FF', display: 'flex', alignItems: 'center', flexDirection: 'column', padding: 2}}>
 
             <Paper elevation={1}
               sx={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                width: '60%',
+                width: '50%',
+                overflow: 'auto',
                 bgcolor: '#FFFFFF',
-                height: '100vh',
                 borderRadius: 3
               }}
             
@@ -157,124 +188,206 @@ function Register() {
                   <StepLabel StepIconComponent={StepIcon}>
                     <Stack gap={1} alignItems="center" direction="row">
                       <Typography color="#494949" sx={{ fontSize: 20, fontWeight: 'bold'}}>{label.number}</Typography>
-                      <Typography color="#494949" sx={{ fontSize: 16}}>{label.name}</Typography>
+                      <Typography color="#494949" sx={{ fontSize: 18, textAlign: 'center'}}>{label.name}</Typography>
                     </Stack>
                     </StepLabel>   
                 </Step>
               ))}
             </Stepper>
             <Divider flexItem />
-            <Box sx={{ padding: 3, marginTop: 3 }}>
               {activeStep === 0 && (
-                <>
-                  <Typography color="#494949" sx={{ fontSize: 20, fontWeight: 'bold'}}> Create an account </Typography>
-                  <Typography color="#494949" sx={{ fontSize: 15, fontWeight: 'regular',  marginBottom: 2}}> Enter your account details </Typography>
-                  <TextField
+                <Box sx={{ paddingLeft: 3, paddingRight: 2, paddingBottom: 3,  marginTop: 1 }}>
+                <div className="w-100 d-flex pb-4 flex-column justify-content-start align-content-center">
+                  <Typography variant="h5" color="#232530"> Create an account </Typography>
+                  <Typography  color="#232530" variant="subtitle1"> Enter your account details </Typography>
+                  </div>
+                  <Grid container rowSpacing={3} columnSpacing={3}>
+                    <Grid item xs={6}>
+                  <CustomTextField
                     label="First Name"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     variant="outlined"
-                    sx={{ width: '49%', marginBottom: 2 }}
-                    margin="normal"
+                    fullWidth
+                    
                   />
-                  <TextField
+                  </Grid>
+                  <Grid item xs={6}>
+                  <CustomTextField
                     label="Last Name"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     variant="outlined"
-                    sx={{ width: '49%', marginLeft: 1, marginBottom: 2}}
-                    margin="normal"
+                    fullWidth
+                    
                   />
-                  <TextField
+                  </Grid>
+                  <Grid item xs={12}>
+                  <CustomTextField
                     label="Email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     fullWidth
-                    sx={{ marginBottom: 2 }}
-                    margin="normal"
+                    sx={{ paddingTop: 0 }}
+                    
                   />
-                  <TextField
+                  </Grid>
+                  <Grid item xs={12}>
+                  <CustomTextField
                     label="Password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     fullWidth
-                    sx={{ marginBottom: 2 }}
-                    margin="normal"
+                    
                   />
+                  </Grid>
                   {error && <p style={{ color: 'red' }}>{error}</p>}
-                </>
+                  </Grid>
+                </Box>
               )}
                 {activeStep === 1 && (
-                  <>
-                    <Typography color="#494949" sx={{ fontSize: 20, fontWeight: 'bold'}}> Meal targets </Typography>
-                    <Typography color="#494949" sx={{ fontSize: 15, fontWeight: 'regular',  marginBottom: 2}}> Enter your daily target goal for each macronutrient in grams </Typography>
-                    <TextField
+                  
+                  <Box sx={{ width: '100%', paddingLeft: 3, paddingRight: 3, paddingBottom: 3,  marginTop: 1 }}>
+                    <div className="w-100 d-flex pb-4 pt-2 flex-column justify-content-start align-content-center">
+                      <Typography variant="h5" color="#232530"> Daily macronutrients targets </Typography>
+                      <Typography  color="#232530" variant="subtitle1">Enter your daily target goal for each macronutrient in grams </Typography>
+                    </div>
+                    <Grid container rowSpacing={3} columnSpacing={3}>
+                    <Grid item xs={12}>
+                    <CustomTextField
                       label="Fats (grams)"
                       value={fats}
                       onChange={(e) => setFats(e.target.value)}
                       variant="outlined"
-                      sx={{ marginBottom: 2}}
                       fullWidth
-                      margin="normal"
+                     
                     />
-                    <TextField
+                    </Grid>
+                    <Grid item xs={12}>
+                    <CustomTextField
                       label="Proteins (grams)"
                       value={proteins}
                       onChange={(e) => setProteins(e.target.value)}
                       variant="outlined"
-                      sx={{ marginBottom: 2}}
                       fullWidth
-                      margin="normal"
+                      
                     />
-                    <TextField
+                    </Grid>
+                    <Grid item xs={12}>
+                    <CustomTextField
                       label="Carbs (grams)"
                       value={carbs}
                       onChange={(e) => setCarbs(e.target.value)}
                       variant="outlined"
-                      sx={{ marginBottom: 2}}
                       fullWidth
-                      margin="normal"
+                      
                     />
-                  </>
+                    </Grid>
+                    </Grid>
+                    </Box>
+                  
                 )}
                   {activeStep === 2 && (
-                    <>
-                      <Typography color="#494949" sx={{ fontSize: 20, fontWeight: 'bold'}}> Health goals </Typography>
-                      <Typography color="#494949" sx={{ fontSize: 15, fontWeight: 'regular',  marginBottom: 2}}> Enter 3 health goals you want to achieve through using Fooducate</Typography>
-                      <TextField
-                        label="Health Goal 1"
-                        value={goals[0]}
-                        onChange={(e) => handleGoalChange(0, e.target.value)}
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                      />
-                      <TextField
-                        label="Health Goal 2"
-                        value={goals[1]}
-                        onChange={(e) => handleGoalChange(1, e.target.value)}
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                      />
-                      <TextField
-                        label="Health Goal 3"
-                        value={goals[2]}
-                        onChange={(e) => handleGoalChange(2, e.target.value)}
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                      />
-                    </>
-                  )}
-                  </Box>
-                   <Box mt={4} sx={{width: '100%', padding: 3 }} display="flex" justifyContent="space-between">
+              <Box sx={{ width: "100%", paddingLeft: 3, paddingRight: 3, paddingBottom: 3, marginTop: 1 }}>
+                <div className="w-100 d-flex pb-4 pt-2 flex-column justify-content-start align-content-center">
+                  <Typography variant="h5" color="#232530">
+                    Personal info
+                  </Typography>
+                  <Typography color="#232530" variant="subtitle1">
+                    Enter setup information
+                  </Typography>
+                </div>
+                <Grid container rowSpacing={3} columnSpacing={3}>
+                  <Grid item xs={12}>
+                    <CustomTextField
+                      label="Weekly grocery budget goal"
+                      value={budgetGoal}
+                      onChange={(e) => setBudgetGoal(e.target.value)}
+                      variant="outlined"
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FormControl fullWidth>
+                      <InputLabel>What macronutrient do you want to improve your intake for?</InputLabel>
+                      <Select
+                        value={macronutrientToImprove}
+                        onChange={(e) => setMacronutrientToImprove(e.target.value)}
+                        label="What macronutrient do you want to improve your intake for?"
+                      >
+                        {macronutrientOptions.map((option) => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="h6" color="#232530">
+                      Likes
+                    </Typography>
+                    <Stack direction="row" gap={1} flexWrap="wrap">
+                      {likeOptions.map((option) => (
+                        <Chip
+                          key={option}
+                          label={option}
+                          clickable
+                          sx={{
+                            backgroundColor: likes.includes(option) ? "#996BFF" : "default",
+                            color: likes.includes(option) ? "#fff" : "default",
+                            "&:hover": {
+                              backgroundColor: likes.includes(option) ? "#996BFF" : "#e0e0e0",
+                            },
+                          }}
+                          onClick={() => handleChipClick(option, "like")}
+                        />
+                      ))}
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="h6" color="#232530">
+                      Dislikes
+                    </Typography>
+                    <Stack direction="row" gap={1} flexWrap="wrap">
+                      {dislikeOptions.map((option) => (
+                        <Chip
+                          key={option}
+                          label={option}
+                          clickable
+                          sx={{
+                            backgroundColor: dislikes.includes(option) ? "#996BFF" : "default",
+                            color: dislikes.includes(option) ? "#fff" : "default",
+                            "&:hover": {
+                              backgroundColor: dislikes.includes(option) ? "#996BFF" : "#e0e0e0",
+                            },
+                          }}
+                          onClick={() => handleChipClick(option, "dislike")}
+                        />
+                      ))}
+                    </Stack>
+                  </Grid>
+                </Grid>
+              </Box>
+        )}
+                  
+                   <Box sx={{width: '100%', paddingLeft: 3, paddingRight: 3, paddingBottom: 4 }} display="flex" justifyContent="space-between">
                       {activeStep !== 0 && (
                         <Button 
                           variant="outlined"
-                          sx={{ borderColor: '#996BFF', color: "#996BFF", width: 200, height: 40}}
+                          sx={{ 
+                            borderColor: '#767676', 
+                            color: "#767676", 
+                            width: 120, 
+                            height: 40,
+                            '&:hover': {
+                              backgroundColor: 'rgba(118, 118, 118, 0.15)', // Custom hover background color
+                              borderColor: '#767676'
+                            }, 
+                          
+                          }}
                           onClick={handleBack}>
                             Back
                         </Button>
@@ -282,7 +395,15 @@ function Register() {
                       {activeStep === steps.length - 1 ? (
                         <Button
                           variant="contained"
-                          sx={{ bgcolor: '#996BFF', width: 200, height: 40}}
+                          disableElevation
+                          sx={{ 
+                            bgcolor: '#996BFF', 
+                            width: 120, 
+                            height: 40,
+                            '&:hover': {
+                            backgroundColor: '#6E4ABE', // Custom hover background color
+                            },
+                          }}
                           onClick={handleRegister}
                         >
                           Register
@@ -291,7 +412,15 @@ function Register() {
                         <Button
                           variant="contained"
                           color="primary"
-                          sx={{ bgcolor: '#996BFF', width: 200, height: 40}}
+                          disableElevation
+                          sx={{ 
+                            bgcolor: '#996BFF', 
+                            width: 120, 
+                            height: 40,
+                            '&:hover': {
+                            backgroundColor: '#6E4ABE', // Custom hover background color
+                            },
+                          }}
                           onClick={handleNext}
                         >
                           Next

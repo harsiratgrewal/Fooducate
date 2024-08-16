@@ -13,12 +13,12 @@ import CelebrationIcon from '@mui/icons-material/Celebration';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 
 const categories = [
-  { name: 'Health', icon: <HealthAndSafetyIcon />, color: '#FF6F61' },
-  { name: 'Fitness', icon: <FitnessCenterIcon />, color: '#6B8E23' },
-  { name: 'Personal Development', icon: <PsychologyIcon />, color: '#1E90FF' },
-  { name: 'Wellbeing', icon: <SpaIcon />, color: '#8A2BE2' },
-  { name: 'Fun & Recreational', icon: <CelebrationIcon />, color: '#FF4500' },
-  { name: 'Nutritional', icon: <RestaurantMenuIcon />, color: '#FFD700' },
+  { name: 'Health', icon: <HealthAndSafetyIcon />, color: '#FF4500' },
+  { name: 'Fitness', icon: <FitnessCenterIcon />, color: '#4EE6D1' },
+  { name: 'Personal Development', icon: <PsychologyIcon />, color: '#FFF275' },
+  { name: 'Wellbeing', icon: <SpaIcon />, color: '#E0479E' },
+  { name: 'Fun & Recreational', icon: <CelebrationIcon />, color: '#8B61E8' },
+  { name: 'Nutritional', icon: <RestaurantMenuIcon />, color: '#00BBF9' },
 ];
 
 export default function ObjectiveCategories() {
@@ -98,7 +98,7 @@ export default function ObjectiveCategories() {
                 <List>
                   {objectives.filter(obj => obj.category === category.name).map(obj => (
                     <ListItem key={obj.id} disablePadding>
-                      <ListItemIcon>
+                      <ListItemIcon sx={{ minWidth: 0 }}>
                         <Checkbox
                           edge="start"
                           checked={obj.completed}
@@ -111,7 +111,7 @@ export default function ObjectiveCategories() {
                           inputProps={{ 'aria-labelledby': `checkbox-list-label-${obj.id}` }}
                         />
                       </ListItemIcon>
-                      <ListItemText primary={obj.name} />
+                      <Typography color="#232530" sx={{ fontSize: 18}}>{obj.name}</Typography>
                     </ListItem>
                   ))}
                 </List>
@@ -121,8 +121,8 @@ export default function ObjectiveCategories() {
                 <Collapse in={expanded[category.name]} timeout="auto" unmountOnExit>
                   <List>
                     {completedObjectives.filter(obj => obj.category === category.name).map(obj => (
-                      <ListItem key={obj.id}>
-                        <ListItemIcon>
+                      <ListItem key={obj.id} disablePadding>
+                        <ListItemIcon sx={{ minWidth: 0 }}>
                           <Checkbox
                             edge="start"
                             checked={obj.completed}

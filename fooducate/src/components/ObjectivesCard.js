@@ -65,18 +65,19 @@ const MiniObjectives = () => {
       <CardContent className='p-0' sx={{ height: '45%'}}>
         <div className='w-100 d-flex flex-row mb-2 align-items-center justify-content-between'>
           <Typography variant="h5" color="#232530">
-            Lifestyle balance objectives
+            Lifestyle objectives
           </Typography>
           <Button 
-          variant="contained" 
+          variant="text" 
           disableElevation
           onClick={handleViewAll} 
           sx={{ 
-          width: 100, 
+          width: 110, 
           height: 30,
-          bgcolor: '#996BFF',
+          color: '#996BFF',
           '&:hover': {
-               backgroundColor: '#8A60E6', // Custom hover background color
+               color: '#8A60E6', // Custom hover background color
+               backgroundColor: '#F5F0FF'
           },
          }}
           >
@@ -85,12 +86,13 @@ const MiniObjectives = () => {
         </div>
           <List sx={{ paddingLeft: 0, height: '100%' }}>
             {objectives.map(obj => (
-              <ListItem key={obj.id} sx={{ padding: 0 }}>
+              <ListItem key={obj.id} className='px-0 py-1'>
                 <Checkbox
                   checked={obj.completed}
                   onChange={() => handleCheckboxChange(obj)}
                   sx={{
                     paddingLeft: 0.5,
+                    color: '#BBBECA',
                     '&.Mui-checked': {
                       color: '#996BFF',
                     },
@@ -101,7 +103,7 @@ const MiniObjectives = () => {
             ))}
           </List>
           <Box sx={{ mt: 'auto', maxHeight: '30vh', overflowY: 'auto' }}> {/* Ensures that the completed section stays at the bottom */}
-            <Divider component="li" sx={{ my: 1 }} />
+            <Divider component="li" sx={{ my: 1, mt: 3 }} />
             <Typography variant="body2" color="textSecondary" onClick={handleExpandClick} sx={{ cursor: 'pointer', mt: 2 }}>
               Completed ({completedObjectives.length}) <ExpandMoreIcon />
             </Typography>

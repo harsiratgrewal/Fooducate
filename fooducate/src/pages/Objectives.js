@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { collection, query, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
-import { Box, Grid, Paper, Typography } from '@mui/material';
+import { Box, Grid, Paper } from '@mui/material';
 import { db, auth } from '../firebase/firebase';
 import Navbar from '../components/Navbar';
 import Header from '../components/Header';
@@ -56,12 +56,18 @@ export default function ObjectivesPage() {
     setObjectivesCount(count);
     setCompletedCount(completed);
   };
+  // Function to assign colors to categories
+const getColorForCategory = (index) => {
+  const colors = ['#FF4500', '#4EE6D1', '#FFF275', '#E0479E', '#8B61E8', '#00BBF9']; // Your custom colors
+  return colors[index % colors.length];
+};
 
-  const pieChartData = categories.map(category => ({
-    id: category,
-    value: objectivesCount[category] || 0,
-    label: category
-  }));
+  const pieChartData = categories.map((category, index) => ({
+  id: category,
+  value: objectivesCount[category] || 0,
+  label: category,
+  color: getColorForCategory(index) // Assign a color based on the category index
+}));
 
   const developedAreasData = categories.map(category => ({
     category,
@@ -106,7 +112,7 @@ export default function ObjectivesPage() {
 
           <Grid item xs={5} sx={{ paddingBottom: 0, paddingTop: 0 }}>
             <Paper
-              elevation={2}
+              elevation={0}
               sx={{
                 display: 'flex',
                 backgroundColor: "#FEFEFF",

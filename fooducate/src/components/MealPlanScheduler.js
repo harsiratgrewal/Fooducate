@@ -21,6 +21,7 @@ import FatsProgressBar from './FatsProgressBar';
 import Header from './Header';
 import CustomWeekPickerInput from './CustomWeekPickerInput'; // Import the custom input component
 import { useNavigate } from 'react-router-dom';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 dayjs.extend(isBetween);
 
 export default function MealPlanScheduler() {
@@ -116,6 +117,12 @@ export default function MealPlanScheduler() {
     setDialogOpen(false);
   };
 
+  const handleSave = (message) => {
+    setAlertMessage(message);
+    setAlertOpen(true);
+    handleCloseDialog();
+  };
+
   const handleMenuClick = (event, recipe) => {
     setAnchorEl(event.currentTarget);
     setSelectedRecipe(recipe);
@@ -131,7 +138,7 @@ export default function MealPlanScheduler() {
     handleMenuClose();
   };
 
-    const handleFavoriteRecipe = async () => {
+  const handleFavoriteRecipe = async () => {
     if (userId && selectedRecipe && selectedRecipe.recipeId) {
       try {
         const favoriteDocRef = doc(collection(db, `users/${userId}/favoritedMeals`));
@@ -139,12 +146,10 @@ export default function MealPlanScheduler() {
           recipeId: selectedRecipe.recipeId,
           favoritedAt: new Date()
         });
-        
+
         handleMenuClose();
         setAlertOpen(true);
         setAlertMessage(`${selectedRecipe.name} added to favorites`);
-        
-        
       } catch (error) {
         console.error('Error adding to favorited meals:', error);
       }
@@ -154,8 +159,6 @@ export default function MealPlanScheduler() {
   const handleAlertClose = () => {
     setAlertOpen(false);
   };
-
-  console.log(selectedRecipe)
 
   const filterMealPlansByWeek = (startOfWeek, endOfWeek) => {
     return mealPlans.filter(mealPlan =>
@@ -186,7 +189,7 @@ export default function MealPlanScheduler() {
 
   return (
     <React.Fragment>
-      <Grid container sx={{ padding: 1, overflowX: 'hidden'}} spacing={1.5} columns={18}>
+      <Grid container sx={{ padding: 1, overflowX: 'hidden' }} spacing={1.5} columns={18}>
         <Grid item xs={18} sx={{ paddingBottom: 1 }}>
           <div className="row mt-1 g-2">
             <div className="col-12">
@@ -217,21 +220,22 @@ export default function MealPlanScheduler() {
                           views={['year', 'month', 'day']}
                         />
                       </LocalizationProvider>
-                      <Button disableElevation variant="contained" 
-                      sx={{ width: 150, 
-                        color: '#FFFFFF', 
-                        backgroundColor: '#996BFF', 
-                        marginLeft: 2,
-                        '&:hover': {
+                      <Button disableElevation variant="contained"
+                        sx={{
+                          width: 150,
+                          color: '#FFFFFF',
+                          backgroundColor: '#996BFF',
+                          marginLeft: 2,
+                          '&:hover': {
                             backgroundColor: '#8A60E6', // Custom hover background color
-                          }, 
-                      
-                      }} 
-                      onClick={handleOpenDialog}>
+                          },
+
+                        }}
+                        onClick={handleOpenDialog}>
                         Add meal
                       </Button>
                     </Box>
-                    <AddMeal open={dialogOpen} onClose={handleCloseDialog} />
+                    <AddMeal open={dialogOpen} onClose={handleCloseDialog} onSave={handleSave} />
                   </Card>
                   <Box>
                     <Grid container spacing={1}>
@@ -243,9 +247,9 @@ export default function MealPlanScheduler() {
                             <Grid item xs={12} key={day} sx={{ width: '100%' }}>
                               <div className="d-flex flex-row mb-2 mt-4">
                                 <Card variant="contained" sx={{ width: 70, overflow: 'visible', borderRadius: 7, backgroundColor: '#FEFEFF', padding: 1, display: 'flex', flexDirection: 'column', textAlign: 'center' }}>
-                                  <Typography sx={{ alignSelf: 'center', color:'#232530', marginTop: 1, fontSize: 18 }}>{day}</Typography>
+                                  <Typography sx={{ alignSelf: 'center', color: '#232530', marginTop: 1, fontSize: 18 }}>{day}</Typography>
                                 </Card>
-                                <Box sx={{ width: '15%'}} className="d-flex flex-column justify-content-evenly ms-2 me-2">
+                                <Box sx={{ width: '15%' }} className="d-flex flex-column justify-content-evenly ms-2 me-2">
                                   <ProgressBar variant="determinate" value={nutrients.protein} max={proteins} />
                                   <CarbsProgressBar variant="determinate" value={nutrients.fats} max={fats} />
                                   <FatsProgressBar variant="determinate" value={nutrients.carbs} max={carbs} />
@@ -257,31 +261,32 @@ export default function MealPlanScheduler() {
                                       <List>
                                         {mealPlansByDayAndCategory[day] && mealPlansByDayAndCategory[day][category] ? mealPlansByDayAndCategory[day][category].map(mealPlan => (
                                           <ListItem sx={{ backgroundColor: "#FEFEFF", borderRadius: 2, marginBottom: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }} key={mealPlan.id}>
-                                            
+
                                             <div className="d-flex flex-row justify-content-between align-items-center w-100 mb-2">
                                               <Typography sx={{ fontSize: 19 }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].name : 'Loading...'}</Typography>
-                                              <IconButton sx={{ width: '20%'}} onClick={(event) => handleMenuClick(event, recipes[mealPlan.recipeId])}>
+                                              <IconButton sx={{ width: '20%' }} onClick={(event) => handleMenuClick(event, recipes[mealPlan.recipeId])}>
                                                 <MoreVertIcon />
                                               </IconButton>
                                             </div>
                                             <div className="d-flex flex-row justify-content-between align-items-center w-100 mb-2">
-                                            <div className="d-flex flex-row align-items-center">
-                                              <img style={{ transform: 'rotate(135deg)', marginRight: 2 }} src={proteinIcon} alt="protein icon"/>
-                                              <Typography sx={{ fontSize: 17}}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.protein : 'Loading...'}g</Typography>
-                                            </div>
-                                            <div className="d-flex flex-row align-items-center">
-                                              <img style={{ marginRight: 2, transform: 'rotate(-45deg)' }}src={carbsIcon} alt="carbs icon"/>
-                                              <Typography sx={{ fontSize: 17 }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.carbs : 'Loading...'}g</Typography>
-                                            </div>
-                                            <div className="d-flex flex-row align-items-center">
-                                              <img style={{ marginRight: 2 }} src={fatsIcon} alt="fats icon"/>
-                                              <Typography sx={{ fontSize: 17 }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.fat : 'Loading...'}g</Typography>
-                                            </div>
+                                              <div className="d-flex flex-row align-items-center">
+                                                <img style={{ transform: 'rotate(135deg)', marginRight: 2 }} src={proteinIcon} alt="protein icon" />
+                                                <Typography sx={{ fontSize: 17 }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.protein : 'Loading...'}g</Typography>
+                                              </div>
+                                              <div className="d-flex flex-row align-items-center">
+                                                <img style={{ marginRight: 2, transform: 'rotate(-45deg)' }} src={carbsIcon} alt="carbs icon" />
+                                                <Typography sx={{ fontSize: 17 }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.carbs : 'Loading...'}g</Typography>
+                                              </div>
+                                              <div className="d-flex flex-row align-items-center">
+                                                <img style={{ marginRight: 2 }} src={fatsIcon} alt="fats icon" />
+                                                <Typography sx={{ fontSize: 17 }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.fat : 'Loading...'}g</Typography>
+                                              </div>
                                             </div>
                                           </ListItem>
                                         )) : (
-                                          <Card variant="outlined" sx={{ backgroundColor: "#F0F3FF", padding: 1, borderRadius: 2 }}>
-                                          <Typography sx={{ fontSize: 16  }} variant="body2">Add meal</Typography>
+                                          <Card variant="outlined" sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', backgroundColor: "rgba(153, 107, 255, 0.10)", border: 1, borderColor: '#996BFF', padding: 2, borderRadius: 3 }}>
+                                            <AddCircleIcon sx={{ color: '#8B61E8', marginRight: 0.75 }} />
+                                            <Typography sx={{ fontSize: 17, color: '#8B61E8' }} variant="body2">Add meal</Typography>
                                           </Card>
                                         )}
                                       </List>
@@ -306,16 +311,16 @@ export default function MealPlanScheduler() {
         <MenuItem onClick={handleViewRecipe}>View</MenuItem>
         <MenuItem onClick={handleFavoriteRecipe}>Favorite</MenuItem>
       </Menu>
-       <Snackbar open={alertOpen} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={6000} onClose={handleAlertClose}>
-       <Alert
-        icon={<CheckIcon  sx={{color: '#1B6A36', fontSize: 28}}  />}
-        autoHideDuration={6000}
-        sx={{ bgcolor: '#95EDB3', color: '#1B6A36', fontSize: 18 }}
-        variant="filled"
-        onClose={handleAlertClose}>
+      <Snackbar open={alertOpen} anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={6000} onClose={handleAlertClose}>
+        <Alert
+          icon={<CheckIcon sx={{ color: '#1B6A36', fontSize: 28 }} />}
+          sx={{ bgcolor: '#95EDB3', color: '#1B6A36', fontSize: 18 }}
+          variant="filled"
+          onClose={handleAlertClose}
+        >
           {alertMessage}
         </Alert>
       </Snackbar>
     </React.Fragment>
-  )
+  );
 }

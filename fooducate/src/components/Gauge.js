@@ -8,12 +8,12 @@ const NutritionGauge = ({ protein, max, category, color }) => {
   const percentage = (protein / max) * 100; // Assuming 50g is the daily goal for protein
 
   return (
-    <Box sx={{ width: '100%', height: '100%', textAlign: 'center' }}>
+    <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
       <Gauge
         value={percentage}
-        max={100}
-        width={100}
-        height={100}
+        max={120}
+        width={120}
+        height={120}
         valueLabelDisplay="on"
         text={`${Math.round(percentage)}g`}
         sx={(theme) => ({
@@ -25,7 +25,7 @@ const NutritionGauge = ({ protein, max, category, color }) => {
                fill: color,
             },
             [`& .${gaugeClasses.referenceArc}`]: {
-                fill: "#E3E6E8",
+                fill: "rgba(231, 233, 243, 0.80)",
             },
         })}
       />

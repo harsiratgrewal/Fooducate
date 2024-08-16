@@ -5,7 +5,7 @@ const setUserDocument = async (user, additionalData) => {
   if (!user) return;
 
   const { uid, email } = user;
-  const { firstName, lastName, password, fats, proteins, carbs, goals } = additionalData;
+  const { firstName, lastName, password, fats, proteins, carbs, budgetGoal, likes, dislikes, macronutrientToImprove } = additionalData;
 
   try {
     const userDoc = doc(db, 'users', uid);
@@ -18,7 +18,10 @@ const setUserDocument = async (user, additionalData) => {
       fats: fats,
       proteins: proteins, 
       carbs: carbs, 
-      goals: goals,
+      budgetGoal: budgetGoal,
+      likes: likes,
+      dislikes: dislikes,
+      macronutrientToImprove: macronutrientToImprove
 
 
     }, { merge: true });
