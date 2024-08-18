@@ -1,4 +1,12 @@
 {
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "node": "--env-file='.env'",
+    "dev": "concurrently \"npm start\" \"node --env-file=.env .\\src\\openai\\server.js"
+  },
   "dependencies": {
     "react-swipeable-views": "^0.14.0"
   }
