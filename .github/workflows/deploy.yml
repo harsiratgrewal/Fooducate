@@ -42,7 +42,7 @@ jobs:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-pages-artifact@v1
       with:
         name: github-pages
         path: ./fooducate/build
@@ -52,13 +52,13 @@ jobs:
     needs: build-and-deploy
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v1
         with:
           name: github-pages
           path: ./fooducate/build
 
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v3
+        uses: actions/deploy-pages@v1
         with:
           name: github-pages
           path: ./fooducate/build
