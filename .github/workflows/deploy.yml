@@ -24,15 +24,16 @@ jobs:
       run: npm install
       working-directory: ./fooducate
 
+    - name: Echo GitHub secrets into .env file
+      run: |
+        echo "REACT_APP_API_KEY=${{ secrets.REACT_APP_API_KEY }}" >> ./fooducate/.env
+        echo "OPEN_API_KEY=${{ secrets.OPEN_API_KEY }}" >> ./fooducate/.env
+      working-directory: ./fooducate
+
     - name: Build and run the application
       run: npm run dev
       working-directory: ./fooducate
       env:
         REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
         OPEN_API_KEY: ${{ secrets.OPEN_API_KEY }}
-
-    - name: Echo GitHub secrets into .env file
-      run: |
-        echo "REACT_APP_API_KEY=${{ secrets.REACT_APP_API_KEY }}" >> ./fooducate/.env
-        echo "OPEN_API_KEY=${{ secrets.OPEN_API_KEY }}" >> ./fooducate/.env
-      working-directory: ./fooducate
+        
