@@ -75,7 +75,7 @@ function SignIn() {
           sx={{
             backgroundImage: `url(${logo})`,
             backgroundColor: (t) => t.palette.mode === 'light' ? '#6F6DCF' : t.palette.grey[900],
-            backgroundSize: 'contain',
+            //backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
             backgroundSize: '70%',
