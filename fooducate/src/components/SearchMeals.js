@@ -67,7 +67,7 @@ const SearchMeals = () => {
     { name: 'sweets', icon: <IcecreamIcon /> }
   ]);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const categoryOrder = ['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'];
+  
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -91,7 +91,7 @@ const SearchMeals = () => {
         }
         return null; // Return null if the recipe doesn't exist
       });
-
+      const categoryOrder = ['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'];
       let recipes = (await Promise.all(recipePromises)).filter(recipe => recipe !== null);
 
       // Sort recipes based on categoryOrder
@@ -117,7 +117,7 @@ const SearchMeals = () => {
       fetchNextDayRecipes();
       fetchRecipes();
     }
-  }, [user, categories, categoryOrder]);
+  }, [user, categories]);
 
 
   const handleSearch = (event) => {
