@@ -1,42 +1,38 @@
-name: Build and Deploy
+name: Deploy Fooducate
+
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
-      
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
       with:
         node-version: '20'
-        
-    - name: Install dependencies
+
+    - name: Install dependencies for root
+      run: npm install
+      working-directory: ./
+
+    - name: Install dependencies for fooducate
       run: npm install
       working-directory: ./fooducate
 
-    - name: Create .env file
-      run: |
-        echo "REACT_APP_API_KEY=${{ secrets.REACT_APP_API_KEY }}" >> .env
-        echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
-      working-directory: ./fooducate
-
-    - name: Build project
-      run: npm run build
-      working-directory: ./fooducate
-  
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Deploy to Server
-      run: npm run deploy
+    - name: Build and run the application
+      run: npm run dev
       working-directory: ./fooducate
       env:
         REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        OPEN_API_KEY: ${{ secrets.OPEN_API_KEY }}
+
+    - name: Echo GitHub secrets into .env file
+      run: |
+        echo "REACT_APP_API_KEY=${{ secrets.REACT_APP_API_KEY }}" >> ./fooducate/.env
+        echo "OPEN_API_KEY=${{ secrets.OPEN_API_KEY }}" >> ./fooducate/.env
+      working-directory: ./fooducate
