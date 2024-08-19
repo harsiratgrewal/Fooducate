@@ -55,10 +55,6 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: github-pages
-          path: ./fooducate/build
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v1
-        with:
-          name: github-pages
-          path: ./fooducate/build
