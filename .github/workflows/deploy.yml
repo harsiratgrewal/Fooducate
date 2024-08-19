@@ -23,7 +23,7 @@ jobs:
 
     - name: Install dependencies for root
       run: npm install
-      working-directory: ./
+      working-directory: ./fooducate
 
     - name: Install dependencies for fooducate
       run: npm install
