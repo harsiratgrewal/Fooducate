@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/Fooducate/fooducate/static/css/main.4994257a.css",
-    "main.js": "/Fooducate/fooducate/static/js/main.b3a522e0.js",
-    "static/js/453.32423f98.chunk.js": "/Fooducate/fooducate/static/js/453.32423f98.chunk.js",
-    "static/media/create-food-website.jpg": "/Fooducate/fooducate/static/media/create-food-website.6ab5fcd2f2edc121e357.jpg",
-    "static/media/illustration.png": "/Fooducate/fooducate/static/media/illustration.5b2488f609f3c02f47dd.png",
-    "static/media/back.jpg": "/Fooducate/fooducate/static/media/back.ef34e5391d82e8e4d1aa.jpg",
-    "static/media/logo-fooducate.svg": "/Fooducate/fooducate/static/media/logo-fooducate.ed5b6e471f00751d3b29e43c967a5b89.svg",
-    "static/media/signin-logo.svg": "/Fooducate/fooducate/static/media/signin-logo.18e6d3dc3b2cbce2ca95b57b57ddeb41.svg",
-    "static/media/wheatcarbs.svg": "/Fooducate/fooducate/static/media/wheatcarbs.419ed3925e237ad45f80979b7e3ecf04.svg",
-    "index.html": "/Fooducate/fooducate/index.html",
-    "static/media/proteindrumstick2.svg": "/Fooducate/fooducate/static/media/proteindrumstick2.615a491c81474165ffbd7d0f325cee26.svg",
-    "static/media/droplet.svg": "/Fooducate/fooducate/static/media/droplet.563aa6cd8cdd11203fbbd984c33dbac5.svg",
-    "main.4994257a.css.map": "/Fooducate/fooducate/static/css/main.4994257a.css.map",
-    "main.b3a522e0.js.map": "/Fooducate/fooducate/static/js/main.b3a522e0.js.map",
-    "453.32423f98.chunk.js.map": "/Fooducate/fooducate/static/js/453.32423f98.chunk.js.map"
+    "main.css": "/Fooducate/static/css/main.73a1d45a.css",
+    "main.js": "/Fooducate/static/js/main.6eebc108.js",
+    "static/js/453.32423f98.chunk.js": "/Fooducate/static/js/453.32423f98.chunk.js",
+    "static/media/create-food-website.jpg": "/Fooducate/static/media/create-food-website.6ab5fcd2f2edc121e357.jpg",
+    "static/media/illustration.png": "/Fooducate/static/media/illustration.5b2488f609f3c02f47dd.png",
+    "static/media/back.jpg": "/Fooducate/static/media/back.ef34e5391d82e8e4d1aa.jpg",
+    "static/media/logo-fooducate.svg": "/Fooducate/static/media/logo-fooducate.ed5b6e471f00751d3b29e43c967a5b89.svg",
+    "static/media/signin-logo.svg": "/Fooducate/static/media/signin-logo.18e6d3dc3b2cbce2ca95b57b57ddeb41.svg",
+    "static/media/wheatcarbs.svg": "/Fooducate/static/media/wheatcarbs.419ed3925e237ad45f80979b7e3ecf04.svg",
+    "index.html": "/Fooducate/index.html",
+    "static/media/proteindrumstick2.svg": "/Fooducate/static/media/proteindrumstick2.615a491c81474165ffbd7d0f325cee26.svg",
+    "static/media/droplet.svg": "/Fooducate/static/media/droplet.563aa6cd8cdd11203fbbd984c33dbac5.svg",
+    "main.73a1d45a.css.map": "/Fooducate/static/css/main.73a1d45a.css.map",
+    "main.6eebc108.js.map": "/Fooducate/static/js/main.6eebc108.js.map",
+    "453.32423f98.chunk.js.map": "/Fooducate/static/js/453.32423f98.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.4994257a.css",
-    "static/js/main.b3a522e0.js"
+    "static/css/main.73a1d45a.css",
+    "static/js/main.6eebc108.js"
   ]
 }
