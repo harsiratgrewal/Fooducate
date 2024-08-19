@@ -38,7 +38,7 @@ const FavoriteMealsCarousel = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [setUserId]);
 
 
 

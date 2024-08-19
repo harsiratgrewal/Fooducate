@@ -40,7 +40,7 @@ const FavoritedMealsCard = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [setUserId]);
 
   
 

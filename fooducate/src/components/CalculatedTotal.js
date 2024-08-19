@@ -38,11 +38,12 @@ const CalculatedTotal = () => {
         console.error("Error fetching grocery items: ", error);
       }
     };
+
     if (user) {
       fetchGroceryItems();
       fetchBudgetGoal();
     }
-  }, [user]); 
+  }, [user, setGroceryItems]); 
 
   
 

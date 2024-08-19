@@ -95,7 +95,7 @@ function Header() {
     } else {
       setIsAuthenticated(false);
     }
-  }, [user, loading]);
+  }, [user, loading, setIsAuthenticated]);
 
 
   return (

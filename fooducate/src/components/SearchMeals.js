@@ -117,7 +117,7 @@ const SearchMeals = () => {
       fetchNextDayRecipes();
       fetchRecipes();
     }
-  }, [user]);
+  }, [user, categories, categoryOrder]);
 
 
   const handleSearch = (event) => {

@@ -13,7 +13,7 @@ import IngredientsCard from '../components/IngreidientsCard';
 
 function Meals() {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
-  const [setChecked] = useState({});
+  //const [setChecked] = useState({});
   const navigate = useNavigate();
 
   const handleSelectRecipe = (recipe) => {
