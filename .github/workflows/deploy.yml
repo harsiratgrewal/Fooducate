@@ -27,11 +27,11 @@ jobs:
     - name: Echo GitHub secrets into .env file
       run: |
         echo "REACT_APP_API_KEY=${{ secrets.REACT_APP_API_KEY }}" >> ./fooducate/.env
-        echo "OPEN_API_KEY=${{ secrets.OPEN_API_KEY }}" >> ./fooducate/.env
+        echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> ./fooducate/.env
 
     - name: Build and run the application
       run: npm run dev
       working-directory: ./fooducate
       env:
         REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
-        OPEN_API_KEY: ${{ secrets.OPEN_API_KEY }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
