@@ -30,7 +30,7 @@ jobs:
         echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> ./fooducate/.env
 
     - name: Build the React app
-      run: npm run build
+      run: npm run dev
       working-directory: ./fooducate
       env:
         REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
