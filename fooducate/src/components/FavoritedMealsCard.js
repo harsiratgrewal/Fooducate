@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Accordion, AccordionSummary, AccordionDetails, List, ListItem, ListItemText, Button, Box,  Typography, Grid, Card, CardContent } from '@mui/material';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { Accordion, AccordionSummary, AccordionDetails, List, ListItem, ListItemText, Box,  Typography } from '@mui/material';
+import { collection, getDocs, query } from 'firebase/firestore';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { onAuthStateChanged } from 'firebase/auth';
-import Divider from '@mui/material/Divider';
+//import Divider from '@mui/material/Divider';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 
@@ -12,36 +12,37 @@ import { db, auth } from '../firebase/firebase'; // Adjust the import based on y
 const categories = ['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'];
 
 const FavoritedMealsCard = () => {
-  const [userId, setUserId] = useState(null);
+  const [setUserId] = useState(null); //removed userId
   const [favoriteMeals, setFavoriteMeals] = useState([]);
   const [recipes, setRecipes] = useState({});
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserId(user.uid);
-        fetchFavoriteMeals(user.uid);
-      } else {
-        setUserId(null);
-        setFavoriteMeals([]);
-        setRecipes({});
+    const fetchFavoriteMeals = async (uid) => {
+      try {
+        const q = query(collection(db, `users/${uid}/favoritedMeals`));
+        const querySnapshot = await getDocs(q);
+        const mealsList = querySnapshot.docs.map(doc => doc.data().recipeId);
+        setFavoriteMeals(mealsList);
+        fetchRecipes(mealsList);
+      } catch (error) {
+        console.error("Error fetching favorite meals: ", error);
       }
+    };
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setUserId(user.uid);
+          fetchFavoriteMeals(user.uid);
+        } else {
+          setUserId(null);
+          setFavoriteMeals([]);
+          setRecipes({});
+        }
     });
 
     return () => unsubscribe();
   }, []);
 
-  const fetchFavoriteMeals = async (uid) => {
-    try {
-      const q = query(collection(db, `users/${uid}/favoritedMeals`));
-      const querySnapshot = await getDocs(q);
-      const mealsList = querySnapshot.docs.map(doc => doc.data().recipeId);
-      setFavoriteMeals(mealsList);
-      fetchRecipes(mealsList);
-    } catch (error) {
-      console.error("Error fetching favorite meals: ", error);
-    }
-  };
+  
 
   const fetchRecipes = async (mealsList) => {
     const allRecipes = {};

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Card, CardContent, Typography, Checkbox, Button, Dialog, DialogContent, DialogActions, List, ListItem, ListItemText, TextField, Divider, Snackbar, Alert } from '@mui/material';
+import { Card, CardContent, Typography, Checkbox, Button, Dialog, DialogContent, DialogActions, List, ListItem, ListItemText, TextField, Divider, Snackbar, Alert } from '@mui/material';
 import { collection, addDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase/firebase'; // adjust the import based on your file structure
 import { useAuthState } from 'react-firebase-hooks/auth';

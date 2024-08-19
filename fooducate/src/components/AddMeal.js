@@ -13,7 +13,7 @@ import DinnerIcon from '@mui/icons-material/DinnerDining';
 import SnacksIcon from '@mui/icons-material/Fastfood';
 import SweetsIcon from '@mui/icons-material/Cake';
 
-const categories = ["Breakfast", "Lunch", "Dinner", "Snack", "Sweets"];
+//const categories = ["Breakfast", "Lunch", "Dinner", "Snack", "Sweets"];
 
 const AddMeal = ({ open, onClose, onSave }) => {
   const [userId, setUserId] = useState(null);

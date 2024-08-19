@@ -58,7 +58,7 @@ const SearchMeals = () => {
   const [units, setUnits] = useState({});
   const [recipes, setRecipes] = useState([]);
   const [filteredRecipes, setFilteredRecipes] = useState([]);
-  const [categories, setCategories] = useState([
+  const [categories] = useState([
     { name: 'all', icon: <AllInclusiveIcon /> },
     { name: 'breakfast', icon: <BreakfastDiningIcon /> },
     { name: 'lunch', icon: <LunchDiningIcon /> },
@@ -73,52 +73,52 @@ const SearchMeals = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   useEffect(() => {
+    const fetchNextDayRecipes = async () => {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowString = tomorrow.toDateString();
+      const mealPlansQuery = query(collection(db, 'mealplans'), where('userId', '==', user.uid));
+      const mealPlansSnapshot = await getDocs(mealPlansQuery);
+      const mealPlans = mealPlansSnapshot.docs.map(doc => doc.data()).filter(mealPlan => {
+        const mealDate = new Date(mealPlan.date); // Convert Firestore Timestamp to Date
+        return mealDate.toDateString() === tomorrowString;
+      });
+
+      const recipePromises = mealPlans.map(async (mealPlan) => {
+        const recipeDoc = await getDoc(doc(db, mealPlan.category, mealPlan.recipeId));
+        if (recipeDoc.exists()) {
+          return { ...recipeDoc.data(), id: recipeDoc.id };
+        }
+        return null; // Return null if the recipe doesn't exist
+      });
+
+      let recipes = (await Promise.all(recipePromises)).filter(recipe => recipe !== null);
+
+      // Sort recipes based on categoryOrder
+      recipes = recipes.sort((a, b) => categoryOrder.indexOf(a.category) - categoryOrder.indexOf(b.category));
+
+      setNextDayRecipes(recipes);
+    };
+
+    const fetchRecipes = async () => {
+      const recipesList = [];
+      for (const category of categories) {
+        if (category.name !== 'all') {
+          const querySnapshot = await getDocs(collection(db, category.name));
+          querySnapshot.forEach((doc) => {
+            recipesList.push({ id: doc.id, ...doc.data(), category: category.name });
+          });
+        }
+      }
+      setRecipes(recipesList);
+      setFilteredRecipes(recipesList);
+    };
     if (user) {
       fetchNextDayRecipes();
       fetchRecipes();
     }
   }, [user]);
 
-  const fetchNextDayRecipes = async () => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowString = tomorrow.toDateString();
-    const mealPlansQuery = query(collection(db, 'mealplans'), where('userId', '==', user.uid));
-    const mealPlansSnapshot = await getDocs(mealPlansQuery);
-    const mealPlans = mealPlansSnapshot.docs.map(doc => doc.data()).filter(mealPlan => {
-      const mealDate = new Date(mealPlan.date); // Convert Firestore Timestamp to Date
-      return mealDate.toDateString() === tomorrowString;
-    });
-
-    const recipePromises = mealPlans.map(async (mealPlan) => {
-      const recipeDoc = await getDoc(doc(db, mealPlan.category, mealPlan.recipeId));
-      if (recipeDoc.exists()) {
-        return { ...recipeDoc.data(), id: recipeDoc.id };
-      }
-      return null; // Return null if the recipe doesn't exist
-    });
-
-    let recipes = (await Promise.all(recipePromises)).filter(recipe => recipe !== null);
-
-    // Sort recipes based on categoryOrder
-    recipes = recipes.sort((a, b) => categoryOrder.indexOf(a.category) - categoryOrder.indexOf(b.category));
-
-    setNextDayRecipes(recipes);
-  };
-
-  const fetchRecipes = async () => {
-    const recipesList = [];
-    for (const category of categories) {
-      if (category.name !== 'all') {
-        const querySnapshot = await getDocs(collection(db, category.name));
-        querySnapshot.forEach((doc) => {
-          recipesList.push({ id: doc.id, ...doc.data(), category: category.name });
-        });
-      }
-    }
-    setRecipes(recipesList);
-    setFilteredRecipes(recipesList);
-  };
 
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);

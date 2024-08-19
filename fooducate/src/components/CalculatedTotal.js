@@ -7,43 +7,44 @@ import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 
 const CalculatedTotal = () => {
   const [user] = useAuthState(auth);
-  const [groceryItems, setGroceryItems] = useState([]);
+  const [setGroceryItems] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
   const [budgetGoal, setBudgetGoal] = useState(0);
 
   useEffect(() => {
+    const fetchBudgetGoal = async () => {
+      try {
+        const docRef = doc(db, 'users', user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          // Convert budgetGoal to a number
+          const budget = parseFloat(docSnap.data().budgetGoal);
+          setBudgetGoal(budget);
+        } else {
+          console.error("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching budget goal: ", error);
+      }
+    };
+
+    const fetchGroceryItems = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, `users/${user.uid}/grocerylist`));
+        const items = querySnapshot.docs.map(doc => doc.data());
+        setGroceryItems(items);
+        calculateTotalCost(items);
+      } catch (error) {
+        console.error("Error fetching grocery items: ", error);
+      }
+    };
     if (user) {
       fetchGroceryItems();
       fetchBudgetGoal();
     }
-  }, [user]);
+  }, [user]); 
 
-  const fetchBudgetGoal = async () => {
-    try {
-      const docRef = doc(db, 'users', user.uid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        // Convert budgetGoal to a number
-        const budget = parseFloat(docSnap.data().budgetGoal);
-        setBudgetGoal(budget);
-      } else {
-        console.error("No such document!");
-      }
-    } catch (error) {
-      console.error("Error fetching budget goal: ", error);
-    }
-  };
-
-  const fetchGroceryItems = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, `users/${user.uid}/grocerylist`));
-      const items = querySnapshot.docs.map(doc => doc.data());
-      setGroceryItems(items);
-      calculateTotalCost(items);
-    } catch (error) {
-      console.error("Error fetching grocery items: ", error);
-    }
-  };
+  
 
   const calculateTotalCost = (items) => {
     const total = items.reduce((acc, item) => {

@@ -11,12 +11,22 @@ import { db, auth } from '../firebase/firebase';
 const categories = ['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'];
 
 const FavoriteMealsCarousel = () => {
-  const [userId, setUserId] = useState(null);
+  const [setUserId] = useState(null); //removed userid
   const [favoriteMeals, setFavoriteMeals] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = favoriteMeals.length;
 
   useEffect(() => {
+    const fetchFavoriteMeals = async (uid) => {
+      try {
+        const q = query(collection(db, `users/${uid}/favoritedMeals`));
+        const querySnapshot = await getDocs(q);
+        const mealsList = querySnapshot.docs.map(doc => doc.data().recipeId);
+        fetchRecipes(mealsList);
+      } catch (error) {
+        console.error("Error fetching favorite meals: ", error);
+      }
+    };
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserId(user.uid);
@@ -30,16 +40,7 @@ const FavoriteMealsCarousel = () => {
     return () => unsubscribe();
   }, []);
 
-  const fetchFavoriteMeals = async (uid) => {
-    try {
-      const q = query(collection(db, `users/${uid}/favoritedMeals`));
-      const querySnapshot = await getDocs(q);
-      const mealsList = querySnapshot.docs.map(doc => doc.data().recipeId);
-      fetchRecipes(mealsList);
-    } catch (error) {
-      console.error("Error fetching favorite meals: ", error);
-    }
-  };
+
 
   const fetchRecipes = async (mealsList) => {
     const allRecipes = [];
@@ -91,7 +92,7 @@ const FavoriteMealsCarousel = () => {
                 {Math.abs(activeStep - index) <= 2 ? (
                   <Box sx={{ height: '100%', overflow: 'hidden', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Card elevation={0} sx={{ width: '100%' }}>
-                        <Typography className="mb-2" variant="h5" color='#232530'>Top favorite meals</Typography>
+                      <Typography className="mb-2" variant="h5" color='#232530'>Top favorite meals</Typography>
                       <CardMedia
                         component="img"
                         height="240"
@@ -116,7 +117,7 @@ const FavoriteMealsCarousel = () => {
           </SwipeableViews>
           <MobileStepper
             steps={maxSteps}
-            sx={{ 
+            sx={{
               marginTop: 2,
               backgroundColor: 'rgba(231, 233, 243, 0.60)',
               paddingLeft: 0,
@@ -127,7 +128,7 @@ const FavoriteMealsCarousel = () => {
               },
               '& .MuiMobileStepper-dotActive': {
                 backgroundColor: '#996BFF', // Active dot color (purple)
-              }, 
+              },
             }}
             position="static"
             activeStep={activeStep}
@@ -137,7 +138,7 @@ const FavoriteMealsCarousel = () => {
               </Button>
             }
             backButton={
-              <Button size="small" sx={{width: 30, borderRadius: 20 }} onClick={handleBack} disabled={activeStep === 0}>
+              <Button size="small" sx={{ width: 30, borderRadius: 20 }} onClick={handleBack} disabled={activeStep === 0}>
                 <ArrowCircleLeftIcon fontSize="large" sx={{ color: '#996BFF' }} />
               </Button>
             }

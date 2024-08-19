@@ -12,12 +12,12 @@ import WeeklyNutrients from '../components/MonthlyNutrients';
 import { auth, db } from "../firebase/firebase";
 import { query, collection, getDocs, where } from "firebase/firestore";
 import Header from "../components/Header";
-import { IconButton, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import carbsIcon from '../img/wheatcarbs.svg';
-import EditIcon from '@mui/icons-material/Edit';
+//import EditIcon from '@mui/icons-material/Edit';
 import proteinIcon from '../img/proteindrumstick2.svg';
 import fatsIcon from '../img/droplet.svg';
-import TopFavoritedMeals from "../components/TopFavoriteMeals";
+//import TopFavoritedMeals from "../components/TopFavoriteMeals";
 import ObjectivesCard from "../components/ObjectivesCard";
 import FavoriteMealsCarousel from "../components/FavoriteMealsCarousel";
 import EditDialog from "../components/EditDialog";
@@ -29,25 +29,22 @@ function Dashboard() {
   const [userInfo, setUserInfo] = useState({})
 
   const navigate = useNavigate();
-  
-  const fetchUserName = async () => {
-    if (user) {
-      try {
-        const q = query(collection(db, "users"), where("uid", "==", user?.uid));
-        const doc = await getDocs(q);
-        if (doc.docs.length > 0) {
-          const data = doc.docs[0].data();
-          setUserInfo(data);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  };
-
-  
 
    useEffect(() => {
+    const fetchUserName = async () => {
+        if (user) {
+        try {
+            const q = query(collection(db, "users"), where("uid", "==", user?.uid));
+            const doc = await getDocs(q);
+            if (doc.docs.length > 0) {
+            const data = doc.docs[0].data();
+            setUserInfo(data);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+        }
+    };   
     if (loading) return; // Wait for loading to complete
     if (!user) {
       navigate("/");

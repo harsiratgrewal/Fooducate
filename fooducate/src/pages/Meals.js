@@ -13,7 +13,7 @@ import IngredientsCard from '../components/IngreidientsCard';
 
 function Meals() {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
-  const [checked, setChecked] = useState({});
+  const [setChecked] = useState({});
   const navigate = useNavigate();
 
   const handleSelectRecipe = (recipe) => {
@@ -28,13 +28,13 @@ function Meals() {
     navigate(`/recipe/${recipeId}`);
   };
 
-  const handleToggle = (name) => () => {
-    setChecked((prev) => {
-      const newChecked = { ...prev, [name]: !prev[name] };
-      console.log(`Item ${name} checked: ${newChecked[name]}`);
-      return newChecked;
-    });
-  };
+  // const handleToggle = (name) => () => {
+  //   setChecked((prev) => {
+  //     const newChecked = { ...prev, [name]: !prev[name] };
+  //     console.log(`Item ${name} checked: ${newChecked[name]}`);
+  //     return newChecked;
+  //   });
+  // };
 
   return (
     <Box sx={{ display: 'flex', width: '100%' }}>

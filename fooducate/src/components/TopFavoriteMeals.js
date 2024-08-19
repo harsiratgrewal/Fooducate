@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { List, ListItem, ListItemText, Box, Typography, Button, IconButton } from '@mui/material';
+import { List, ListItem, ListItemText, Box, Typography, IconButton } from '@mui/material';
 import { collection, getDocs, query } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '../firebase/firebase'; // Adjust the import based on your file structure
@@ -8,11 +8,22 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 const categories = ['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'];
 
 const TopFavoritedMeals = () => {
-  const [userId, setUserId] = useState(null);
+  const [setUserId] = useState(null);
   const [favoriteMeals, setFavoriteMeals] = useState([]);
   const [recipes, setRecipes] = useState({});
 
   useEffect(() => {
+    const fetchFavoriteMeals = async (uid) => {
+      try {
+        const q = query(collection(db, `users/${uid}/favoritedMeals`));
+        const querySnapshot = await getDocs(q);
+        const mealsList = querySnapshot.docs.map(doc => doc.data().recipeId);
+        setFavoriteMeals(mealsList.slice(0, 6)); // Limit to the first 5 favorite meals
+        fetchRecipes(mealsList.slice(0, 6));
+      } catch (error) {
+        console.error("Error fetching favorite meals: ", error);
+      }
+    };    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserId(user.uid);
@@ -27,17 +38,7 @@ const TopFavoritedMeals = () => {
     return () => unsubscribe();
   }, []);
 
-  const fetchFavoriteMeals = async (uid) => {
-    try {
-      const q = query(collection(db, `users/${uid}/favoritedMeals`));
-      const querySnapshot = await getDocs(q);
-      const mealsList = querySnapshot.docs.map(doc => doc.data().recipeId);
-      setFavoriteMeals(mealsList.slice(0, 6)); // Limit to the first 5 favorite meals
-      fetchRecipes(mealsList.slice(0, 6));
-    } catch (error) {
-      console.error("Error fetching favorite meals: ", error);
-    }
-  };
+
 
   const fetchRecipes = async (mealsList) => {
     const allRecipes = {};

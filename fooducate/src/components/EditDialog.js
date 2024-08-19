@@ -18,8 +18,7 @@ import CheckIcon from '@mui/icons-material/Check';
 export default function EditDialog() {
   const [open, setOpen] = React.useState(false);
   const [fats, setFats] = useState();
-  const [proteins, setProteins] = useState();
-  const [carbs, setCarbs] = useState();
+ // const [proteins, setProteins] = useState();
   const [userId, setUserId] = useState(null);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertOpen, setAlertOpen] = useState(false);

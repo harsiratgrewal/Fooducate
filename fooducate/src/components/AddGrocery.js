@@ -7,12 +7,11 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
-  Typography,
   Divider,
   Snackbar,
   Alert
 } from '@mui/material';
-import { collection, setDoc, doc } from 'firebase/firestore';
+import { setDoc, doc } from 'firebase/firestore';
 import { db, auth } from '../firebase/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { v4 as uuidv4 } from 'uuid';

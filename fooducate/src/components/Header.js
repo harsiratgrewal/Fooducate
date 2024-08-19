@@ -12,11 +12,11 @@ import AssistantIcon from '@mui/icons-material/Assistant';
 import { useNavigate } from "react-router-dom";
 
 function Header() {
-  const [user, loading, error] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth); //removed error
   const [name, setName] = useState("");
   const [logoutLoading, setLogoutLoading] = useState(false);
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [setIsAuthenticated] = useState(false); //removed isAuthenticated
 
   const handleChatClick = () => {
     navigate('/nutrients');
@@ -77,6 +77,17 @@ function Header() {
   }));
 
   useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const q = query(collection(db, "users"), where("uid", "==", user?.uid));
+        const doc = await getDocs(q);
+        const data = doc.docs[0].data();
+        setName(data.firstName);
+      } catch (err) {
+        console.error(err);
+        alert("An error occurred while fetching user data");
+      }
+    };
     if (loading) return;
     if (user) {
       setIsAuthenticated(true);
@@ -86,17 +97,6 @@ function Header() {
     }
   }, [user, loading]);
 
-  const fetchUserName = async () => {
-    try {
-      const q = query(collection(db, "users"), where("uid", "==", user?.uid));
-      const doc = await getDocs(q);
-      const data = doc.docs[0].data();
-      setName(data.firstName);
-    } catch (err) {
-      console.error(err);
-      alert("An error occurred while fetching user data");
-    }
-  };
 
   return (
     <React.Fragment>

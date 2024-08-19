@@ -67,7 +67,7 @@ const newTheme = (theme) => createTheme({
 export default function WeeklySuggestions() {
   const [selectedDate, setSelectedDate] = useState(dayjs(new Date()));
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [userId, setUserId] = useState(null);
+  const [setUserId] = useState(null);
   const [mealPlans, setMealPlans] = useState([]);
   const [recipes, setRecipes] = useState({})
 
@@ -115,12 +115,12 @@ export default function WeeklySuggestions() {
     setSelectedDate(date);
   };
 
-  const handleCategoryChange = (event) => {
-    const value = event.target.value;
-    setSelectedCategories(
-      typeof value === 'string' ? value.split(',') : value
-    );
-  };
+  // const handleCategoryChange = (event) => {
+  //   const value = event.target.value;
+  //   setSelectedCategories(
+  //     typeof value === 'string' ? value.split(',') : value
+  //   );
+  // };
 
   const filteredMealPlans = mealPlans.filter(mealPlan => {
     const sameDay = dayjs(mealPlan.date).isSame(selectedDate, 'day');

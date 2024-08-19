@@ -1,11 +1,11 @@
 import React from 'react'
 import Box from '@mui/material/Box';
 import Navbar from '../components/Navbar';
-import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
-import Chatbot from '../components/Chatbot';
-import ChatHistory from '../components/ChatHistory';
-import AddMeal from '../components/AddMeal';
+// import Paper from '@mui/material/Paper';
+// import Grid from '@mui/material/Grid';
+// import Chatbot from '../components/Chatbot';
+// import ChatHistory from '../components/ChatHistory';
+// import AddMeal from '../components/AddMeal';
 import MealPlanScheduler from '../components/MealPlanScheduler';
 
 function MealPlan() {
