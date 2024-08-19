@@ -29,19 +29,12 @@ jobs:
       run: npm install
       working-directory: ./fooducate
 
-    - name: Echo GitHub secrets into .env file
-      run: |
-        echo "REACT_APP_API_KEY=${{ secrets.REACT_APP_API_KEY }}" >> ./fooducate/.env
-        echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> ./fooducate/.env
-        echo "FIREBASE_KEY=${{ secrets.FIREBASE_KEY }}" >> ./fooducate/.env
-
     - name: Build the React app
       run: npm run build
       working-directory: ./fooducate
       env:
         REACT_APP_API_KEY: ${{ secrets.REACT_APP_API_KEY }}
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        FIREBASE_KEY: ${{ secrets.FIREBASE_KEY }}
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
