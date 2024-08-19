@@ -58,4 +58,6 @@ jobs:
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v3
+        with:
+          publish_dir: ./build
         
