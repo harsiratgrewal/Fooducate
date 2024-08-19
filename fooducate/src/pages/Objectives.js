@@ -41,7 +41,7 @@ export default function ObjectivesPage() {
     });
 
     return () => unsubscribe();
-  }, [fetchObjectives]);
+  }, []);
 
   
 
