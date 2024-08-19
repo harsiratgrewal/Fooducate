@@ -7,7 +7,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
-  
+
 jobs:
   build-and-deploy:
     runs-on: windows-latest
@@ -44,17 +44,17 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: build-artifact
+        name: github-pages
         path: ./fooducate/build
   
   deploy:
-      runs-on: windows-latest
-      needs: build-and-deploy
-      steps:
-        - name: Download artifact
-          uses: actions/download-artifact@v3
-          with:
-            name: build-artifact
-  
-        - name: Deploy to GitHub Pages
-          uses: actions/deploy-pages@v4
+    runs-on: windows-latest
+    needs: build-and-deploy
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: github-pages
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
