@@ -22,7 +22,7 @@ import {
 const KEY = process.env.FIREBASE_KEY;
 
 const firebaseConfig = {
-  apiKey: KEY,
+  apiKey: `${KEY}`,
   authDomain: "proj-5f207.firebaseapp.com",
   projectId: "proj-5f207",
   storageBucket: "proj-5f207.appspot.com",
