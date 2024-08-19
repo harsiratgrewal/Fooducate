@@ -19,10 +19,10 @@ import {
   addDoc,
 } from "firebase/firestore";
 
-
+const KEY = process.env.FIREBASE_KEY;
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBhOsbLCwYMno6t31QoGVpehmxcCBsVnHs",
+  apiKey: KEY,
   authDomain: "proj-5f207.firebaseapp.com",
   projectId: "proj-5f207",
   storageBucket: "proj-5f207.appspot.com",
