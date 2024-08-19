@@ -52,7 +52,7 @@ jobs:
     needs: build-and-deploy
     steps:
       - name: Download artifact
-        uses: actions/download-pages-artifact@v3
+        uses: actions/download-artifact@v3
         with:
           name: github-pages
           path: ./fooducate/build
