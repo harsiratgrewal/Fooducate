@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Fooducate/static/css/main.73a1d45a.css",
-    "main.js": "/Fooducate/static/js/main.35a2a48a.js",
+    "main.js": "/Fooducate/static/js/main.3bdf5f7e.js",
     "static/js/453.32423f98.chunk.js": "/Fooducate/static/js/453.32423f98.chunk.js",
     "static/media/create-food-website.jpg": "/Fooducate/static/media/create-food-website.6ab5fcd2f2edc121e357.jpg",
     "static/media/illustration.png": "/Fooducate/static/media/illustration.5b2488f609f3c02f47dd.png",
@@ -13,11 +13,11 @@
     "static/media/proteindrumstick2.svg": "/Fooducate/static/media/proteindrumstick2.615a491c81474165ffbd7d0f325cee26.svg",
     "static/media/droplet.svg": "/Fooducate/static/media/droplet.563aa6cd8cdd11203fbbd984c33dbac5.svg",
     "main.73a1d45a.css.map": "/Fooducate/static/css/main.73a1d45a.css.map",
-    "main.35a2a48a.js.map": "/Fooducate/static/js/main.35a2a48a.js.map",
+    "main.3bdf5f7e.js.map": "/Fooducate/static/js/main.3bdf5f7e.js.map",
     "453.32423f98.chunk.js.map": "/Fooducate/static/js/453.32423f98.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.73a1d45a.css",
-    "static/js/main.35a2a48a.js"
+    "static/js/main.3bdf5f7e.js"
   ]
 }
