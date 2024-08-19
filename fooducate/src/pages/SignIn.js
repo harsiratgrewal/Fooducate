@@ -75,10 +75,10 @@ function SignIn() {
           sx={{
             backgroundImage: `url(${logo})`,
             backgroundColor: (t) => t.palette.mode === 'light' ? '#6F6DCF' : t.palette.grey[900],
-            //backgroundSize: 'contain',
+            backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
-            backgroundSize: '70%',
+            //backgroundSize: '70%',
           }}
         />
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>

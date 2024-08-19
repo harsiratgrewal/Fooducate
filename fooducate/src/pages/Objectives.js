@@ -30,7 +30,7 @@ export default function ObjectivesPage() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [fetchObjectives]);
 
   const fetchObjectives = async (uid) => {
     try {
