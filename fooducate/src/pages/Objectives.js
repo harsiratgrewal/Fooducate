@@ -18,8 +18,19 @@ export default function ObjectivesPage() {
   const [objectives, setObjectives] = useState([]);
   const [objectivesCount, setObjectivesCount] = useState({});
   const [completedCount, setCompletedCount] = useState({});
-
+  
   useEffect(() => {
+    const fetchObjectives = async (uid) => {
+      try {
+        const q = query(collection(db, `users/${uid}/objectives`));
+        const querySnapshot = await getDocs(q);
+        const objectivesArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setObjectives(objectivesArray);
+        calculateCounts(objectivesArray);
+      } catch (error) {
+        console.error("Error fetching objectives: ", error);
+      }
+    };
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
@@ -32,17 +43,7 @@ export default function ObjectivesPage() {
     return () => unsubscribe();
   }, [fetchObjectives]);
 
-  const fetchObjectives = async (uid) => {
-    try {
-      const q = query(collection(db, `users/${uid}/objectives`));
-      const querySnapshot = await getDocs(q);
-      const objectivesArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setObjectives(objectivesArray);
-      calculateCounts(objectivesArray);
-    } catch (error) {
-      console.error("Error fetching objectives: ", error);
-    }
-  };
+  
 
   const calculateCounts = (objectives) => {
     const count = {};
