@@ -6,8 +6,6 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import axios from 'axios';
 
-const KEY = process.env.REACT_APP_API_KEY;
-
 export default function Chatbot({ sessionKey }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
@@ -102,27 +100,8 @@ export default function Chatbot({ sessionKey }) {
   
   const getNutritionalInfo = async (description) => {
     try {
-      console.log(`Getting nutritional info for: ${description}`);
-      const response = await axios.post(
-        'https://api.openai.com/v1/chat/completions',
-        {
-          model: 'gpt-4o-mini',
-          messages: [{ role: 'user', content: `Give a 2-3 line brief nutritional breakdown (no headings or sub headings) (just include one line of names/quantities, total calories, and then a very brief benefit) for the following items: ${description}
-            Use this format: 
-            Quantity Name (Calories cal), Quantity Name (Calories). Total calories ~ (Amount) cal. Overall Benefit` }],
-          max_tokens: 1000,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${KEY}`,
-          },
-        }
-      );
-
-      console.log("OpenAI API response:", response.data);
-      const info = response.data.choices[0].message.content;
-      return info;
+      const response = await axios.post('http://localhost:5000/get-nutritional-info', { description });
+      return response.data.nutritionalInfo;
     } catch (error) {
       console.error('Error getting nutritional info: ', error);
       return null;
@@ -131,48 +110,42 @@ export default function Chatbot({ sessionKey }) {
  
   const handleSendMessage = async () => {
     if (!message) return;
+  
     const newMessage = { text: message, type: 'user' };
     setMessages([...messages, newMessage]);
     setMessage('');
+  
     let sessionKey = sessionStorage.getItem('sessionKey');
     if (!sessionKey) {
         sessionKey = `session-${new Date().toLocaleString()}`;
         sessionStorage.setItem('sessionKey', sessionKey);
         localStorage.setItem(sessionKey, JSON.stringify([]));
     }
-
+  
     const currentSession = JSON.parse(sessionStorage.getItem('currentSession')) || [];
     const updatedSession = [...currentSession, newMessage];
     sessionStorage.setItem('currentSession', JSON.stringify(updatedSession));
-
+  
     const localStorageSession = JSON.parse(localStorage.getItem(sessionKey)) || [];
     const updatedLocalStorageSession = [...localStorageSession, newMessage];
     localStorage.setItem(sessionKey, JSON.stringify(updatedLocalStorageSession));
-
+  
     try {
-      console.log("Sending message to OpenAI API...");
-      const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-        model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: `I am passing your chat history here- ${JSON.stringify(updatedSession)} (if history is empty ignore this line) (don't mention about the history in response just use it). This is the current query (don't mention about the query just take it) (Just answer the question): ${message}`}],
-        max_tokens: 500,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${KEY}`,
-        },
+      const response = await axios.post('http://localhost:5000/send-message', {
+        message,
+        sessionHistory: updatedSession
       });
-
-      console.log("OpenAI API response:", response.data);
-      const aiResponse = { text: response.data.choices[0].message.content.trim(), type: 'ai' };
+  
+      const aiResponse = { text: response.data.aiResponse, type: 'ai' };
       setMessages(prevMessages => [...prevMessages, aiResponse]);
-
+  
       const finalSession = [...updatedSession, aiResponse];
       sessionStorage.setItem('currentSession', JSON.stringify(finalSession));
-
+  
       const finalLocalStorageSession = [...updatedLocalStorageSession, aiResponse];
       localStorage.setItem(sessionKey, JSON.stringify(finalLocalStorageSession));
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error sending message:', error);
     }
   };
 
