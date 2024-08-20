@@ -10,7 +10,7 @@ export default function Chatbot({ sessionKey }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const chatContainerRef = useRef(null);
-
+  const API_BASE_URL = 'https://git.heroku.com/fooducate.git';
   useEffect(() => {
     const savedMessages = JSON.parse(sessionStorage.getItem('currentSession')) || [];
     setMessages(savedMessages);
@@ -81,7 +81,7 @@ export default function Chatbot({ sessionKey }) {
       reader.onload = async () => {
         const base64Image = reader.result.split(',')[1];
         try {
-          const response = await axios.post('http://localhost:5000/analyze-image', { base64Image });
+          const response = await axios.post(`${API_BASE_URL}/analyze-image`, { base64Image });
           console.log(response);
           if (response.data.description) {
             const description = response.data.description;
@@ -100,7 +100,7 @@ export default function Chatbot({ sessionKey }) {
   
   const getNutritionalInfo = async (description) => {
     try {
-      const response = await axios.post('http://localhost:5000/get-nutritional-info', { description });
+      const response = await axios.post(`${API_BASE_URL}/get-nutritional-info`, { description });
       return response.data.nutritionalInfo;
     } catch (error) {
       console.error('Error getting nutritional info: ', error);
@@ -131,7 +131,7 @@ export default function Chatbot({ sessionKey }) {
     localStorage.setItem(sessionKey, JSON.stringify(updatedLocalStorageSession));
   
     try {
-      const response = await axios.post('http://localhost:5000/send-message', {
+      const response = await axios.post(`${API_BASE_URL}/send-message`, {
         message,
         sessionHistory: updatedSession
       });
