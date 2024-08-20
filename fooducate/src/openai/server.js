@@ -21,7 +21,7 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json());
 
-app.post('send-message', async (req, res) => {
+app.post('/send-message', async (req, res) => {
   const { message, sessionHistory } = req.body;
 
   try {
