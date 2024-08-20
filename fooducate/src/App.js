@@ -13,9 +13,9 @@ import Objectives from './pages/Objectives';
 
 function App() {
   return (
-    <Router basename="/Fooducate">
+    <Router>
       <Routes>
-        <Route exact path='/' element={<SignIn />} />
+        <Route path='/' element={<SignIn />} />
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/meals' element={<Meals />} />
         <Route path='/mealplan' element={<MealPlan />}/>
@@ -23,7 +23,7 @@ function App() {
         <Route path='/nutrients' element={<Nutrients />} />
         <Route path='/register' element={<Register />} />
         <Route path='/objectives' element={<Objectives />} />
-        <Route exact path="/recipe/:recipeId" element={<RecipeDetails />} />
+        <Route path="/recipe/:recipeId" element={<RecipeDetails />} />
       </Routes>
     </Router>
   );
