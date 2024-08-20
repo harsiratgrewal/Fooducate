@@ -13,7 +13,14 @@ const openai = new OpenAI({
 });
 
 app.use(cors({
-  origin: 'https://www.fooducate.me',
+  origin: function (origin, callback) {
+    const allowedOrigins = ['https://harsiratgrewal.github.io', 'https://www.fooducate.me'];
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST']
 }));
 
