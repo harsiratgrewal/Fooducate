@@ -6,6 +6,7 @@ import { collection, getDocs, query } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import { db, auth } from '../firebase/firebase';
 
 const categories = ['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'];
@@ -101,13 +102,18 @@ const FavoriteMealsCarousel = () => {
                         className='rounded'
                       />
                       <CardContent className='p-0'>
-                        <Typography variant="h5" sx={{ mt: 1 }} color='#232530'>{meal.name}</Typography>
+                        <Stack direction="row" justifyContent="space-between" alignContent="center">
+                          <Typography variant="h5" sx={{ mt: 1 }} color='#232530'>{meal.name}</Typography>
+                          <div className='w-25 d-flex flex-row mt-1 justify-content-end align-items-center'>
+                          <LocalFireDepartmentIcon fontSize='medium' sx={{ color: '#4B49C3', marginRight: 0.25}} />
+                          <Typography variant="body1">{meal.nutrients.calories}</Typography>
+                          </div>
+                        </Stack>
                         <Stack direction="row" spacing={1} alignItems="center">
                           <AccessTimeFilledIcon fontSize="small" sx={{ color: '#6F6DCF' }} />
                           <Typography variant="body1">{meal.cookTime} Min</Typography>
                         </Stack>
                         <Typography variant="body1">{meal.ingredients.length} ingredients</Typography>
-                        <Typography variant="body1">{meal.nutrients.calories}</Typography>
                       </CardContent>
                     </Card>
                   </Box>

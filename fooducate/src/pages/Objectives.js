@@ -15,22 +15,21 @@ const categories = ['Health', 'Fitness', 'Personal Development', 'Wellbeing', 'F
 
 export default function ObjectivesPage() {
   const [user, setUser] = useState(null);
-  const [setObjectives] = useState([]);
   const [objectivesCount, setObjectivesCount] = useState({});
   const [completedCount, setCompletedCount] = useState({});
-  
+
   useEffect(() => {
     const fetchObjectives = async (uid) => {
       try {
         const q = query(collection(db, `users/${uid}/objectives`));
         const querySnapshot = await getDocs(q);
         const objectivesArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setObjectives(objectivesArray);
-        calculateCounts(objectivesArray);
+        calculateCounts(objectivesArray); // Pass fetched objectives directly to the calculation
       } catch (error) {
         console.error("Error fetching objectives: ", error);
       }
     };
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
@@ -41,9 +40,7 @@ export default function ObjectivesPage() {
     });
 
     return () => unsubscribe();
-  }, [setObjectives, user]);
-
-  
+  }, [user]);
 
   const calculateCounts = (objectives) => {
     const count = {};
@@ -57,22 +54,23 @@ export default function ObjectivesPage() {
     setObjectivesCount(count);
     setCompletedCount(completed);
   };
+
   // Function to assign colors to categories
-const getColorForCategory = (index) => {
-  const colors = ['#FF4500', '#4EE6D1', '#FFF275', '#E0479E', '#8B61E8', '#00BBF9']; // Your custom colors
-  return colors[index % colors.length];
-};
+  const getColorForCategory = (index) => {
+    const colors = ['#FF4500', '#4EE6D1', '#FFF275', '#E0479E', '#8B61E8', '#00BBF9']; // Your custom colors
+    return colors[index % colors.length];
+  };
 
   const pieChartData = categories.map((category, index) => ({
-  id: category,
-  value: objectivesCount[category] || 0,
-  label: category,
-  color: getColorForCategory(index) // Assign a color based on the category index
-}));
+    id: category,
+    value: objectivesCount[category] || 0,
+    label: category,
+    color: getColorForCategory(index) // Assign a color based on the category index
+  }));
 
   const developedAreasData = categories.map(category => ({
     category,
-    completedPercentage: (completedCount[category] / objectivesCount[category]) * 100 || 0
+    completedPercentage: (completedCount[category] / (objectivesCount[category] || 1)) * 100 // Avoid division by zero
   }));
 
   return (
@@ -97,7 +95,7 @@ const getColorForCategory = (index) => {
               </div>
               <div className="col-12">
                 <div style={{ height: '100%' }}>
-                  <AddObjective/>
+                  <AddObjective />
                 </div>
               </div>
               <div className="col-12">
@@ -105,7 +103,7 @@ const getColorForCategory = (index) => {
                   <ObjectiveCategories />
                 </div>
               </div>
-               <div className="col-12">
+              <div className="col-12">
                 <Journal />
               </div>
             </div>
@@ -120,7 +118,6 @@ const getColorForCategory = (index) => {
                 flexDirection: 'column',
                 height: '100%',
                 padding: 0.75,
-                
               }}
             >
               <CategoryPieChart data={pieChartData} />

@@ -1,16 +1,14 @@
-import { Typography } from '@mui/material'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
+import { Typography, Grid, Card } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs from 'dayjs';
-import Card from '@mui/material/Card';
-import { db, auth } from '../firebase/firebase';
-import { Grid } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { collection, getDocs, where, query } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import { db, auth } from '../firebase/firebase';
 
 const newTheme = (theme) => createTheme({
   ...theme,
@@ -22,7 +20,6 @@ const newTheme = (theme) => createTheme({
           border: '0px solid',
           width: '75%',
           fontSize: 16
-          
         }
       }
     },
@@ -42,9 +39,9 @@ const newTheme = (theme) => createTheme({
     MuiDayCalendar: {
       styleOverrides: {
         weekContainer: {
-          margin: 10 
+          margin: 10
         },
-         weekDayLabel: {
+        weekDayLabel: {
           fontSize: 18
         }
       }
@@ -62,14 +59,14 @@ const newTheme = (theme) => createTheme({
       }
     }
   }
-})
+});
 
 export default function WeeklySuggestions() {
   const [selectedDate, setSelectedDate] = useState(dayjs(new Date()));
   const [selectedCategories] = useState([]);
   const [userId, setUserId] = useState(null);
   const [mealPlans, setMealPlans] = useState([]);
-  const [recipes, setRecipes] = useState({})
+  const [recipes, setRecipes] = useState({});
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -115,13 +112,6 @@ export default function WeeklySuggestions() {
     setSelectedDate(date);
   };
 
-  // const handleCategoryChange = (event) => {
-  //   const value = event.target.value;
-  //   setSelectedCategories(
-  //     typeof value === 'string' ? value.split(',') : value
-  //   );
-  // };
-
   const filteredMealPlans = mealPlans.filter(mealPlan => {
     const sameDay = dayjs(mealPlan.date).isSame(selectedDate, 'day');
     const inSelectedCategories = selectedCategories.length === 0 || selectedCategories.includes(recipes[mealPlan.recipeId]?.category);
@@ -132,61 +122,65 @@ export default function WeeklySuggestions() {
     return filteredMealPlans.filter(mealPlan => recipes[mealPlan.recipeId]?.category === category);
   };
 
-  const displayedDate = new Date(selectedDate).toLocaleDateString('en-us', { weekday: 'long', month: 'long', day: 'numeric' })
-  
+  const displayedDate = new Date(selectedDate).toLocaleDateString('en-us', { weekday: 'long', month: 'long', day: 'numeric' });
+
   return (
     <React.Fragment>
-        <React.Fragment>
+      <Grid container sx={{ height: '100%', padding: 0 }}>
+        <Grid item xs={12}>
+          <Grid container sx={{ height: '100%', padding: 0 }}>
+            <Grid item xs={6} className='d-flex flex-column justify-content-start'>
+              <Typography variant="h5" color="#232530">
+                Meal Plans 
+              </Typography>
 
-            <Grid container sx={{ height: '100%', padding: 0 }}>
-                    <Grid item xs={12}>
-                      <Grid container sx={{ height: '100%', padding: 0 }}>
-                        <Grid item xs={6} className='d-flex flex-column justify-content-start'>
-                          <Typography variant="h5" color="#232530">
-                              Meal Plans 
-                          </Typography>
-                          
-                        <ThemeProvider theme={newTheme}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <DateCalendar 
-                          defaultValue={dayjs(new Date())} 
-                          value={selectedDate} 
-                          onChange={handleDateChange} />                     
-                        </LocalizationProvider>
-                        </ThemeProvider>
-                       
-                        </Grid>
-                        
-                    
-                      <Grid item xs={6} sx={{  height: '100%' }} className='d-flex flex-column justify-content-start'>
-                        <Typography sx={{ paddingBottom: 1, fontSize: 20}}>{displayedDate}</Typography>
-                        <div style={{ marginTop: '2rem' }}>
-                          {['breakfast', 'lunch', 'dinner'].map(category => (
-                            <React.Fragment key={category}>
-                              
-                              <Typography sx={{ fontSize: 16, paddingBottom: 1, fontWeight: 'light' }} className="ps-0">{category.charAt(0).toUpperCase() + category.slice(1)}</Typography>
-                              <Grid container direction="column" spacing={2} wrap="nowrap">
-                                {groupedMealPlans(category).map(mealPlan => (
-                                  <Grid sx={{ height: '100%' }} item key={mealPlan.id}>
-                                    <Card variant="outlined" sx={{ textAlign: 'left'}} className="border w-100 fw-light rounded-3 py-3 px-2 mb-3 d-flex flex-row justify-content-between align-items-center">
-                                      <Typography sx={{ fontSize: 18, width: '100%' }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].name : 'Loading...'}</Typography>
-                                      <div className='d-flex flex-row align-items-center justify-content-end'>
-                                      <LocalFireDepartmentIcon fontSize='medium' sx={{ color: '#4B49C3', marginRight: 0.25}} />
-                                      <Typography sx={{ fontSize: 18, width: '100%'  }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.calories : 'Loading...'}</Typography>
-                                      </div>
-                                    </Card>
-                                  </Grid>
-                                ))}
-                              </Grid>
-                              
-                            </React.Fragment>
-                          ))}
-                        </div>
-                      </Grid>
-                    </Grid>
-                  </Grid>
+              <ThemeProvider theme={newTheme}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateCalendar
+                    defaultValue={dayjs(new Date())}
+                    value={selectedDate}
+                    onChange={handleDateChange}
+                  />
+                </LocalizationProvider>
+              </ThemeProvider>
             </Grid>
-        </React.Fragment>
+
+            <Grid item xs={6} sx={{ height: '100%' }} className='d-flex flex-column justify-content-start'>
+              <Typography sx={{ paddingBottom: 1, fontSize: 20 }}>{displayedDate}</Typography>
+              <div style={{ marginTop: '2rem' }}>
+                {['breakfast', 'lunch', 'dinner'].map(category => (
+                  <React.Fragment key={category}>
+                    <Typography sx={{ fontSize: 16, paddingBottom: 1, fontWeight: 'light' }} className="ps-0">
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </Typography>
+                    <Grid container direction="column" spacing={2} wrap="nowrap">
+                      {groupedMealPlans(category).length > 0 ? (
+                        groupedMealPlans(category).map(mealPlan => (
+                          <Grid sx={{ height: '100%' }} item key={mealPlan.id}>
+                            <Card variant="outlined" sx={{ textAlign: 'left' }} className="border w-100 fw-light rounded-3 py-3 px-2 mb-3 d-flex flex-row justify-content-between align-items-center">
+                              <Typography sx={{ fontSize: 18, width: '100%' }}>{recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].name : 'Loading...'}</Typography>
+                              <div className='d-flex flex-row align-items-center justify-content-end'>
+                                <LocalFireDepartmentIcon fontSize='medium' sx={{ color: '#4B49C3', marginRight: 0.25 }} />
+                                <Typography sx={{ fontSize: 18, width: '100%' }}>
+                                  {recipes[mealPlan.recipeId] ? recipes[mealPlan.recipeId].nutrients.calories : 'Loading...'}
+                                </Typography>
+                              </div>
+                            </Card>
+                          </Grid>
+                        ))
+                      ) : (
+                        <Card variant="contained" elevation={0} sx={{ textAlign: 'center', marginTop: 2, padding: 2, marginLeft: 2, marginBottom: 2, backgroundColor: 'rgba(231, 233, 243, 0.60)' }}>
+                          <Typography color="#232530" sx={{ fontSize: 17 }}>No meal planned</Typography>
+                        </Card>
+                      )}
+                    </Grid>
+                  </React.Fragment>
+                ))}
+              </div>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
     </React.Fragment>
-  )
+  );
 }

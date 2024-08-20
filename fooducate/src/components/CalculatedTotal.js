@@ -7,7 +7,6 @@ import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 
 const CalculatedTotal = () => {
   const [user] = useAuthState(auth);
-  const [setGroceryItems] = useState([]);
   const [totalCost, setTotalCost] = useState(0);
   const [budgetGoal, setBudgetGoal] = useState(0);
 
@@ -17,9 +16,12 @@ const CalculatedTotal = () => {
         const docRef = doc(db, 'users', user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          // Convert budgetGoal to a number
           const budget = parseFloat(docSnap.data().budgetGoal);
-          setBudgetGoal(budget);
+          if (!isNaN(budget)) {
+            setBudgetGoal(budget);
+          } else {
+            console.error("Invalid budgetGoal value in the database.");
+          }
         } else {
           console.error("No such document!");
         }
@@ -32,7 +34,6 @@ const CalculatedTotal = () => {
       try {
         const querySnapshot = await getDocs(collection(db, `users/${user.uid}/grocerylist`));
         const items = querySnapshot.docs.map(doc => doc.data());
-        setGroceryItems(items);
         calculateTotalCost(items);
       } catch (error) {
         console.error("Error fetching grocery items: ", error);
@@ -43,34 +44,34 @@ const CalculatedTotal = () => {
       fetchGroceryItems();
       fetchBudgetGoal();
     }
-  }, [user, setGroceryItems]); 
-
-  
+  }, [user]);
 
   const calculateTotalCost = (items) => {
     const total = items.reduce((acc, item) => {
-      const itemTotal = parseFloat(item.price) * parseInt(item.quantity);
+      const itemTotal = parseFloat(item.price) * parseInt(item.quantity, 10);
       return acc + itemTotal;
     }, 0);
-    setTotalCost(total.toFixed(2)); // Round to 2 decimal places
+    setTotalCost(total);
   };
 
-  const leftToSpendColor = (budgetGoal - totalCost) >= 0 ? 'rgba(11, 38, 136, 0.04)' : '#FFCDD2'; // Red color for overspending
+  const leftToSpendColor = (budgetGoal - totalCost) >= 0 ? 'rgba(11, 38, 136, 0.04)' : '#FFCDD2';
 
   return (
-      <><div className='d-flex pt-3 ps-3 pe-3 flex-row justify-content-between w-100'>
-      <Typography variant="h5" color="#232530">
-        Budget tracker
-      </Typography>
-      <Box sx={{ backgroundColor: leftToSpendColor, paddingLeft: 2, paddingRight: 2, borderRadius: 3, display: 'flex', flexDirection: 'column' }}>
-        <Typography variant="subtitle2" sx={{ paddingTop: 0.75 }} color="rgba(27, 29, 37, 0.63)">
-          Left to spend
+    <>
+      <div className='d-flex pt-3 ps-3 pe-3 flex-row justify-content-between w-100'>
+        <Typography variant="h5" color="#232530">
+          Budget tracker
         </Typography>
-        <Typography sx={{ paddingBottom: 0.75 }} fontSize={22} color="#232530">
-          ${(budgetGoal - totalCost).toFixed(2)}
-        </Typography>
-      </Box>
-    </div><svg style={{ height: 0 }}>
+        <Box sx={{ backgroundColor: leftToSpendColor, paddingLeft: 2, paddingRight: 2, borderRadius: 3, display: 'flex', flexDirection: 'column' }}>
+          <Typography variant="subtitle2" sx={{ paddingTop: 0.75 }} color="rgba(27, 29, 37, 0.63)">
+            Left to spend
+          </Typography>
+          <Typography sx={{ paddingBottom: 0.75 }} fontSize={22} color="#232530">
+            ${(budgetGoal - totalCost).toFixed(2)}
+          </Typography>
+        </Box>
+      </div>
+      <svg style={{ height: 0 }}>
         <defs>
           <linearGradient id="gradientColors" gradientTransform="rotate(90)">
             <stop offset="0%" stopColor="rgba(153, 107, 255, 0.50)" />
@@ -78,11 +79,12 @@ const CalculatedTotal = () => {
             <stop offset="100%" stopColor='#EFE2FA' />
           </linearGradient>
         </defs>
-      </svg><div className="w-100 d-flex flex-row align-items-baseline justify-content-center">
+      </svg>
+      <div className="w-100 d-flex flex-row align-items-baseline justify-content-center">
         <Gauge
           variant="determinate"
-          value={(totalCost / budgetGoal) * 100}
-          valueMax={budgetGoal}
+          value={(totalCost / budgetGoal) * 100 || 0}
+          valueMax={100}
           startAngle={-90}
           endAngle={90}
           width={450}
@@ -101,14 +103,16 @@ const CalculatedTotal = () => {
               fill: 'rgba(231, 233, 243, 0.80)',
             },
           }}
-          text={({ value }) => `${value.toFixed(2)}%`} />
-      </div><div className='w-100 pb-3 d-flex flex-row align-items-center justify-content-between'>
+          text={({ value }) => `${value.toFixed(2)}%`}
+        />
+      </div>
+      <div className='w-100 pb-3 d-flex flex-row align-items-center justify-content-between'>
         <Box sx={{ padding: 2, display: 'flex', flexDirection: 'column' }}>
           <Typography variant="subtitle2" color="rgba(27, 29, 37, 0.63)">
             Current grocery list total
           </Typography>
           <Typography variant="h5" color="#232530">
-            ${totalCost}
+            ${totalCost.toFixed(2)}
           </Typography>
         </Box>
         <Box sx={{ padding: 2, display: 'flex', flexDirection: 'column' }}>
@@ -119,7 +123,8 @@ const CalculatedTotal = () => {
             ${budgetGoal.toFixed(2)}
           </Typography>
         </Box>
-      </div></>
+      </div>
+    </>
   );
 };
 

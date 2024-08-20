@@ -187,7 +187,7 @@ export default function Chatbot({ sessionKey }) {
           }}
         >
           <SmartToyIcon sx={{ fontSize: 40, color: '#fff', mr: 2 }} />
-          <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#fff', m: 0, fontSize: '28px' }}>
+          <Typography variant="h4" sx={{ color: '#fff', m: 0 }}>
             Nutritional Helper
           </Typography>
         </Box>
@@ -254,7 +254,7 @@ export default function Chatbot({ sessionKey }) {
               </Box>
             ))
           ) : (
-            <Typography variant="body1" color="text.secondary" align="center" sx={{ fontWeight: 'bold', fontSize: '24px' }}>
+            <Typography variant="body1" color="text.secondary" align="center" sx={{ color: "#232530", fontWeight: 'bold', fontSize: '24px' }}>
               Hello! I am your AI Nutritional Chatbot. Please type a message to start the conversation!
             </Typography>
           )}
@@ -286,7 +286,7 @@ export default function Chatbot({ sessionKey }) {
               '& .MuiInputBase-input': {
                 padding: '10px',
                 color: '#fff',
-                fontSize: '16px',
+                fontSize: '18px',
                 fontWeight: 'bold',
                 caretColor: '#fff', 
               },

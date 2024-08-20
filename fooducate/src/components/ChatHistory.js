@@ -33,8 +33,8 @@ export default function ChatHistory({ loadSession }) {
     <React.Fragment>
       <Typography
         variant="h5"
-        color="#4B0082"
-        sx={{ fontWeight: 'bold', textAlign: 'center', mb: 2 }}
+        color="#232530"
+        sx={{  textAlign: 'left', mb: 2 }}
       >
         Chat History
       </Typography>
@@ -49,7 +49,7 @@ export default function ChatHistory({ loadSession }) {
       </Button>
       <Typography
         variant="subtitle1"
-        color="#757575"
+        color="rgba(27, 29, 37, 0.63)"
         sx={{ mb: 2, fontSize: '1rem', fontWeight: 'bold' }}
       >
         Previous Sessions

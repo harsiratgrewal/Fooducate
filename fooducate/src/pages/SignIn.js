@@ -46,7 +46,7 @@ function SignIn() {
 
   useEffect(() => {
     if (loading) {
-      // maybe trigger a loading screen
+      
       return;
     }
     if (user) {
@@ -59,8 +59,15 @@ function SignIn() {
       setLoginError("");
       await logInWithEmailAndPassword(email, password);
     } catch (error) {
-      console.error("Login error:", error); // Log the error to the console
+      console.error("Login error:", error); 
       setLoginError("Invalid credentials. Please try again.");
+    }
+  };
+
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleLogin();
     }
   };
 
@@ -78,7 +85,6 @@ function SignIn() {
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
-            //backgroundSize: '70%',
           }}
         />
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
@@ -108,6 +114,7 @@ function SignIn() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={handleKeyPress} // Handle Enter key for email input
               fullWidth
               margin="normal"
               sx={{ marginBottom: 3}}
@@ -117,6 +124,7 @@ function SignIn() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handleKeyPress} // Handle Enter key for password input
               fullWidth
               margin="normal"
               sx={{ marginBottom: 2}}
@@ -139,7 +147,7 @@ function SignIn() {
                     },
                     height: 40 
                   }} 
-                  onClick={handleLogin}>
+                  onClick={handleLogin}> {/* Trigger login on click */}
                     Log in
                   </Button>
                 </Stack>           
