@@ -13,7 +13,7 @@ import Objectives from './pages/Objectives';
 
 function App() {
   return (
-    <Router basename="/Fooducate/fooducate">
+    <Router basename="/Fooducate">
       <Routes>
         <Route exact path='/' element={<SignIn />} />
         <Route path='/dashboard' element={<Dashboard />} />
