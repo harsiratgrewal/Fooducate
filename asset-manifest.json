@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.93468f79.css",
-    "main.js": "/static/js/main.253b6e72.js",
+    "main.js": "/static/js/main.37f82763.js",
     "static/js/453.32423f98.chunk.js": "/static/js/453.32423f98.chunk.js",
     "static/media/create-food-website.jpg": "/static/media/create-food-website.6ab5fcd2f2edc121e357.jpg",
     "static/media/illustration.png": "/static/media/illustration.5b2488f609f3c02f47dd.png",
@@ -13,11 +13,11 @@
     "static/media/proteindrumstick2.svg": "/static/media/proteindrumstick2.615a491c81474165ffbd7d0f325cee26.svg",
     "static/media/droplet.svg": "/static/media/droplet.563aa6cd8cdd11203fbbd984c33dbac5.svg",
     "main.93468f79.css.map": "/static/css/main.93468f79.css.map",
-    "main.253b6e72.js.map": "/static/js/main.253b6e72.js.map",
+    "main.37f82763.js.map": "/static/js/main.37f82763.js.map",
     "453.32423f98.chunk.js.map": "/static/js/453.32423f98.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.93468f79.css",
-    "static/js/main.253b6e72.js"
+    "static/js/main.37f82763.js"
   ]
 }
