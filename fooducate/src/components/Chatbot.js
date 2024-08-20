@@ -10,7 +10,7 @@ export default function Chatbot({ sessionKey }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const chatContainerRef = useRef(null);
-  const API_BASE_URL = 'https://fooducate-7e23f9527415.herokuapp.com/';
+  const API_BASE_URL = 'https://fooducate-7e23f9527415.herokuapp.com';
   useEffect(() => {
     const savedMessages = JSON.parse(sessionStorage.getItem('currentSession')) || [];
     setMessages(savedMessages);
