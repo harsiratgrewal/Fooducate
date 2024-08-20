@@ -21,6 +21,27 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json());
 
+app.post('send-message', async (req, res) => {
+  const { message, sessionHistory } = req.body;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content: `I am passing your chat history here- ${JSON.stringify(sessionHistory)} (if history is empty ignore this line) (don't mention about the history in response just use it). This is the current query (don't mention about the query just take it) (Just answer the question): ${message}`}],
+      max_tokens: 500,
+    });
+
+    if (response.choices[0].message.content) {
+      const aiResponse = response.choices[0].message.content.trim();
+      res.json({ aiResponse });
+    } else {
+      res.status(500).json({ error: 'Failed to get a valid response from OpenAI API.' });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Error processing the message' });
+  }
+});
 
 app.post('/analyze-image', async (req, res) => {
   const { base64Image } = req.body;
@@ -84,27 +105,7 @@ app.post('/get-nutritional-info', async (req, res) => {
   }
 });
 
-app.post('/send-message', async (req, res) => {
-  const { message, sessionHistory } = req.body;
 
-  try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: `I am passing your chat history here- ${JSON.stringify(sessionHistory)} (if history is empty ignore this line) (don't mention about the history in response just use it). This is the current query (don't mention about the query just take it) (Just answer the question): ${message}`}],
-      max_tokens: 500,
-    });
-
-    if (response.choices[0].message.content) {
-      const aiResponse = response.choices[0].message.content.trim();
-      res.json({ aiResponse });
-    } else {
-      res.status(500).json({ error: 'Failed to get a valid response from OpenAI API.' });
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Error processing the message' });
-  }
-});
 
 
 app.listen(port, () => {
