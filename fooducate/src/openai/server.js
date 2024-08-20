@@ -13,7 +13,7 @@ const openai = new OpenAI({
 });
 
 app.use(cors({
-  origin: 'https://harsiratgrewal.github.io',
+  origin: 'https://www.fooducate.me',
   methods: ['GET', 'POST']
 }));
 
