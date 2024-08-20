@@ -12,7 +12,7 @@ import { db, auth } from '../firebase/firebase'; // Adjust the import based on y
 const categories = ['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'];
 
 const FavoritedMealsCard = () => {
-  const [setUserId] = useState(null); //removed userId
+  const [userId, setUserId] = useState(null); //removed userId
   const [favoriteMeals, setFavoriteMeals] = useState([]);
   const [recipes, setRecipes] = useState({});
 
@@ -40,7 +40,7 @@ const FavoritedMealsCard = () => {
     });
 
     return () => unsubscribe();
-  }, [setUserId]);
+  }, [userId]);
 
   
 

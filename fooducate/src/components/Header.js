@@ -16,7 +16,7 @@ function Header() {
   const [name, setName] = useState("");
   const [logoutLoading, setLogoutLoading] = useState(false);
   const navigate = useNavigate();
-  const [setIsAuthenticated] = useState(false); //removed isAuthenticated
+  const [isAuthenticated, setIsAuthenticated] = useState(false); //removed isAuthenticated
 
   const handleChatClick = () => {
     navigate('/nutrients');
@@ -95,7 +95,7 @@ function Header() {
     } else {
       setIsAuthenticated(false);
     }
-  }, [user, loading, setIsAuthenticated]);
+  }, [user, loading, isAuthenticated]);
 
 
   return (

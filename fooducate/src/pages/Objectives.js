@@ -14,7 +14,7 @@ import AddObjective from "../components/AddObjective";
 const categories = ['Health', 'Fitness', 'Personal Development', 'Wellbeing', 'Fun & Recreational', 'Nutritional'];
 
 export default function ObjectivesPage() {
-  const [setUser] = useState(null);
+  const [user, setUser] = useState(null);
   const [setObjectives] = useState([]);
   const [objectivesCount, setObjectivesCount] = useState({});
   const [completedCount, setCompletedCount] = useState({});
@@ -41,7 +41,7 @@ export default function ObjectivesPage() {
     });
 
     return () => unsubscribe();
-  }, [setObjectives, setUser]);
+  }, [setObjectives, user]);
 
   
 

@@ -8,7 +8,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 const categories = ['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'];
 
 const TopFavoritedMeals = () => {
-  const [setUserId] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [favoriteMeals, setFavoriteMeals] = useState([]);
   const [recipes, setRecipes] = useState({});
 
@@ -36,7 +36,7 @@ const TopFavoritedMeals = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [userId]);
 
 
 

@@ -11,7 +11,7 @@ import { db, auth } from '../firebase/firebase';
 const categories = ['breakfast', 'lunch', 'dinner', 'snacks', 'sweets'];
 
 const FavoriteMealsCarousel = () => {
-  const [setUserId] = useState(null); //removed userid
+  const [userId, setUserId] = useState(null); //removed userid
   const [favoriteMeals, setFavoriteMeals] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = favoriteMeals.length;
@@ -38,7 +38,7 @@ const FavoriteMealsCarousel = () => {
     });
 
     return () => unsubscribe();
-  }, [setUserId]);
+  }, [userId]);
 
 
 

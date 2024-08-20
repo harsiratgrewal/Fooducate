@@ -67,7 +67,7 @@ const newTheme = (theme) => createTheme({
 export default function WeeklySuggestions() {
   const [selectedDate, setSelectedDate] = useState(dayjs(new Date()));
   const [selectedCategories] = useState([]);
-  const [setUserId] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [mealPlans, setMealPlans] = useState([]);
   const [recipes, setRecipes] = useState({})
 
@@ -83,7 +83,7 @@ export default function WeeklySuggestions() {
     });
 
     return () => unsubscribe();
-  }, [setUserId]);
+  }, [userId]);
 
   const fetchMealPlans = async (uid) => {
     try {

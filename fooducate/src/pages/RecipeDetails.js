@@ -85,7 +85,7 @@ const RecipeDetails = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [userId]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
