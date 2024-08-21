@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Meals from './pages/Meals';
 import Dashboard from './pages/Dashboard';
 import Nutrients from './pages/Nutrients';
@@ -15,14 +15,14 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path='/' element={<SignIn />} />
-        <Route path='/dashboard' element={<Dashboard />} />
-        <Route path='/meals' element={<Meals />} />
-        <Route path='/mealplan' element={<MealPlan />}/>
-        <Route path='/grocerylist' element={<GroceryList />} />
-        <Route path='/nutrients' element={<Nutrients />} />
-        <Route path='/register' element={<Register />} />
-        <Route path='/objectives' element={<Objectives />} />
+        <Route path="/" element={<SignIn />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/meals" element={<Meals />} />
+        <Route path="/mealplan" element={<MealPlan />} />
+        <Route path="/grocerylist" element={<GroceryList />} />
+        <Route path="/nutrients" element={<Nutrients />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/objectives" element={<Objectives />} />
         <Route path="/recipe/:recipeId" element={<RecipeDetails />} />
       </Routes>
     </Router>
