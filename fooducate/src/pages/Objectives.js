@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { collection, query, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Box, Grid, Paper } from '@mui/material';
@@ -18,18 +18,21 @@ export default function ObjectivesPage() {
   const [objectivesCount, setObjectivesCount] = useState({});
   const [completedCount, setCompletedCount] = useState({});
 
-  useEffect(() => {
-    const fetchObjectives = async (uid) => {
-      try {
-        const q = query(collection(db, `users/${uid}/objectives`));
-        const querySnapshot = await getDocs(q);
-        const objectivesArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        calculateCounts(objectivesArray); // Pass fetched objectives directly to the calculation
-      } catch (error) {
-        console.error("Error fetching objectives: ", error);
-      }
-    };
+  // Memoize the fetchObjectives function to avoid recreating it on every render
+  const fetchObjectives = useCallback(async (uid) => {
+    if (!uid) return;
 
+    try {
+      const q = query(collection(db, `users/${uid}/objectives`));
+      const querySnapshot = await getDocs(q);
+      const objectivesArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      calculateCounts(objectivesArray); // Pass fetched objectives directly to the calculation
+    } catch (error) {
+      console.error("Error fetching objectives: ", error);
+    }
+  }, []);
+
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
@@ -40,7 +43,13 @@ export default function ObjectivesPage() {
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, [fetchObjectives]);
+
+  useEffect(() => {
+    if (user) {
+      fetchObjectives(user.uid);
+    }
+  }, [user, fetchObjectives]);
 
   const calculateCounts = (objectives) => {
     const count = {};
@@ -53,6 +62,12 @@ export default function ObjectivesPage() {
 
     setObjectivesCount(count);
     setCompletedCount(completed);
+  };
+
+  const handleObjectiveAdded = () => {
+    if (user) {
+      fetchObjectives(user.uid); // Re-fetch objectives when a new one is added
+    }
   };
 
   // Function to assign colors to categories
@@ -95,7 +110,7 @@ export default function ObjectivesPage() {
               </div>
               <div className="col-12">
                 <div style={{ height: '100%' }}>
-                  <AddObjective />
+                  <AddObjective onObjectiveAdded={handleObjectiveAdded} />
                 </div>
               </div>
               <div className="col-12">

@@ -46,7 +46,7 @@ function SignIn() {
 
   useEffect(() => {
     if (loading) {
-      
+      // maybe trigger a loading screen
       return;
     }
     if (user) {
@@ -59,12 +59,12 @@ function SignIn() {
       setLoginError("");
       await logInWithEmailAndPassword(email, password);
     } catch (error) {
-      console.error("Login error:", error); 
+      console.error("Login error:", error); // Log the error to the console
       setLoginError("Invalid credentials. Please try again.");
     }
   };
 
-
+  // Handle "Enter" key press
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       handleLogin();

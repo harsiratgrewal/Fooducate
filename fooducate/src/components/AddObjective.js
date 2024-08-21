@@ -30,7 +30,7 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 
 const categories = ['Health', 'Fitness', 'Personal Development', 'Wellbeing', 'Fun & Recreational', 'Nutritional'];
 
-export default function AddObjective() {
+export default function AddObjective({ onObjectiveAdded }) {
   const [user] = useAuthState(auth);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [objectiveName, setObjectiveName] = useState('');
@@ -71,6 +71,12 @@ export default function AddObjective() {
       };
 
       await addDoc(userObjectivesRef, objective);
+
+      // Notify the parent component that a new objective has been added
+      if (onObjectiveAdded) {
+        onObjectiveAdded();
+      }
+
       setAlertMessage('Objective created');
       setAlertOpen(true);
       handleDialogClose();
@@ -82,24 +88,23 @@ export default function AddObjective() {
   return (
     <Box sx={{ mb: 2 }}>
       <Card elevation={0} sx={{ mt: 1, pb: 0, p: 2, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', borderRadius: 2 }}>
-        
         <Typography variant="h5" color="#232530">
           Lifestyle Balance Objectives
         </Typography>
         <Button 
-        disableElevation 
-        variant="contained" 
-        color="primary" 
-        onClick={handleDialogOpen} 
-        sx={{ 
+          disableElevation 
+          variant="contained" 
+          color="primary" 
+          onClick={handleDialogOpen} 
+          sx={{ 
             width: 40,
             '&:hover': {
-            backgroundColor: '#6E4ABE', // Custom hover background color
+              backgroundColor: '#6E4ABE', // Custom hover background color
             },
             bgcolor: "#996BFF",
             fontWeight: 'regular',
             fontSize: 15,
-        }}>
+          }}>
           Add
         </Button>
       </Card>
@@ -113,7 +118,6 @@ export default function AddObjective() {
             label="Objective Name"
             value={objectiveName}
             onChange={(e) => setObjectiveName(e.target.value)}
-            
           />
           <CustomTextField
             fullWidth
@@ -132,36 +136,35 @@ export default function AddObjective() {
         </DialogContent>
         <DialogActions sx={{ paddingBottom: 2}}>
           <div className='d-flex pb-4 flex-row justify-content-center w-100'>
-          <Button 
-          onClick={handleDialogClose}
-          variant="outlined"
-          sx={{ 
-            
-            width: '40%',
-            borderColor: '#767676',
-            color: '#767676', 
-            '&:hover': {
-               backgroundColor: 'rgba(118, 118, 118, 0.15)', // Custom hover background color
-               borderColor: '#767676'
-            }, 
-          }}
-          >
-            Cancel
-          </Button>
-          <Button 
-          variant="contained" 
-          disableElevation
-         sx={{ 
-              marginLeft: 1,
-              backgroundColor: '#996BFF',
-              width: '40%',
-              '&:hover': {
-              backgroundColor: '#8A60E6', // Custom hover background color
-             }, 
-          }}
-          onClick={handleCreateObjective}>
-            Create
-          </Button>
+            <Button 
+              onClick={handleDialogClose}
+              variant="outlined"
+              sx={{ 
+                width: '40%',
+                borderColor: '#767676',
+                color: '#767676', 
+                '&:hover': {
+                   backgroundColor: 'rgba(118, 118, 118, 0.15)', // Custom hover background color
+                   borderColor: '#767676'
+                }, 
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="contained" 
+              disableElevation
+              sx={{ 
+                marginLeft: 1,
+                backgroundColor: '#996BFF',
+                width: '40%',
+                '&:hover': {
+                  backgroundColor: '#8A60E6', // Custom hover background color
+                }, 
+              }}
+              onClick={handleCreateObjective}>
+              Create
+            </Button>
           </div>
         </DialogActions>
       </Dialog>

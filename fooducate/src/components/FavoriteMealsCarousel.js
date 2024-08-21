@@ -77,9 +77,14 @@ const FavoriteMealsCarousel = () => {
   return (
     <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
       {maxSteps === 0 ? (
-        <Typography variant="body1" color="#999999">
-          No favorite meals found.
+        <Box>
+        <Typography variant="h5" color='#232530'>Top favorite meals</Typography>
+        <Box sx={{ textAlign: 'center', marginTop: 2, padding: 4, marginBottom: 2, borderRadius: 2, backgroundColor: 'rgba(231, 233, 243, 0.60)' }}>
+        <Typography variant="body1" color="#232530">
+          You have no favorited meals.
         </Typography>
+        </Box>
+        </Box>
       ) : (
         <>
           <SwipeableViews

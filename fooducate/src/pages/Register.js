@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { TextField, Button, Stepper, Step, StepLabel, Box, Typography, Stack, Divider, Grid, InputLabel, Select, Chip, MenuItem, FormControl } from '@mui/material';
+import { TextField, Button, Stepper, Step, StepLabel, Box, Typography, Stack, Divider, Grid, Chip, MenuItem } from '@mui/material';
 import {
   auth,
 } from "../firebase/firebase";
@@ -310,20 +310,19 @@ function Register() {
                     />
                   </Grid>
                   <Grid item xs={12}>
-                    <FormControl fullWidth>
-                      <InputLabel>What macronutrient do you want to improve your intake for?</InputLabel>
-                      <Select
-                        value={macronutrientToImprove}
-                        onChange={(e) => setMacronutrientToImprove(e.target.value)}
-                        label="What macronutrient do you want to improve your intake for?"
-                      >
-                        {macronutrientOptions.map((option) => (
+                    <CustomTextField
+                     fullWidth
+                     select
+                     label="What macronutrient do you want to improve your intake for?"
+                     value={macronutrientToImprove}
+                     onChange={(e) => setMacronutrientToImprove(e.target.value)}
+                    >
+                      {macronutrientOptions.map((option) => (
                           <MenuItem key={option} value={option}>
                             {option}
                           </MenuItem>
                         ))}
-                      </Select>
-                    </FormControl>
+                    </CustomTextField>
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="h6" color="#232530">

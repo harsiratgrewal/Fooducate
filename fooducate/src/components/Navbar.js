@@ -15,7 +15,7 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 import logoFooducate from '../img/logo-fooducate.svg'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import TrackChangesIcon from '@mui/icons-material/TrackChanges';
 
 
 const drawerWidth = 190;
@@ -131,10 +131,10 @@ export default function Navbar() {
            <ListItem disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                  <EmojiEventsIcon sx={{ color: "#cecae3"}} />
+                  <TrackChangesIcon sx={{ color: "#cecae3"}} />
                 </ListItemIcon>
                 <ListItemText>
-                  Health goals
+                  Lifestyle
                 </ListItemText>
               </ListItemButton>
             </ListItem>

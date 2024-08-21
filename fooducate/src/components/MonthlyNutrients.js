@@ -1,5 +1,5 @@
-import { Typography } from '@mui/material';
 import React, { useState, useEffect } from 'react';
+import { Typography, Box } from '@mui/material';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db, auth } from '../firebase/firebase'; // Adjust the import based on your file structure
@@ -30,7 +30,6 @@ export default function WeeklyNutrients() {
     { day: 'Thu', carbs: 0, proteins: 0, fats: 0 },
     { day: 'Fri', carbs: 0, proteins: 0, fats: 0 },
     { day: 'Sat', carbs: 0, proteins: 0, fats: 0 }
-    
   ]);
   const [weekRange, setWeekRange] = useState("");
 
@@ -124,33 +123,49 @@ export default function WeeklyNutrients() {
     }
   };
 
+  const areAllNutrientsZero = () => {
+    return weeklyMacronutrients.every(
+      (day) => day.carbs === 0 && day.proteins === 0 && day.fats === 0
+    );
+  };
+
   return (
     <React.Fragment>
       <Typography variant="h5" color="#232530">
         Weekly macronutrients
       </Typography>
-      <Typography variant="100%" color="#232530">
+      <Typography variant="subtitle1" color="#232530">
         {weekRange}
       </Typography>
-      <BarChart
-        xAxis={[{ scaleType: 'band', data: weeklyMacronutrients.map(day => day.day), barGapRatio: 0.4, categoryGapRatio: 0.6 }]}
-        series={[
-          { data: weeklyMacronutrients.map(day => day.carbs), stack: 'A', label: 'Carbs', color: '#996BFF'  },
-          { data: weeklyMacronutrients.map(day => day.proteins), stack: 'A', label: 'Proteins', color: '#39379C' },
-          { data: weeklyMacronutrients.map(day => day.fats), stack: 'A', label: 'Fats', color: '#5D5AE6' },
-        ]}
-        borderRadius={30}
-        slotProps={{
-           bar: {
-                borderRadius: 8,
+      {areAllNutrientsZero() ? (
+        <Box sx={{ borderRadius: 3, marginTop: 4, display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <Box sx={{ borderRadius: 3, textAlign: 'center', padding: 2, backgroundColor: 'rgba(231, 233, 243, 0.60)', }}>
+          <Typography variant="body1" color="#232530">
+            Create meal plans to view your weekly stats
+          </Typography>
+          </Box>
+        </Box>
+      ) : (
+        <BarChart
+          xAxis={[{ scaleType: 'band', data: weeklyMacronutrients.map(day => day.day), barGapRatio: 0.4, categoryGapRatio: 0.6 }]}
+          series={[
+            { data: weeklyMacronutrients.map(day => day.carbs), stack: 'A', label: 'Carbs', color: '#996BFF'  },
+            { data: weeklyMacronutrients.map(day => day.proteins), stack: 'A', label: 'Proteins', color: '#39379C' },
+            { data: weeklyMacronutrients.map(day => day.fats), stack: 'A', label: 'Fats', color: '#5D5AE6' },
+          ]}
+          borderRadius={30}
+          slotProps={{
+            bar: {
+              borderRadius: 8,
             },
-          legend: {
-            direction: 'row',
-            position: { vertical: 'top', horizontal: 'right' },
-            padding: 0,
-          }
-        }}
-      />
+            legend: {
+              direction: 'row',
+              position: { vertical: 'top', horizontal: 'right' },
+              padding: 0,
+            }
+          }}
+        />
+      )}
     </React.Fragment>
   );
 }

@@ -79,6 +79,10 @@ export default function MealPlanScheduler() {
     }
   };
 
+  const handleMealPlanAdded = (newMealPlans) => {
+    setMealPlans((prevMealPlans) => [...prevMealPlans, ...newMealPlans]);
+  };
+
   const fetchMealPlans = async (uid) => {
     try {
       const mealPlansCollection = collection(db, 'mealplans');
@@ -235,7 +239,7 @@ export default function MealPlanScheduler() {
                         Add meal
                       </Button>
                     </Box>
-                    <AddMeal open={dialogOpen} onClose={handleCloseDialog} onSave={handleSave} />
+                    <AddMeal open={dialogOpen} onClose={handleCloseDialog} onSave={handleSave} onMealPlanAdded={handleMealPlanAdded} />
                   </Card>
                   <Box>
                     <Grid container spacing={1}>

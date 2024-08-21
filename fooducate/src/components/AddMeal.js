@@ -15,7 +15,7 @@ import SweetsIcon from '@mui/icons-material/Cake';
 
 //const categories = ["Breakfast", "Lunch", "Dinner", "Snack", "Sweets"];
 
-const AddMeal = ({ open, onClose, onSave }) => {
+const AddMeal = ({ open, onClose, onSave, onMealPlanAdded }) => {
   const [userId, setUserId] = useState(null);
   const [recipes, setRecipes] = useState([]);
   const [filteredRecipes, setFilteredRecipes] = useState([]);
@@ -92,19 +92,24 @@ const AddMeal = ({ open, onClose, onSave }) => {
     if (userId && selectedRecipes.length > 0 && date) {
       try {
         const batch = writeBatch(db);
+        const newMealPlans = [];
 
         selectedRecipes.forEach((recipe) => {
           const mealPlanData = {
             userId,
             recipeId: recipe.id,
-            date: date.format('YYYY-MM-DDTHH:mm:ss.sssZ'), // Format date as YYYY-MM-DD
-            category: recipe.category
+            date: date.format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+            category: recipe.category,
           };
           const mealPlanDocRef = doc(collection(db, 'mealplans'));
           batch.set(mealPlanDocRef, mealPlanData);
+          newMealPlans.push({ ...mealPlanData, id: mealPlanDocRef.id });
         });
 
         await batch.commit();
+
+        onMealPlanAdded(newMealPlans);
+
         onSave(`Successfully added ${selectedRecipes.length} meals for ${date.format('MMMM DD, YYYY')} to meal plans!`);
       } catch (error) {
         console.error('Error adding recipes to meal plan:', error);

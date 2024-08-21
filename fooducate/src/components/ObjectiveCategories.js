@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { collection, query, getDocs, doc, setDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { List, ListItem, ListItemText, Checkbox, Typography, Box, Grid, Card, CardContent, Collapse } from '@mui/material';
@@ -39,25 +39,25 @@ export default function ObjectiveCategories() {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    const fetchObjectives = async () => {
-      if (!userId) return;
+  const fetchObjectives = useCallback(async () => {
+    if (!userId) return;
 
-      try {
-        const q = query(collection(db, `users/${userId}/objectives`));
-        const querySnapshot = await getDocs(q);
-        const objectivesArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const active = objectivesArray.filter(obj => !obj.completed);
-        const completed = objectivesArray.filter(obj => obj.completed);
-        setObjectives(active);
-        setCompletedObjectives(completed);
-      } catch (error) {
-        console.error("Error fetching objectives: ", error);
-      }
-    };
-
-    fetchObjectives();
+    try {
+      const q = query(collection(db, `users/${userId}/objectives`));
+      const querySnapshot = await getDocs(q);
+      const objectivesArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const active = objectivesArray.filter(obj => !obj.completed);
+      const completed = objectivesArray.filter(obj => obj.completed);
+      setObjectives(active);
+      setCompletedObjectives(completed);
+    } catch (error) {
+      console.error("Error fetching objectives: ", error);
+    }
   }, [userId]);
+
+  useEffect(() => {
+    fetchObjectives();
+  }, [userId, fetchObjectives]);
 
   const handleCheckboxChange = async (objective) => {
     if (!userId) return;
