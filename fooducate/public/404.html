@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <title>Redirecting...</title>
     <script type="text/javascript">
-        var path = window.location.pathname + window.location.search + window.location.hash;
-        var redirectTo = window.location.origin + '/#' + path;
-        window.location.replace(redirectTo);
+        (function() {
+            var path = window.location.pathname + window.location.search + window.location.hash;
+            var redirectTo = window.location.origin + '/#' + path;
+            if (window.location.href !== redirectTo) {
+                window.location.replace(redirectTo);
+            }
+        })();
     </script>
 </head>
 <body>
