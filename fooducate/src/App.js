@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import Meals from './pages/Meals';
 import Dashboard from './pages/Dashboard';
 import Nutrients from './pages/Nutrients';
