@@ -24,6 +24,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/objectives" element={<Objectives />} />
         <Route path="/recipe/:recipeId" element={<RecipeDetails />} />
+        <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
     </Router>
   );
