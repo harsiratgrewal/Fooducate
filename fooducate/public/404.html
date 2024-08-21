@@ -4,9 +4,16 @@
     <meta charset="UTF-8">
     <title>Redirecting...</title>
     <script type="text/javascript">
-        var path = window.location.pathname + window.location.search + window.location.hash;
-        var redirectTo = window.location.origin + path;
-        window.location.replace(redirectTo);
+        function isValidRoute() {
+            const validRoutes = ['/', '/dashboard', '/meals', '/mealplan', '/grocerylist', '/nutrients', '/register', '/objectives', '/recipe'];
+            const currentPath = window.location.pathname;
+            return validRoutes.some(route => currentPath.startsWith(route));
+        }
+        if (!isValidRoute()) {
+            var path = window.location.pathname + window.location.search + window.location.hash;
+            var redirectTo = window.location.origin + '/#' + path;
+            window.location.replace(redirectTo);
+        }
     </script>
 </head>
 <body>
