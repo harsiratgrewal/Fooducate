@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react';
-import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Meals from './pages/Meals';
 import Dashboard from './pages/Dashboard';
 import Nutrients from './pages/Nutrients';
@@ -14,7 +14,7 @@ import Objectives from './pages/Objectives';
 function App() {
   return (
     <Router>
-      <Switch>
+      <Routes>
         <Route path='/' element={<SignIn />} />
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/meals' element={<Meals />} />
@@ -24,7 +24,7 @@ function App() {
         <Route path='/register' element={<Register />} />
         <Route path='/objectives' element={<Objectives />} />
         <Route path="/recipe/:recipeId" element={<RecipeDetails />} />
-      </Switch>
+      </Routes>
     </Router>
   );
 }

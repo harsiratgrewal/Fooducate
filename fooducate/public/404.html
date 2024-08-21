@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecting...</title>
+    <script type="text/javascript">
+        var path = window.location.pathname;
+        var redirectTo = window.location.origin + '/#' + path;
+        window.location.replace(redirectTo);
+    </script>
+</head>
+<body>
+    <h1>Redirecting...</h1>
+    <p>If you are not redirected, <a id="redirect-link">click here</a>.</p>
+    <script type="text/javascript">
+        document.getElementById('redirect-link').href = redirectTo;
+    </script>
+</body>
+</html>
